@@ -407,11 +407,12 @@ export default function DashboardPage() {
         )}
 
        
-        <section className="mb-4 sm:mb-8 flex justify-end">
+        <section className="mb-4 sm:mb-8 md:flex md:justify-end">
           {/* recents */}
           <div className="w-full h-auto flex flex-col justify-start items-start px-2">
 
-            <div className="w-full h-auto flex justify-between px-4">
+
+           <div className="w-full h-auto flex justify-between px-4">
            <h3 className="text-gray-800 text-xl font-bold">Rescent Resume</h3>
            <Link href="/dashboard/resumes">
                 <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
@@ -700,6 +701,7 @@ export default function DashboardPage() {
 
           {/* Recent Follow-Up Emails Section - Changed to half-width */}
           <Card className="border-t-orange-400 shadow-sm h-[350px]">
+
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base sm:text-lg">Recent Follow-Ups</CardTitle>
@@ -712,6 +714,7 @@ export default function DashboardPage() {
                 </Button>
               </Link>
             </CardHeader>
+
             <CardContent className="p-2 sm:p-4">
               {loadingFollowUps ? (
                 <div className="flex justify-center py-4">
@@ -751,10 +754,12 @@ export default function DashboardPage() {
                   <h3 className="text-xs sm:text-sm font-medium mb-1">No follow-ups yet</h3>
                   <p className="text-xs text-gray-500 mb-2">No follow-up emails created this month</p>
                   <Link href="/dashboard/cover-letters?tab=follow-up">
+
                     <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
                       <Plus className="h-3 w-3 mr-1" />
                       Create Follow-Up
                     </Button>
+
                   </Link>
                 </div>
               )}
