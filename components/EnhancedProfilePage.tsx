@@ -63,6 +63,8 @@ import { Separator } from "@/components/ui/separator";
 import SubscriptionStatus from '@/components/SubscriptionStatus';
 import BillingPortalButton from '@/components/BillingPortalButton';
 import { SubscriptionStatus as SubscriptionStatusType } from '@/types/subscription';
+import { getAllFeatureUsage } from '@/lib/subscription-enforcement';
+import UsageLimits from '@/components/UsageLimits';
 
 // Cache for storing fetched data
 const dataCache = new Map();
@@ -170,9 +172,16 @@ export default function EnhancedProfilePage() {
     }
     setInvoicesLoading(false);
 
-    // Process usage
+    // Process usage - ensure it has the correct structure
     if (usageResult && !usageResult.error) {
-      setUsageStats(usageResult);
+      // Transform the usage data to match expected format
+      const formattedUsage = {
+        coverLetters: usageResult.coverLetters || { used: 0, limit: 0 },
+        resumes: usageResult.resumes || { used: 0, limit: 0 },
+        atsScans: usageResult.atsScans || { used: 0, limit: 0 },
+        interviewSessions: usageResult.interviewSessions || { used: 0, limit: 0 }
+      };
+      setUsageStats(formattedUsage);
     }
     setUsageLoading(false);
     
@@ -207,6 +216,14 @@ export default function EnhancedProfilePage() {
       day: 'numeric'
     });
   }, []);
+
+  const formatCurrency = (amount: number, currency = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2
+    }).format(amount / 100); // Stripe amounts are in cents
+  };
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,7 +295,7 @@ export default function EnhancedProfilePage() {
 
   // Show UI immediately after auth loads
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-10">
+    <div className="px-4 sm:px-6 lg:px-8">
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -288,10 +305,10 @@ export default function EnhancedProfilePage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Badge variant="outline" className="pl-2 pr-2 py-1">
               <span className="font-normal text-gray-600 mr-1">Account:</span>
-              <span className="text-orange-700">{user?.email}</span>
+              <span className="text-teal-700">{user?.email}</span>
             </Badge>
             <Button
-              className="w-full sm:w-auto text-white border-orange-600 hover:bg-orange-100"
+              className="w-full sm:w-auto text-teal-700 border-teal-600 hover:bg-teal-100"
               onClick={handleSignOut}
               disabled={signOutLoading}
             >
@@ -307,32 +324,11 @@ export default function EnhancedProfilePage() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6 w-fit flex bg-muted/50 rounded-lg p-1 gap-2">
-          <TabsTrigger 
-          value="personal" 
-          className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-          > 
-          <User className="w-4 h-4 mr-2" /> Personal
-        </TabsTrigger>
-
-        <TabsTrigger 
-          value="security" 
-          className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-          > 
-           <Key className="w-4 h-4 mr-2" /> 
-           Security 
-        </TabsTrigger>
-
-        <TabsTrigger 
-        value="billing" 
-        className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-        > 
-        <CreditCard className="w-4 h-4 mr-2" /> Billing 
-        </TabsTrigger>
-          <TabsTrigger value="general" className="flex items-center"> 
-          <Settings className="w-4 h-4 mr-2" /> 
-          General
-        </TabsTrigger>
+        <TabsList className="mb-6 flex flex-wrap text-gray-700">
+          <TabsTrigger value="personal" className="flex items-center"> <User className="w-4 h-4 mr-2" /> Personal</TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center"> <Key className="w-4 h-4 mr-2" /> Security </TabsTrigger>
+          <TabsTrigger value="billing" className="flex items-center"> <CreditCard className="w-4 h-4 mr-2" /> Billing </TabsTrigger>
+          <TabsTrigger value="general" className="flex items-center"> <Settings className="w-4 h-4 mr-2" /> General</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
@@ -381,7 +377,7 @@ export default function EnhancedProfilePage() {
                     <Label htmlFor="confirm-password" className="text-gray-600">Confirm New Password</Label>
                     <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" disabled={isUpdatingPassword} className="text-white bg-orange-600 hover:bg-orange-700">
+                  <Button type="submit" disabled={isUpdatingPassword} className="text-white bg-teal-600 hover:bg-teal-700">
                     {isUpdatingPassword ? <LoadingSpinner /> : "Update Password"}
                   </Button>
                 </form>
@@ -432,6 +428,11 @@ export default function EnhancedProfilePage() {
                 />
               )
             )}
+
+            {/* Usage Limits Card */}
+            {!usageLoading && usageStats && (
+              <UsageLimits showCard={true} />
+            )}
             
             {/* Payment Methods - Always show, handle loading state internally */}
             {!subscriptionLoading && (
@@ -439,7 +440,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center">
-                      <CreditCard className="h-5 w-5 mr-2 text-orange-600" />
+                      <CreditCard className="h-5 w-5 mr-2 text-teal-600" />
                       Payment Method
                     </CardTitle>
                     <CardDescription>
@@ -477,7 +478,7 @@ export default function EnhancedProfilePage() {
                         <p className="text-sm text-muted-foreground mb-4">
                           You are currently on the Free plan. Upgrade to add a payment method.
                         </p>
-                        <Button asChild className="bg-orange-600 hover:bg-orange-700">
+                        <Button asChild className="bg-teal-600 hover:bg-teal-700">
                           <Link href="/pricing">
                             <Sparkles className="mr-2 h-4 w-4" />
                             Upgrade Now
@@ -499,7 +500,7 @@ export default function EnhancedProfilePage() {
                         <BillingPortalButton 
                           label="Manage Subscription"
                           showIcon={true}
-                          className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                          className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
                           returnUrl={`${window.location.origin}/dashboard/profile`}
                         />
                         
@@ -512,8 +513,8 @@ export default function EnhancedProfilePage() {
                       </div>
                       
                       {subscription.cancelAtPeriodEnd && (
-                        <div className="flex items-start p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                          <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <div className="flex items-start p-3 bg-amber-50 border border-amber-200 rounded-md">
+                          <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
                           <div className="space-y-1">
                             <p className="text-sm font-medium">Your subscription is scheduled to cancel</p>
                             <p className="text-xs text-muted-foreground">
@@ -531,7 +532,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center">
-                      <Shield className="h-5 w-5 mr-2 text-orange-600" />
+                      <Shield className="h-5 w-5 mr-2 text-teal-600" />
                       Security & Privacy
                     </CardTitle>
                   </CardHeader>
@@ -551,7 +552,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center">
-                      <Receipt className="h-5 w-5 mr-2 text-orange-600" />
+                      <Receipt className="h-5 w-5 mr-2 text-teal-600" />
                       Billing History
                     </CardTitle>
                     <CardDescription>
@@ -578,27 +579,28 @@ export default function EnhancedProfilePage() {
                               {invoices.map((invoice) => (
                                 <tr key={invoice.id} className="border-b">
                                   <td className="py-3 px-2 text-sm">
-                                    {formatDate(invoice.created)}
+                                    {formatDate(invoice.created_at)}
                                   </td>
                                   <td className="py-3 px-2 text-sm">
-                                    {invoice.description || `${invoice.plan?.nickname || 'Plan'} - ${invoice.plan?.interval || 'period'}`}
+                                    {invoice.description || `${subscription?.tier} Plan - ${subscription?.interval || 'Monthly'}`}
                                   </td>
                                   <td className="py-3 px-2 text-sm text-right">
-                                    ${(invoice.amount_paid / 100).toFixed(2)}
+                                    {formatCurrency(invoice.amount)}
                                   </td>
                                   <td className="py-3 px-2 text-sm text-right">
-                                    {/* FIX: Use a valid variant for the Badge component */}
                                     <Badge variant={invoice.status === 'paid' ? 'default' : 'outline'} className={invoice.status === 'paid' ? 'bg-green-100 text-green-800' : ''}>
                                       {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                                     </Badge>
                                   </td>
                                   <td className="py-3 px-2 text-sm text-right">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                                      <a href={invoice.invoice_pdf} target="_blank" rel="noopener noreferrer">
-                                        <FileDown className="h-4 w-4" />
-                                        <span className="sr-only">Download</span>
-                                      </a>
-                                    </Button>
+                                    {invoice.invoice_pdf && (
+                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+                                        <a href={invoice.invoice_pdf} target="_blank" rel="noopener noreferrer">
+                                          <FileDown className="h-4 w-4" />
+                                          <span className="sr-only">Download</span>
+                                        </a>
+                                      </Button>
+                                    )}
                                   </td>
                                 </tr>
                               ))}
@@ -610,7 +612,7 @@ export default function EnhancedProfilePage() {
                       <div className="text-center py-8">
                         <p className="text-muted-foreground mb-2">No invoices yet</p>
                         {subscription && subscription.tier === 'FREE' && (
-                          <Button asChild className="mt-2 bg-orange-600 hover:bg-orange-700">
+                          <Button asChild className="mt-2 bg-teal-600 hover:bg-teal-700">
                             <Link href="/pricing">
                               <Sparkles className="mr-2 h-4 w-4" />
                               Upgrade to Pro
@@ -686,7 +688,7 @@ export default function EnhancedProfilePage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveSettings} disabled={isSettingsSaving} className="text-white bg-orange-600 hover:bg-orange-700">
+              <Button onClick={handleSaveSettings} disabled={isSettingsSaving} className="text-white bg-teal-600 hover:bg-teal-700">
                 {isSettingsSaving ? <LoadingSpinner /> : "Save Settings"}
               </Button>
             </CardFooter>
