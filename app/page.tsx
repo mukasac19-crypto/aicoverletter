@@ -44,7 +44,7 @@ export default function LandingPage() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-8">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -72,7 +72,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-4">
               {user ? (
                 <Link href="/dashboard">
-                  <Button className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-lg shadow-orange-500/25">
+                  <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
                     Go to Dashboard
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -85,7 +85,7 @@ export default function LandingPage() {
                     </Button>
                   </Link>
                   <Link href="/auth/register">
-                    <Button className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-lg shadow-orange-500/25">
+                    <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
                       Start Free Trial
                     </Button>
                   </Link>
@@ -129,8 +129,8 @@ export default function LandingPage() {
         {/* Background decorations */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-20 left-10 h-72 w-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 h-72 w-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 h-72 w-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-40 right-10 h-72 w-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 h-72 w-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
         
         <div className="container mx-auto px-4">
@@ -146,7 +146,7 @@ export default function LandingPage() {
                 Land Your Dream Job with
               </span>
               <br />
-              <span className="bg-gradient-to-r from-orange-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-600 to-orange-600 bg-clip-text text-transparent">
                 AI-Powered Applications
               </span>
             </h1>
@@ -157,7 +157,7 @@ export default function LandingPage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/auth/register">
-                <Button size="lg" className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-xl shadow-orange-500/25 px-8">
+                <Button size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free - No Card Required
                 </Button>
@@ -172,15 +172,15 @@ export default function LandingPage() {
             
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-orange-500" />
                 <span>Free forever plan</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-orange-500" />
                 <span>No credit card needed</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-orange-500" />
                 <span>Cancel anytime</span>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-orange-600 to-emerald-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-orange-600 to-orange-600 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
@@ -263,7 +263,7 @@ export default function LandingPage() {
             
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <FileText className="h-8 w-8 text-white" />
                 </div>
                 <div className="absolute -top-4 -right-4 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
@@ -292,10 +292,10 @@ export default function LandingPage() {
 
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <Upload className="h-8 w-8 text-white" />
                 </div>
-                <div className="absolute -top-4 -right-4 bg-emerald-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                <div className="absolute -top-4 -right-4 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
                   2
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-center">Upload Your Experience</h3>
@@ -304,15 +304,15 @@ export default function LandingPage() {
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">LinkedIn one-click import</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">PDF/Word resume upload</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">Smart experience matching</span>
                   </li>
                 </ul>
@@ -351,7 +351,7 @@ export default function LandingPage() {
 
           <div className="text-center mt-12">
             <Link href="/auth/register">
-              <Button size="lg" className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-xl shadow-orange-500/25 px-8">
+              <Button size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
                 Try It Now - Free Forever Plan
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -390,7 +390,7 @@ export default function LandingPage() {
             </Card>
 
             <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-orange-600 rounded-xl flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4">
                 <Globe className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Multi-Language Support</h3>
@@ -485,7 +485,7 @@ export default function LandingPage() {
                 "The AI understood exactly what Tesla was looking for. My tailored resume got me an interview on the first try!"
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
                   M
                 </div>
                 <div>
@@ -522,7 +522,7 @@ export default function LandingPage() {
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
          <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="inline-block rounded-full bg-gradient-to-r from-orange-100 to-emerald-100 px-4 py-2 text-sm font-semibold text-orange-800 mb-4">
+            <span className="inline-block rounded-full bg-gradient-to-r from-orange-100 to-orange-100 px-4 py-2 text-sm font-semibold text-orange-800 mb-4">
               SIMPLE PRICING
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -541,7 +541,7 @@ export default function LandingPage() {
               >
                 {tier === "PRO" && (
                   <div className="absolute -top-5 left-0 right-0 flex justify-center">
-                    <span className="bg-gradient-to-r from-orange-600 to-emerald-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                    <span className="bg-gradient-to-r from-orange-600 to-orange-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
                       Most Popular
                     </span>
                   </div>
@@ -602,7 +602,7 @@ export default function LandingPage() {
                           tier === "FREE"
                             ? "bg-gray-900 hover:bg-gray-800"
                             : tier === "PRO"
-                            ? "bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 shadow-lg shadow-orange-500/25"
+                            ? "bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg shadow-orange-500/25"
                             : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         }`}
                       >
@@ -698,11 +698,11 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-600 via-emerald-600 to-orange-700 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-orange-600 via-orange-600 to-orange-700 text-white relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 bg-grid-white/10"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -758,7 +758,7 @@ export default function LandingPage() {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">Resume Mate AI</span>
