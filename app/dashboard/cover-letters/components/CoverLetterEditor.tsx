@@ -33,6 +33,8 @@ import { saveCoverLetter } from "@/lib/coverLetterGenerator";
 import CoverLetterPreview from "./CoverLetterPreview";
 import TemplateSelection from "./TemplateSelection";
 import DownloadCoverLetter from "./DownloadCoverletter";
+import { useSubscription } from "@/hooks/useSubscription";
+import LimitedActionButton from "@/components/LimitedActionButton";
 
 // Extend the base CoverLetter type to include `dataSource` which is required by the save function.
 type CoverLetter = BaseCoverLetter & { dataSource: any };
@@ -51,6 +53,7 @@ const CoverLetterEditor = ({
   onRegenerateLetter,
 }: Props) => {
   const { toast } = useToast();
+  const { checkAndTrack } = useSubscription();
 
   const [editedLetter, setEditedLetter] = useState<CoverLetter>(coverLetter);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
@@ -94,6 +97,18 @@ const CoverLetterEditor = ({
       console.error("onRegenerateLetter is not a function.");
       return;
     }
+    
+    // Check subscription limit before regenerating
+    const { allowed, reason } = await checkAndTrack('coverLetters');
+    if (!allowed) {
+      toast({
+        title: "Limit Reached",
+        description: reason || "You've reached your cover letter limit.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsRegenerating(true);
     try {
       await onRegenerateLetter(editedLetter);
@@ -203,11 +218,14 @@ const CoverLetterEditor = ({
                 onApplyTemplate={onApplyTemplate}
                 onSkipSelection={() => {}}
               />
-              <Button
+              <LimitedActionButton
+                feature="coverLetters"
+                featureName="Cover Letter"
+                confirmationMessage="Regenerating will use another cover letter from your quota."
+                onAllowed={handleRegenerate}
                 variant="outline"
                 size="sm"
                 className="flex items-center"
-                onClick={handleRegenerate}
                 disabled={isRegenerating}
               >
                 {isRegenerating ? (
@@ -216,7 +234,7 @@ const CoverLetterEditor = ({
                   <RefreshCw className="h-4 w-4 mr-2" />
                 )}
                 Regenerate
-              </Button>
+              </LimitedActionButton>
             </div>
           </div>
         </CardHeader>
