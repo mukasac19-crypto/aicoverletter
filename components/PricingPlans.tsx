@@ -88,8 +88,8 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
             className={cn(
               "text-sm rounded-md",
               selectedInterval === 'monthly' 
-                ? "bg-teal-600 text-white hover:bg-teal-700" 
-                : "text-gray-700 hover:text-teal-700"
+                ? "bg-orange-600 text-white hover:bg-orange-700" 
+                : "text-gray-700 hover:text-orange-700"
             )}
           >
             Monthly
@@ -101,13 +101,13 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
             className={cn(
               "text-sm rounded-md",
               selectedInterval === 'annually' 
-                ? "bg-teal-600 text-white hover:bg-teal-700" 
-                : "text-gray-700 hover:text-teal-700"
+                ? "bg-orange-600 text-white hover:bg-orange-700" 
+                : "text-gray-700 hover:text-orange-700"
             )}
           >
             Annually
             {getSavings() > 0 && (
-              <span className="ml-2 text-xs px-1.5 py-0.5 bg-teal-700 text-white rounded-full">
+              <span className="ml-2 text-xs px-1.5 py-0.5 bg-orange-700 text-white rounded-full">
                 Save {getSavings()}%
               </span>
             )}
@@ -170,14 +170,14 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
 
         {/* PRO Plan */}
         <Card className={cn(
-          "relative overflow-hidden transition-all duration-200 border-teal-500 shadow-md",
-          currentPlan === 'PRO' && "ring-2 ring-teal-500"
+          "relative overflow-hidden transition-all duration-200 border-orange-500 shadow-md",
+          currentPlan === 'PRO' && "ring-2 ring-orange-500"
         )}>
-          <div className="absolute top-0 left-0 right-0 bg-teal-500 text-white text-xs text-center py-1">
+          <div className="absolute top-0 left-0 right-0 bg-orange-500 text-white text-xs text-center py-1">
             MOST POPULAR
           </div>
           <CardHeader className="pt-7 pb-6">
-            <CardTitle className="text-xl font-bold text-teal-600">
+            <CardTitle className="text-xl font-bold text-orange-600">
               Pro
             </CardTitle>
             <CardDescription className="text-sm mt-2">
@@ -191,7 +191,7 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
                 /{selectedInterval === 'monthly' ? 'mo' : 'year'}
               </span>
               {selectedInterval === 'annually' && (
-                <div className="mt-1 text-sm text-teal-600 font-medium">
+                <div className="mt-1 text-sm text-orange-600 font-medium">
                   Save {getSavings()}% vs monthly
                 </div>
               )}
@@ -201,7 +201,7 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
             <ul className="space-y-3">
               {PLAN_FEATURES.PRO.map((feature, index) => (
                 <li key={index} className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">{feature}</span>
                 </li>
               ))}
@@ -218,7 +218,7 @@ export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterva
               </Button>
             ) : (
               <Button 
-                className="w-full bg-teal-600 hover:bg-teal-700"
+                className="w-full bg-orange-600 hover:bg-orange-700"
                 onClick={() => handleSelectPlan('PRO')}
               >
                 Upgrade to Pro

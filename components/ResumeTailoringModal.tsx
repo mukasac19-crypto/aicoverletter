@@ -223,7 +223,7 @@ export default function ResumeTailoringModal({
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
-            <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600" />
+            <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
             Tailor Resume for Job Description
           </DialogTitle>
           <DialogDescription className="text-sm">
@@ -232,10 +232,10 @@ export default function ResumeTailoringModal({
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2 sm:mt-4">
-          <TabsList className="grid grid-cols-3 bg-teal-100">
+          <TabsList className="grid grid-cols-3 bg-orange-100">
             <TabsTrigger 
               value="job-description" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white"
             >
               <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden xs:inline">Job Description</span>
@@ -243,7 +243,7 @@ export default function ResumeTailoringModal({
             </TabsTrigger>
             <TabsTrigger 
               value="preview" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-teal-600 data-[state=active]:text-white" 
+              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white" 
               disabled={!tailoredResume}
             >
               <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -252,7 +252,7 @@ export default function ResumeTailoringModal({
             </TabsTrigger>
             <TabsTrigger 
               value="template-preview" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-teal-600 data-[state=active]:text-white" 
+              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white" 
               disabled={!tailoredResume}
             >
               <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -262,10 +262,10 @@ export default function ResumeTailoringModal({
           </TabsList>
           
           <TabsContent value="job-description" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-            <Card className="border-teal-200">
+            <Card className="border-orange-200">
               <CardHeader className="pb-2 sm:pb-4">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                  <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
+                  <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
                   Enter Job Description
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm">
@@ -277,7 +277,7 @@ export default function ResumeTailoringModal({
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   placeholder="Paste the job description here..."
-                  className="min-h-[200px] sm:min-h-[300px] focus-visible:ring-teal-500"
+                  className="min-h-[200px] sm:min-h-[300px] focus-visible:ring-orange-500"
                   disabled={isLoading}
                 />
               </CardContent>
@@ -288,7 +288,7 @@ export default function ResumeTailoringModal({
                 <Button 
                   onClick={handleTailorResume} 
                   disabled={isLoading || !jobDescription.trim()}
-                  className="bg-teal-600 hover:bg-teal-700 text-xs sm:text-sm self-end xs:self-auto"
+                  className="bg-orange-600 hover:bg-orange-700 text-xs sm:text-sm self-end xs:self-auto"
                 >
                   {isLoading ? (
                     <>
@@ -316,14 +316,14 @@ export default function ResumeTailoringModal({
           <TabsContent value="preview" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
             {tailoredResume && (
               <>
-                <Alert className="bg-teal-50 border-teal-200">
-                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
-                  <AlertTitle className="text-teal-800 text-xs sm:text-sm font-medium">Resume Tailored Successfully</AlertTitle>
-                  <AlertDescription className="text-teal-700 text-xs">
+                <Alert className="bg-orange-50 border-orange-200">
+                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
+                  <AlertTitle className="text-orange-800 text-xs sm:text-sm font-medium">Resume Tailored Successfully</AlertTitle>
+                  <AlertDescription className="text-orange-700 text-xs">
                     The following sections have been optimized for this job description:
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1 sm:mt-2">
                       {changedSections.map((section) => (
-                        <Badge key={section} variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">
+                        <Badge key={section} variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">
                           {section === 'workExperience' ? 'Work Experience' : 
                            section === 'personalInfo' ? 'Personal Info' :
                            section.charAt(0).toUpperCase() + section.slice(1)}
@@ -335,7 +335,7 @@ export default function ResumeTailoringModal({
                         variant="outline"
                         size="sm" 
                         onClick={() => setActiveTab("template-preview")}
-                        className="bg-white border-teal-300 text-teal-700 hover:bg-teal-50 text-xs"
+                        className="bg-white border-orange-300 text-orange-700 hover:bg-orange-50 text-xs"
                       >
                         <Eye className="h-3 w-3 mr-1.5" />
                         View Resume Template Preview
@@ -347,10 +347,10 @@ export default function ResumeTailoringModal({
                 <div className="space-y-3 sm:space-y-4">
                   {/* Summary Preview */}
                   {changedSections.includes('summary') && (
-                    <Card className="border-teal-200">
+                    <Card className="border-orange-200">
                       <CardHeader className="py-2 sm:py-3 px-3 sm:px-4">
                         <CardTitle className="text-xs sm:text-sm flex items-center">
-                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 mr-1 sm:mr-2" />
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600 mr-1 sm:mr-2" />
                           Professional Summary
                         </CardTitle>
                       </CardHeader>
@@ -360,8 +360,8 @@ export default function ResumeTailoringModal({
                             <h4 className="text-xs font-medium text-gray-500 mb-1">Original</h4>
                             <p className="text-xs sm:text-sm">{resume.personalInfo?.summary || 'No summary provided'}</p>
                           </div>
-                          <div className="p-2 sm:p-3 bg-teal-50 rounded-md border border-teal-200">
-                            <h4 className="text-xs font-medium text-teal-700 mb-1">Tailored</h4>
+                          <div className="p-2 sm:p-3 bg-orange-50 rounded-md border border-orange-200">
+                            <h4 className="text-xs font-medium text-orange-700 mb-1">Tailored</h4>
                             <p className="text-xs sm:text-sm">{tailoredResume.personalInfo?.summary}</p>
                           </div>
                         </div>
@@ -371,10 +371,10 @@ export default function ResumeTailoringModal({
                   
                   {/* Skills Preview */}
                   {changedSections.includes('skills') && (
-                    <Card className="border-teal-200">
+                    <Card className="border-orange-200">
                       <CardHeader className="py-2 sm:py-3 px-3 sm:px-4">
                         <CardTitle className="text-xs sm:text-sm flex items-center">
-                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 mr-1 sm:mr-2" />
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600 mr-1 sm:mr-2" />
                           Skills
                         </CardTitle>
                       </CardHeader>
@@ -388,18 +388,18 @@ export default function ResumeTailoringModal({
                               ))}
                             </div>
                           </div>
-                          <div className="p-2 sm:p-3 bg-teal-50 rounded-md border border-teal-200">
-                            <h4 className="text-xs font-medium text-teal-700 mb-1">Tailored Skills ({tailoredResume.skills.length})</h4>
+                          <div className="p-2 sm:p-3 bg-orange-50 rounded-md border border-orange-200">
+                            <h4 className="text-xs font-medium text-orange-700 mb-1">Tailored Skills ({tailoredResume.skills.length})</h4>
                             <div className="flex flex-wrap gap-1">
                               {tailoredResume.skills.map((skill) => (
                                 <Badge 
                                   key={skill.id} 
                                   variant="outline"
                                   className={!resume.skills.some(s => s.name === skill.name) ? 
-                                    "bg-teal-100 border-teal-300 text-teal-800 text-xs" : "text-xs"}
+                                    "bg-orange-100 border-orange-300 text-orange-800 text-xs" : "text-xs"}
                                 >
                                   {!resume.skills.some(s => s.name === skill.name) && 
-                                    <span className="mr-1 text-teal-600">+</span>
+                                    <span className="mr-1 text-orange-600">+</span>
                                   }
                                   {skill.name}
                                 </Badge>
@@ -413,10 +413,10 @@ export default function ResumeTailoringModal({
                   
                   {/* Work Experience Preview */}
                   {changedSections.includes('workExperience') && (
-                    <Card className="border-teal-200">
+                    <Card className="border-orange-200">
                       <CardHeader className="py-2 sm:py-3 px-3 sm:px-4">
                         <CardTitle className="text-xs sm:text-sm flex items-center">
-                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 mr-1 sm:mr-2" />
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600 mr-1 sm:mr-2" />
                           Work Experience
                         </CardTitle>
                       </CardHeader>
@@ -433,7 +433,7 @@ export default function ResumeTailoringModal({
                             if (!descriptionChanged && !achievementsChanged) return null;
                             
                             return (
-                              <div key={exp.id} className="border border-teal-100 rounded-md p-2 sm:p-3">
+                              <div key={exp.id} className="border border-orange-100 rounded-md p-2 sm:p-3">
                                 <h4 className="font-medium mb-1 sm:mb-2 text-xs sm:text-sm">{exp.position} at {exp.company}</h4>
                                 
                                 {descriptionChanged && (
@@ -444,8 +444,8 @@ export default function ResumeTailoringModal({
                                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Original</div>
                                         {originalExp.description}
                                       </div>
-                                      <div className="p-1 sm:p-2 bg-teal-50 rounded border border-teal-200 text-xs">
-                                        <div className="text-[10px] sm:text-xs text-teal-700 mb-1">Tailored</div>
+                                      <div className="p-1 sm:p-2 bg-orange-50 rounded border border-orange-200 text-xs">
+                                        <div className="text-[10px] sm:text-xs text-orange-700 mb-1">Tailored</div>
                                         {exp.description}
                                       </div>
                                     </div>
@@ -464,8 +464,8 @@ export default function ResumeTailoringModal({
                                           ))}
                                         </ul>
                                       </div>
-                                      <div className="p-1 sm:p-2 bg-teal-50 rounded border border-teal-200 text-xs">
-                                        <div className="text-[10px] sm:text-xs text-teal-700 mb-1">Tailored</div>
+                                      <div className="p-1 sm:p-2 bg-orange-50 rounded border border-orange-200 text-xs">
+                                        <div className="text-[10px] sm:text-xs text-orange-700 mb-1">Tailored</div>
                                         <ul className="list-disc pl-4 sm:pl-5 space-y-1">
                                           {exp.achievements.map((achievement, i) => (
                                             <li key={i}>{achievement}</li>
@@ -485,10 +485,10 @@ export default function ResumeTailoringModal({
                   
                   {/* Projects Preview */}
                   {changedSections.includes('projects') && tailoredResume.projects && resume.projects && (
-                    <Card className="border-teal-200">
+                    <Card className="border-orange-200">
                       <CardHeader className="py-2 sm:py-3 px-3 sm:px-4">
                         <CardTitle className="text-xs sm:text-sm flex items-center">
-                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 mr-1 sm:mr-2" />
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600 mr-1 sm:mr-2" />
                           Projects
                         </CardTitle>
                       </CardHeader>
@@ -505,7 +505,7 @@ export default function ResumeTailoringModal({
                             if (!descriptionChanged && !technologiesChanged) return null;
                             
                             return (
-                              <div key={project.id} className="border border-teal-100 rounded-md p-2 sm:p-3">
+                              <div key={project.id} className="border border-orange-100 rounded-md p-2 sm:p-3">
                                 <h4 className="font-medium mb-1 sm:mb-2 text-xs sm:text-sm">{project.name}</h4>
                                 
                                 {descriptionChanged && (
@@ -516,8 +516,8 @@ export default function ResumeTailoringModal({
                                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Original</div>
                                         {originalProject.description}
                                       </div>
-                                      <div className="p-1 sm:p-2 bg-teal-50 rounded border border-teal-200 text-xs">
-                                        <div className="text-[10px] sm:text-xs text-teal-700 mb-1">Tailored</div>
+                                      <div className="p-1 sm:p-2 bg-orange-50 rounded border border-orange-200 text-xs">
+                                        <div className="text-[10px] sm:text-xs text-orange-700 mb-1">Tailored</div>
                                         {project.description}
                                       </div>
                                     </div>
@@ -536,18 +536,18 @@ export default function ResumeTailoringModal({
                                           ))}
                                         </div>
                                       </div>
-                                      <div className="p-1 sm:p-2 bg-teal-50 rounded border border-teal-200 text-xs">
-                                        <div className="text-[10px] sm:text-xs text-teal-700 mb-1">Tailored</div>
+                                      <div className="p-1 sm:p-2 bg-orange-50 rounded border border-orange-200 text-xs">
+                                        <div className="text-[10px] sm:text-xs text-orange-700 mb-1">Tailored</div>
                                         <div className="flex flex-wrap gap-1">
                                           {project.technologies.map((tech, i) => (
                                             <Badge 
                                               key={i} 
                                               variant="outline"
                                               className={!originalProject.technologies.includes(tech) ? 
-                                                "bg-teal-100 border-teal-300 text-teal-800 text-xs" : "text-xs"}
+                                                "bg-orange-100 border-orange-300 text-orange-800 text-xs" : "text-xs"}
                                             >
                                               {!originalProject.technologies.includes(tech) && 
-                                                <span className="mr-1 text-teal-600">+</span>
+                                                <span className="mr-1 text-orange-600">+</span>
                                               }
                                               {tech}
                                             </Badge>
@@ -573,15 +573,15 @@ export default function ResumeTailoringModal({
           <TabsContent value="template-preview" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
             {tailoredResume && (
               <>
-                <Alert className="bg-teal-50 border-teal-200">
-                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
-                  <AlertTitle className="text-teal-800 text-xs sm:text-sm font-medium">Preview Your Tailored Resume</AlertTitle>
-                  <AlertDescription className="text-teal-700 text-xs">
+                <Alert className="bg-orange-50 border-orange-200">
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
+                  <AlertTitle className="text-orange-800 text-xs sm:text-sm font-medium">Preview Your Tailored Resume</AlertTitle>
+                  <AlertDescription className="text-orange-700 text-xs">
                     This is how your tailored resume will look when exported. Click "Apply Changes" to save these updates to your resume.
                   </AlertDescription>
                 </Alert>
                 
-                <Card className="border-teal-200 overflow-hidden">
+                <Card className="border-orange-200 overflow-hidden">
                   <CardHeader className="bg-white border-b py-2 px-4 flex justify-between items-center">
                     <CardTitle className="text-sm font-medium text-gray-800">
                       {template ? `Template: ${template.name}` : 'Resume Template Preview'}
@@ -673,7 +673,7 @@ export default function ResumeTailoringModal({
                   
                   <Button 
                     onClick={handleApplyChanges}
-                    className="bg-teal-600 hover:bg-teal-700 text-xs"
+                    className="bg-orange-600 hover:bg-orange-700 text-xs"
                   >
                     <Check className="h-3 w-3 mr-1" />
                     Apply Changes
@@ -689,7 +689,7 @@ export default function ResumeTailoringModal({
         <Button 
           variant="outline" 
           onClick={() => onOpenChange?.(false)}
-          className="border-teal-200 text-teal-700 hover:bg-teal-50 text-xs sm:text-sm"
+          className="border-orange-200 text-orange-700 hover:bg-orange-50 text-xs sm:text-sm"
         >
           <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
           Cancel
@@ -698,7 +698,7 @@ export default function ResumeTailoringModal({
         {tailoredResume && (
           <Button 
             onClick={handleApplyChanges}
-            className="bg-teal-600 hover:bg-teal-700 text-xs sm:text-sm"
+            className="bg-orange-600 hover:bg-orange-700 text-xs sm:text-sm"
           >
             <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Apply Changes

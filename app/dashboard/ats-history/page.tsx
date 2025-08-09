@@ -314,7 +314,7 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
           </Link>
         </div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <BarChart2 className="h-8 w-8 text-teal-600" />
+          <BarChart2 className="h-8 w-8 text-orange-600" />
           ATS Analysis History
         </h1>
         <p className="text-muted-foreground mt-2">

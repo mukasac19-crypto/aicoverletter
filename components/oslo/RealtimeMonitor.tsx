@@ -128,7 +128,7 @@ export function RealtimeMonitor() {
       case 'user_created':
         return <UserPlus className="h-5 w-5 text-green-500" />;
       case 'cover_letter_created':
-        return <FileText className="h-5 w-5 text-teal-500" />;
+        return <FileText className="h-5 w-5 text-orange-500" />;
       case 'resume_created':
         return <FileSpreadsheet className="h-5 w-5 text-blue-500" />;
       case 'subscription_updated':

@@ -22,26 +22,26 @@ import { useAuth } from "@/contexts/AuthContext";
 const FeaturesPage = () => {
   const { user } = useAuth();
   return (
-    <main className="min-h-screen bg-gradient-to-b from-teal-50/20 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-orange-50/20 to-white">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 border-b border-teal-100 bg-white shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/90">
+      <header className="sticky top-0 z-50 border-b border-orange-100 bg-white shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/90">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center">
-            <FileText className="h-6 w-6 text-teal-600 mr-2" />
+            <FileText className="h-6 w-6 text-orange-600 mr-2" />
             <h1 className="text-xl font-bold text-gray-800">Resume Mate AI</h1>
           </div>
           
           <div className="flex items-center gap-4">
-            <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">
+            <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors">
               Pricing
             </Link>
-            <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">
+            <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors">
               Features
             </Link>
             
             {user ? (
               <Link href="/dashboard">
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white">
                   Go to Dashboard
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -49,12 +49,12 @@ const FeaturesPage = () => {
             ) : (
               <>
                 <Link href="/auth/login" className="hidden sm:block">
-                  <Button variant="outline" className="border-teal-200 text-gray-700 hover:text-teal-700 hover:bg-teal-50 hover:border-teal-300">
+                  <Button variant="outline" className="border-orange-200 text-gray-700 hover:text-orange-700 hover:bg-orange-50 hover:border-orange-300">
                     Log In
                   </Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button className="bg-teal-600 hover:bg-teal-700 text-white">Sign Up</Button>
+                  <Button className="bg-orange-600 hover:bg-orange-700 text-white">Sign Up</Button>
                 </Link>
               </>
             )}
@@ -63,7 +63,7 @@ const FeaturesPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-teal-50 to-white py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-orange-50 to-white py-16 md:py-24">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         <div className="container relative mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
@@ -75,12 +75,12 @@ const FeaturesPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/register">
-                <Button size="lg" className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white">
+                <Button size="lg" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white">
                   Get Started - It's Free
                 </Button>
               </Link>
               <Link href="#features">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-teal-200 text-gray-700 hover:text-teal-700 hover:bg-teal-50 hover:border-teal-300">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto border-orange-200 text-gray-700 hover:text-orange-700 hover:bg-orange-50 hover:border-orange-300">
                   Explore Features
                 </Button>
               </Link>
@@ -102,10 +102,10 @@ const FeaturesPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {/* Cover Letter Generator */}
             <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-3 bg-teal-600 w-full"></div>
+              <div className="h-3 bg-orange-600 w-full"></div>
               <div className="p-6">
-                <div className="bg-teal-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-teal-200 transition-colors">
-                  <FileText className="h-8 w-8 text-teal-600" />
+                <div className="bg-orange-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-orange-200 transition-colors">
+                  <FileText className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-800">AI Cover Letter Generator</h3>
                 <p className="text-gray-600 mb-6">
@@ -114,12 +114,12 @@ const FeaturesPage = () => {
                 <ul className="space-y-2 mb-6">
                   {["Perfect keyword matching", "Multiple tone options", "Instant generation", "Perfectly formatted"].map((item, i) => (
                     <li key={i} className="flex items-center">
-                      <CheckCircle2 className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                       <span className="text-gray-700">{item}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white">
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
                   Try Cover Letter Generator
                 </Button>
               </div>
@@ -251,10 +251,10 @@ const FeaturesPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center">
               <div className="relative">
-                <div className="bg-teal-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Upload className="h-8 w-8 text-teal-600" />
+                <div className="bg-orange-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Upload className="h-8 w-8 text-orange-600" />
                 </div>
-                <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-teal-500 to-transparent -z-10"></div>
+                <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-orange-500 to-transparent -z-10"></div>
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-800">1. Upload your resume</h3>
               <p className="text-gray-600">
@@ -264,10 +264,10 @@ const FeaturesPage = () => {
 
             <div className="text-center">
               <div className="relative">
-                <div className="bg-teal-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-teal-600" />
+                <div className="bg-orange-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-orange-600" />
                 </div>
-                <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-teal-500 to-transparent -z-10"></div>
+                <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-orange-500 to-transparent -z-10"></div>
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-800">2. Paste job description</h3>
               <p className="text-gray-600">
@@ -276,8 +276,8 @@ const FeaturesPage = () => {
             </div>
 
             <div className="text-center">
-              <div className="bg-teal-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Download className="h-8 w-8 text-teal-600" />
+              <div className="bg-orange-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Download className="h-8 w-8 text-orange-600" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-800">3. Get your documents</h3>
               <p className="text-gray-600">
@@ -289,12 +289,12 @@ const FeaturesPage = () => {
       </section>
 
       {/* Advanced Features Highlight */}
-      <section className="py-20 bg-gradient-to-r from-teal-900 to-teal-800 text-white">
+      <section className="py-20 bg-gradient-to-r from-orange-900 to-orange-800 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Advanced AI-Powered Features</h2>
-              <p className="text-xl text-teal-100 max-w-3xl mx-auto">
+              <p className="text-xl text-orange-100 max-w-3xl mx-auto">
                 Our platform uses cutting-edge AI to analyze job listings and optimize your applications.
               </p>
             </div>
@@ -302,13 +302,13 @@ const FeaturesPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="flex">
                 <div className="mr-6">
-                  <div className="bg-teal-700 p-4 rounded-lg">
-                    <Sparkles className="h-8 w-8 text-teal-300" />
+                  <div className="bg-orange-700 p-4 rounded-lg">
+                    <Sparkles className="h-8 w-8 text-orange-300" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Keyword Optimization</h3>
-                  <p className="text-teal-100">
+                  <p className="text-orange-100">
                     Our AI identifies key skills and requirements from job descriptions and seamlessly incorporates them into your cover letters and resumes.
                   </p>
                 </div>
@@ -316,13 +316,13 @@ const FeaturesPage = () => {
 
               <div className="flex">
                 <div className="mr-6">
-                  <div className="bg-teal-700 p-4 rounded-lg">
-                    <ScanSearch className="h-8 w-8 text-teal-300" />
+                  <div className="bg-orange-700 p-4 rounded-lg">
+                    <ScanSearch className="h-8 w-8 text-orange-300" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-2">ATS Compatibility Analysis</h3>
-                  <p className="text-teal-100">
+                  <p className="text-orange-100">
                     Get detailed feedback on how well your resume will perform with applicant tracking systems and suggestions for improvements.
                   </p>
                 </div>
@@ -330,13 +330,13 @@ const FeaturesPage = () => {
 
               <div className="flex">
                 <div className="mr-6">
-                  <div className="bg-teal-700 p-4 rounded-lg">
-                    <MessagesSquare className="h-8 w-8 text-teal-300" />
+                  <div className="bg-orange-700 p-4 rounded-lg">
+                    <MessagesSquare className="h-8 w-8 text-orange-300" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Interview Question Prediction</h3>
-                  <p className="text-teal-100">
+                  <p className="text-orange-100">
                     Our system analyzes job descriptions to predict likely interview questions and helps you prepare compelling answers.
                   </p>
                 </div>
@@ -344,13 +344,13 @@ const FeaturesPage = () => {
 
               <div className="flex">
                 <div className="mr-6">
-                  <div className="bg-teal-700 p-4 rounded-lg">
-                    <MailCheck className="h-8 w-8 text-teal-300" />
+                  <div className="bg-orange-700 p-4 rounded-lg">
+                    <MailCheck className="h-8 w-8 text-orange-300" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Follow-Up Email Generation</h3>
-                  <p className="text-teal-100">
+                  <p className="text-orange-100">
                     Create professional follow-up emails at the perfect time to increase your chances of getting a response.
                   </p>
                 </div>
@@ -358,7 +358,7 @@ const FeaturesPage = () => {
             </div>
 
             <div className="mt-12 text-center">
-              <Button size="lg" className="bg-white text-teal-700 hover:bg-teal-50">
+              <Button size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
                 Explore All Features
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -368,21 +368,21 @@ const FeaturesPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-teal-600 to-teal-700 text-white">
+      <section className="py-16 bg-gradient-to-br from-orange-600 to-orange-700 text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Ready to elevate your job applications?</h2>
-            <p className="text-xl mb-8 text-teal-50">
+            <p className="text-xl mb-8 text-orange-50">
               Join thousands of job seekers who have improved their application success rate with our AI-powered tools
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/register">
-                <Button size="lg" className="bg-white text-teal-700 hover:bg-teal-50">
+                <Button size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
                   Get Started - It's Free
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-teal-600">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-orange-600">
                   View Pricing
                 </Button>
               </Link>
@@ -392,18 +392,18 @@ const FeaturesPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-teal-100 bg-white">
+      <footer className="border-t border-orange-100 bg-white">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <FileText className="h-5 w-5 text-teal-600 mr-2" />
+              <FileText className="h-5 w-5 text-orange-600 mr-2" />
               <span className="font-semibold text-gray-800">Resume Mate AI</span>
             </div>
             <div className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-8 text-sm text-gray-600">
-              <Link href="#" className="hover:text-teal-600 transition">Terms of Service</Link>
-              <Link href="#" className="hover:text-teal-600 transition">Privacy Policy</Link>
-              <Link href="/pricing" className="hover:text-teal-600 transition">Pricing</Link>
-              <Link href="#" className="hover:text-teal-600 transition">Contact Us</Link>
+              <Link href="#" className="hover:text-orange-600 transition">Terms of Service</Link>
+              <Link href="#" className="hover:text-orange-600 transition">Privacy Policy</Link>
+              <Link href="/pricing" className="hover:text-orange-600 transition">Pricing</Link>
+              <Link href="#" className="hover:text-orange-600 transition">Contact Us</Link>
             </div>
           </div>
           <div className="mt-8 text-center text-xs text-gray-500">

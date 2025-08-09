@@ -88,7 +88,7 @@ export default function SubscriptionCheck({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild className="bg-teal-600 hover:bg-teal-700">
+            <Button asChild className="bg-orange-600 hover:bg-orange-700">
               <Link href="/auth/login">
                 Sign In
               </Link>
@@ -124,13 +124,13 @@ export default function SubscriptionCheck({
     const requiredPlan = SUBSCRIPTION_PLANS[requiredTier];
     
     return (
-      <Card className="border-teal-200 shadow-sm">
-        <CardHeader className="pb-3 bg-gradient-to-r from-teal-100 to-teal-50">
-          <CardTitle className="text-lg flex items-center text-teal-800">
-            <Sparkles className="h-5 w-5 mr-2 text-teal-600" />
+      <Card className="border-orange-200 shadow-sm">
+        <CardHeader className="pb-3 bg-gradient-to-r from-orange-100 to-orange-50">
+          <CardTitle className="text-lg flex items-center text-orange-800">
+            <Sparkles className="h-5 w-5 mr-2 text-orange-600" />
             {featureInfo?.title || `${requiredPlan.name} Feature`}
           </CardTitle>
-          <CardDescription className="text-teal-700">
+          <CardDescription className="text-orange-700">
             {featureInfo?.description || `This feature requires a ${requiredPlan.name} subscription or higher`}
           </CardDescription>
         </CardHeader>
@@ -143,14 +143,14 @@ export default function SubscriptionCheck({
             <ul className="text-sm space-y-2 text-left self-stretch max-w-sm mx-auto">
               {requiredPlan.features.map((feature, i) => (
                 <li key={i} className="flex items-start">
-                  <span className="text-teal-500 mr-2">✓</span>
+                  <span className="text-orange-500 mr-2">✓</span>
                   {feature}
                 </li>
               ))}
             </ul>
             
             <div className="pt-2">
-              <Button asChild className="bg-teal-600 hover:bg-teal-700">
+              <Button asChild className="bg-orange-600 hover:bg-orange-700">
                 <Link href="/pricing">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Upgrade to {requiredPlan.name}
@@ -165,12 +165,12 @@ export default function SubscriptionCheck({
   
   // Simple alert if we don't want the full card
   return (
-    <Alert className="bg-teal-50 border-teal-200">
-      <Sparkles className="h-4 w-4 text-teal-600" />
+    <Alert className="bg-orange-50 border-orange-200">
+      <Sparkles className="h-4 w-4 text-orange-600" />
       <AlertTitle>Subscription Required</AlertTitle>
       <AlertDescription>
         This feature requires a {SUBSCRIPTION_PLANS[requiredTier].name} subscription.{' '}
-        <Link href="/pricing" className="font-medium text-teal-600 hover:underline">
+        <Link href="/pricing" className="font-medium text-orange-600 hover:underline">
           Upgrade your plan
         </Link>{' '}
         to access it.

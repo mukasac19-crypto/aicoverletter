@@ -27,7 +27,7 @@ export default function CheckoutCanceledPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-3">
-          <Button asChild className="w-full bg-teal-600 hover:bg-teal-700">
+          <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
             <Link href="/pricing">
               Try Again
             </Link>

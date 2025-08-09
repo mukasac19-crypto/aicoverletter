@@ -74,7 +74,7 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg flex items-center">
-              <CreditCard className="h-5 w-5 mr-2 text-teal-600" />
+              <CreditCard className="h-5 w-5 mr-2 text-orange-600" />
               Subscription
             </CardTitle>
             <CardDescription>
@@ -213,7 +213,7 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
         {tier !== 'BUSINESS' && (
           <Button 
             size="sm" 
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"
+            className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
             asChild
           >
             <Link href="/pricing">

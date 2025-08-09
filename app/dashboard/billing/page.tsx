@@ -173,7 +173,7 @@ export default function BillingPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2 text-teal-600" />
+                  <CreditCard className="h-5 w-5 mr-2 text-orange-600" />
                   Payment Method
                 </CardTitle>
                 <CardDescription>
@@ -211,7 +211,7 @@ export default function BillingPage() {
                     <p className="text-sm text-muted-foreground mb-4">
                       You are currently on the Free plan. Upgrade to add a payment method.
                     </p>
-                    <Button asChild className="bg-teal-600 hover:bg-teal-700">
+                    <Button asChild className="bg-orange-600 hover:bg-orange-700">
                       <Link href="/pricing">
                         <Sparkles className="mr-2 h-4 w-4" />
                         Upgrade Now
@@ -233,7 +233,7 @@ export default function BillingPage() {
                     <BillingPortalButton 
                       label="Manage Subscription"
                       showIcon={true}
-                      className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
+                      className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
                       returnUrl={`${window.location.origin}/dashboard/billing`}
                     />
                     
@@ -265,7 +265,7 @@ export default function BillingPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
-                  <Shield className="h-5 w-5 mr-2 text-teal-600" />
+                  <Shield className="h-5 w-5 mr-2 text-orange-600" />
                   Security & Privacy
                 </CardTitle>
               </CardHeader>
@@ -287,7 +287,7 @@ export default function BillingPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center">
-                <Receipt className="h-5 w-5 mr-2 text-teal-600" />
+                <Receipt className="h-5 w-5 mr-2 text-orange-600" />
                 Billing History
               </CardTitle>
               <CardDescription>
@@ -346,7 +346,7 @@ export default function BillingPage() {
                 <div className="text-center py-8">
                   <p className="text-muted-foreground mb-2">No invoices yet</p>
                   {subscription && subscription.tier === 'FREE' && (
-                    <Button asChild className="mt-2 bg-teal-600 hover:bg-teal-700">
+                    <Button asChild className="mt-2 bg-orange-600 hover:bg-orange-700">
                       <Link href="/pricing">
                         <Sparkles className="mr-2 h-4 w-4" />
                         Upgrade to Pro

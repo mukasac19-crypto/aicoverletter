@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <FileText className="h-4 w-4 mr-2 text-teal-500" />
+              <FileText className="h-4 w-4 mr-2 text-orange-500" />
               Cover Letters
             </CardTitle>
           </CardHeader>
@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
             <div className="text-2xl font-bold">{stats?.coverLettersCount || 0}</div>
             <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
-                className="bg-teal-500 h-full rounded-full" 
+                className="bg-orange-500 h-full rounded-full" 
                 style={{ width: `${Math.min(100, ((stats?.coverLettersCount || 0) / 100) * 100)}%` }}
               ></div>
             </div>

@@ -236,7 +236,7 @@ export default function TailorResumePage() {
   if (isLoading) {
     return (
       <div className="container px-4 py-4 sm:py-8 flex justify-center">
-        <LoadingSpinner className="text-teal-600" />
+        <LoadingSpinner className="text-orange-600" />
       </div>
     );
   }
@@ -248,7 +248,7 @@ export default function TailorResumePage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
         <div className="flex justify-center mt-4 sm:mt-6">
-          <Button asChild className="bg-teal-600 hover:bg-teal-700">
+          <Button asChild className="bg-orange-600 hover:bg-orange-700">
             <Link href="/dashboard/resumes">Back to Resumes</Link>
           </Button>
         </div>
@@ -259,11 +259,11 @@ export default function TailorResumePage() {
   if (!resume) {
     return (
       <div className="container px-4 py-4 sm:py-8">
-        <Alert className="bg-teal-50 border-teal-200">
-          <AlertDescription className="text-teal-800">Resume data could not be loaded. Please try again.</AlertDescription>
+        <Alert className="bg-orange-50 border-orange-200">
+          <AlertDescription className="text-orange-800">Resume data could not be loaded. Please try again.</AlertDescription>
         </Alert>
         <div className="flex justify-center mt-4 sm:mt-6">
-          <Button asChild className="bg-teal-600 hover:bg-teal-700">
+          <Button asChild className="bg-orange-600 hover:bg-orange-700">
             <Link href={`/dashboard/resumes/${resumeId}`}>Back to Resume</Link>
           </Button>
         </div>
@@ -274,7 +274,7 @@ export default function TailorResumePage() {
   return (
     <div className="container px-4 py-4 sm:py-8">
       <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
-        <Button variant="ghost" asChild className="mb-2 sm:mb-0 mr-0 sm:mr-4 hover:bg-teal-50 hover:text-teal-700 self-start">
+        <Button variant="ghost" asChild className="mb-2 sm:mb-0 mr-0 sm:mr-4 hover:bg-orange-50 hover:text-orange-700 self-start">
           <Link href={`/dashboard/resumes/${resumeId}`}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Resume
@@ -286,7 +286,7 @@ export default function TailorResumePage() {
         </div>
       </div>
       
-      <Card className="border-teal-200 shadow-sm">
+      <Card className="border-orange-200 shadow-sm">
         <CardContent className="p-4 sm:p-6">
           {resume && (
             <div className="flex justify-center">
@@ -302,10 +302,10 @@ export default function TailorResumePage() {
       </Card>
       
       {/* Mobile info card - visible only on smaller screens */}
-      <Card className="mt-4 border-teal-200 shadow-sm bg-teal-50/50 sm:hidden">
+      <Card className="mt-4 border-orange-200 shadow-sm bg-orange-50/50 sm:hidden">
         <CardContent className="p-4">
-          <h3 className="text-sm font-medium text-teal-800 mb-2">Tips for tailoring your resume:</h3>
-          <ul className="text-xs text-teal-700 space-y-1">
+          <h3 className="text-sm font-medium text-orange-800 mb-2">Tips for tailoring your resume:</h3>
+          <ul className="text-xs text-orange-700 space-y-1">
             <li>• Match your skills to the job description</li>
             <li>• Highlight relevant experience first</li>
             <li>• Use keywords from the job posting</li>

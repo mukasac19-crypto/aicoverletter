@@ -584,7 +584,7 @@ export default function SubscriptionsPage() {
                             subscription.plan_id === 'business' ? 'outline' : 'secondary'
                           }
                           className={
-                            subscription.plan_id === 'pro' ? 'bg-teal-500' :
+                            subscription.plan_id === 'pro' ? 'bg-orange-500' :
                             subscription.plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                           }
                         >

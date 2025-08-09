@@ -41,12 +41,12 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 bg-teal-700 text-white rounded-t-lg">
+        <CardHeader className="space-y-1 bg-orange-700 text-white rounded-t-lg">
           <div className="flex items-center justify-center mb-2">
             <Shield className="h-10 w-10" />
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
-          <CardDescription className="text-teal-100 text-center">
+          <CardDescription className="text-orange-100 text-center">
             Enter your credentials to access the admin portal
           </CardDescription>
         </CardHeader>
@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
             
             <Button 
               type="submit" 
-              className="w-full bg-teal-600 hover:bg-teal-700" 
+              className="w-full bg-orange-600 hover:bg-orange-700" 
               disabled={isLoading}
             >
               {isLoading ? (

@@ -457,23 +457,23 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       <div className="fixed bottom-6 right-6 z-50">
         <DropdownMenu open={showMobileActions} onOpenChange={setShowMobileActions}>
           <DropdownMenuTrigger asChild>
-            <Button className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-teal-500 to-gray-700 text-white hover:from-teal-600 hover:to-gray-800 transition-all" aria-label="Resume Actions">
+            <Button className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-orange-500 to-gray-700 text-white hover:from-orange-600 hover:to-gray-800 transition-all" aria-label="Resume Actions">
               <FileText className="h-6 w-6" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-2 bg-white rounded-md shadow-xl border border-teal-100 mb-2">
-            <DropdownMenuItem onClick={toggleMobilePreview} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Eye className="h-5 w-5 mr-3 text-teal-600" /> <span>Preview</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setShowTemplateModal(true)} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Palette className="h-5 w-5 mr-3 text-teal-600" /> <span>Template</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Save className="h-5 w-5 mr-3 text-teal-600" /> <span>Save</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-teal-600" /> <span>Export PDF</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-teal-600" /> <span>Export DOCX</span> </DropdownMenuItem>
+          <DropdownMenuContent align="end" className="w-56 p-2 bg-white rounded-md shadow-xl border border-orange-100 mb-2">
+            <DropdownMenuItem onClick={toggleMobilePreview} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Eye className="h-5 w-5 mr-3 text-orange-600" /> <span>Preview</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowTemplateModal(true)} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Palette className="h-5 w-5 mr-3 text-orange-600" /> <span>Template</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Save className="h-5 w-5 mr-3 text-orange-600" /> <span>Save</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-orange-600" /> <span>Export PDF</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-orange-600" /> <span>Export DOCX</span> </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     );
   };
 
-  if (isLoading) { return (<div className="min-h-[80vh] flex items-center justify-center w-full"><div className="text-center"><LoadingSpinner className="h-8 w-8 mb-4 text-teal-600" /><p className="text-muted-foreground">Loading Resume Editor...</p></div></div>); }
+  if (isLoading) { return (<div className="min-h-[80vh] flex items-center justify-center w-full"><div className="text-center"><LoadingSpinner className="h-8 w-8 mb-4 text-orange-600" /><p className="text-muted-foreground">Loading Resume Editor...</p></div></div>); }
   if (error) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert variant="destructive"><AlertTriangle className="h-4 w-4" /><AlertTitle>Error Loading Resume</AlertTitle><AlertDescription>{error}</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
   if (!resumeData) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert><AlertDescription>Resume data could not be loaded or created.</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
 
@@ -515,12 +515,12 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 </Button>
                 <div ref={dropdownRef} className="relative">
                   <div className="flex">
-                    <Button onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="rounded-r-none border-r-0 bg-teal-600 hover:bg-teal-700 text-white h-9 px-4">
+                    <Button onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="rounded-r-none border-r-0 bg-orange-600 hover:bg-orange-700 text-white h-9 px-4">
                       {isSaving ? <LoadingSpinner className="mr-2" /> : <Save className="h-4 w-4 mr-2" />} {recentlySaved ? "Saved!" : (isSaving ? "Saving..." : "Save")}
                     </Button>
                     <DropdownMenu open={showExportOptions} onOpenChange={setShowExportOptions}>
                       <DropdownMenuTrigger asChild>
-                        <Button className="rounded-l-none bg-teal-600 hover:bg-teal-700 text-white px-2 h-9" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate} aria-label="Export options">
+                        <Button className="rounded-l-none bg-orange-600 hover:bg-orange-700 text-white px-2 h-9" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate} aria-label="Export options">
                           <ChevronDown className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -540,13 +540,13 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
       {showImportAlert && importedSections.length > 0 && (
         <div className="container mx-auto px-4 mt-4">
-          <Alert className="bg-teal-50 border-teal-200 text-teal-800">
-            <CheckCircle2 className="h-5 w-5 text-teal-500" />
-            <AlertTitle className="text-teal-800 font-medium">Resume Imported Successfully!</AlertTitle>
-            <AlertDescription className="text-teal-700">
+          <Alert className="bg-orange-50 border-orange-200 text-orange-800">
+            <CheckCircle2 className="h-5 w-5 text-orange-500" />
+            <AlertTitle className="text-orange-800 font-medium">Resume Imported Successfully!</AlertTitle>
+            <AlertDescription className="text-orange-700">
               <p className="mt-1 text-sm">Review imported sections and save your changes.</p>
               <div className="mt-3">
-                <Button onClick={() => setShowImportAlert(false)} variant="ghost" size="sm" className="text-teal-700 hover:bg-teal-100 h-7 px-2">
+                <Button onClick={() => setShowImportAlert(false)} variant="ghost" size="sm" className="text-orange-700 hover:bg-orange-100 h-7 px-2">
                   <X className="h-4 w-4 mr-1" /> Dismiss
                 </Button>
               </div>
@@ -673,7 +673,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 {!selectedTemplate ? (
                   <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 rounded-md w-full m-4 bg-white">
                     <div className="text-center space-y-2 p-4">
-                      <Palette className="h-8 w-8 text-teal-300 mx-auto" />
+                      <Palette className="h-8 w-8 text-orange-300 mx-auto" />
                       <h3 className="font-medium text-gray-700 text-sm">Choose a Template</h3>
                       <Button onClick={() => setShowTemplateModal(true)} size="sm" className="mx-auto"> Choose Template </Button>
                     </div>
@@ -699,14 +699,14 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
               </div>
               {selectedTemplate && (
                 <div className="border-t border-l border-r border-b border-gray-200 rounded-b-md py-2 px-4 bg-gray-50 flex justify-between">
-                  <Button variant="outline" size="sm" className="text-teal-700 border-teal-200 hover:bg-teal-50 h-8" onClick={toggleExpandedPreview} >
+                  <Button variant="outline" size="sm" className="text-orange-700 border-orange-200 hover:bg-orange-50 h-8" onClick={toggleExpandedPreview} >
                     {expandedPreview ? (<><LayoutList className="h-3 w-3 mr-1" /> <span className="text-xs">Edit Mode</span></>) : (<><Eye className="h-3 w-3 mr-1" /> <span className="text-xs">Focus on Preview</span></>)}
                   </Button>
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank')} variant="outline" className="text-teal-700 border-teal-200 hover:bg-teal-50 h-8" >
+                    <Button size="sm" onClick={() => window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank')} variant="outline" className="text-orange-700 border-orange-200 hover:bg-orange-50 h-8" >
                       <Maximize className="h-3 w-3 mr-1" /> <span className="text-xs">Open Full View</span>
                     </Button>
-                    <Button size="sm" onClick={() => handleExportOption('pdf')} className="bg-teal-600 hover:bg-teal-700 text-white h-8" >
+                    <Button size="sm" onClick={() => handleExportOption('pdf')} className="bg-orange-600 hover:bg-orange-700 text-white h-8" >
                       <Download className="h-3 w-3 mr-1" /> <span className="text-xs">Download PDF</span>
                     </Button>
                   </div>

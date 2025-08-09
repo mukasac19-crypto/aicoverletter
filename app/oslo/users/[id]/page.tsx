@@ -331,7 +331,7 @@ export default function UserDetailPage() {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'cover_letter':
-        return <FileText className="h-4 w-4 text-teal-500" />;
+        return <FileText className="h-4 w-4 text-orange-500" />;
       case 'resume':
         return <FileSpreadsheet className="h-4 w-4 text-blue-500" />;
       case 'ats_scan':
@@ -450,7 +450,7 @@ export default function UserDetailPage() {
         <CardContent className="pt-6 pb-6">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-shrink-0 flex items-start">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white text-3xl font-bold">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-3xl font-bold">
                 {user.first_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
               </div>
             </div>
@@ -517,7 +517,7 @@ export default function UserDetailPage() {
                           subscription.plan_id === 'business' ? 'outline' : 'secondary'
                         }
                         className={
-                          subscription.plan_id === 'pro' ? 'bg-teal-500' :
+                          subscription.plan_id === 'pro' ? 'bg-orange-500' :
                           subscription.plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                         }
                       >
@@ -788,7 +788,7 @@ export default function UserDetailPage() {
                           subscription.plan_id === 'business' ? 'outline' : 'secondary'
                         }
                         className={`text-base px-3 py-1.5 ${
-                          subscription.plan_id === 'pro' ? 'bg-teal-500' :
+                          subscription.plan_id === 'pro' ? 'bg-orange-500' :
                           subscription.plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                         }`}
                       >
@@ -834,7 +834,7 @@ export default function UserDetailPage() {
                     <p className="text-sm font-medium text-muted-foreground mb-1">Subscription Timeline</p>
                     <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
                       <div 
-                        className="bg-teal-500 h-full"
+                        className="bg-orange-500 h-full"
                         style={{
                           width: `${Math.max(0, Math.min(100, calculateProgress(subscription.current_period_start, subscription.current_period_end)))}%`
                         }}

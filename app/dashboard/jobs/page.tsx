@@ -281,7 +281,7 @@ export default function JobsPage() {
       )}
 
       {/* Search Input */}
-      <div className="rounded-lg border border-teal-100 p-6 bg-white shadow-sm">
+      <div className="rounded-lg border border-orange-100 p-6 bg-white shadow-sm">
         <JobSearchInput
           onSearch={handleSearch}
           isSearching={isSearching}

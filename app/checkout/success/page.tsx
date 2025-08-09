@@ -8,7 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 function LoadingFallback() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex items-center justify-center p-4">
-      <LoadingSpinner className="h-12 w-12 text-teal-600" />
+      <LoadingSpinner className="h-12 w-12 text-orange-600" />
     </div>
   );
 }

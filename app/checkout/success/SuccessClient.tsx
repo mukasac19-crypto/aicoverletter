@@ -74,7 +74,7 @@ export default function CheckoutSuccessPage() {
             <CardDescription>Please wait while we verify your payment...</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center py-8">
-            <LoadingSpinner className="h-12 w-12 text-teal-600" />
+            <LoadingSpinner className="h-12 w-12 text-orange-600" />
           </CardContent>
         </Card>
       </div>
@@ -85,8 +85,8 @@ export default function CheckoutSuccessPage() {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center pb-6">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-teal-100 flex items-center justify-center">
-            <CheckCircle className="h-10 w-10 text-teal-600" />
+          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center">
+            <CheckCircle className="h-10 w-10 text-orange-600" />
           </div>
           <CardTitle className="text-2xl">Payment Successful!</CardTitle>
           <CardDescription className="text-base mt-2">
@@ -94,8 +94,8 @@ export default function CheckoutSuccessPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-md bg-teal-50 p-4 border border-teal-100">
-            <p className="text-sm text-teal-800">
+          <div className="rounded-md bg-orange-50 p-4 border border-orange-100">
+            <p className="text-sm text-orange-800">
               Your subscription is now active. You can start using all the premium features right away.
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function CheckoutSuccessPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-3">
-          <Button asChild className="w-full bg-teal-600 hover:bg-teal-700">
+          <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
             <Link href="/dashboard/billing">
               <FileText className="mr-2 h-4 w-4" />
               View Subscription Details

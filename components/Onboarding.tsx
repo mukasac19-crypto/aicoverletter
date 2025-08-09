@@ -407,12 +407,12 @@ export default function Onboarding() {
       </div>
       
       {/* Step content */}
-      <Card className="border-teal-100 shadow-sm">
+      <Card className="border-orange-100 shadow-sm">
         {activeStep === 1 && (
           <>
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
-                <User className="mr-2 h-6 w-6 text-teal-600" />
+                <User className="mr-2 h-6 w-6 text-orange-600" />
                 Personal Information
               </CardTitle>
               <CardDescription>
@@ -547,7 +547,7 @@ export default function Onboarding() {
                     <Button 
                       type="submit"
                       disabled={loading}
-                      className="bg-teal-600 hover:bg-teal-700"
+                      className="bg-orange-600 hover:bg-orange-700"
                     >
                       {loading ? (
                         <>
@@ -575,7 +575,7 @@ export default function Onboarding() {
           <>
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
-                <Briefcase className="mr-2 h-6 w-6 text-teal-600" />
+                <Briefcase className="mr-2 h-6 w-6 text-orange-600" />
                 Career Goals
               </CardTitle>
               <CardDescription>
@@ -669,7 +669,7 @@ export default function Onboarding() {
                     <Button 
                       type="submit"
                       disabled={loading}
-                      className="bg-teal-600 hover:bg-teal-700"
+                      className="bg-orange-600 hover:bg-orange-700"
                     >
                       {loading ? (
                         <>
@@ -697,7 +697,7 @@ export default function Onboarding() {
           <>
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
-                <FileUp className="mr-2 h-6 w-6 text-teal-600" />
+                <FileUp className="mr-2 h-6 w-6 text-orange-600" />
                 Upload Your CV
               </CardTitle>
               <CardDescription>
@@ -712,13 +712,13 @@ export default function Onboarding() {
                       <Label>Upload CV File</Label>
                       <div 
                         className={`mt-2 border-2 border-dashed rounded-lg p-6 text-center ${
-                          cvFile ? 'border-teal-300 bg-teal-50' : 'border-gray-300 hover:border-teal-300'
+                          cvFile ? 'border-orange-300 bg-orange-50' : 'border-gray-300 hover:border-orange-300'
                         } transition-colors cursor-pointer`}
                         onClick={() => document.getElementById('cv-upload')?.click()}
                       >
                         {cvFile ? (
                           <div className="space-y-2">
-                            <CheckCircle2 className="h-8 w-8 mx-auto text-teal-500" />
+                            <CheckCircle2 className="h-8 w-8 mx-auto text-orange-500" />
                             <p className="text-sm font-medium">{cvFile.name}</p>
                             <p className="text-xs text-muted-foreground">
                               {(cvFile.size / 1024 / 1024).toFixed(2)} MB
@@ -813,7 +813,7 @@ export default function Onboarding() {
                         type="button"
                         onClick={uploadCV}
                         disabled={loading || (!cvFile && !linkedInConnected)}
-                        className="bg-teal-600 hover:bg-teal-700"
+                        className="bg-orange-600 hover:bg-orange-700"
                       >
                         {loading ? (
                           <>
@@ -840,7 +840,7 @@ export default function Onboarding() {
               <>
                 <CardHeader>
                   <CardTitle className="flex items-center text-2xl">
-                    <Briefcase className="mr-2 h-6 w-6 text-teal-600" />
+                    <Briefcase className="mr-2 h-6 w-6 text-orange-600" />
                     Job Search Preferences
                   </CardTitle>
                   <CardDescription>
@@ -946,7 +946,7 @@ export default function Onboarding() {
                         type="button"
                         onClick={saveJobPreferences}
                         disabled={loading}
-                        className="bg-teal-600 hover:bg-teal-700"
+                        className="bg-orange-600 hover:bg-orange-700"
                       >
                         {loading ? (
                           <>
@@ -973,7 +973,7 @@ export default function Onboarding() {
               <>
                 <CardHeader>
                   <CardTitle className="flex items-center text-2xl">
-                    <Sparkles className="mr-2 h-6 w-6 text-teal-600" />
+                    <Sparkles className="mr-2 h-6 w-6 text-orange-600" />
                     You&apos;re All Set!
                   </CardTitle>
                   <CardDescription>
@@ -982,19 +982,19 @@ export default function Onboarding() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <div className="bg-teal-50 p-6 rounded-lg border border-teal-100 text-center">
-                      <CheckCircle2 className="h-12 w-12 mx-auto text-teal-600 mb-4" />
-                      <h3 className="text-xl font-medium text-teal-900 mb-2">Profile Setup Complete</h3>
-                      <p className="text-teal-700">
+                    <div className="bg-orange-50 p-6 rounded-lg border border-orange-100 text-center">
+                      <CheckCircle2 className="h-12 w-12 mx-auto text-orange-600 mb-4" />
+                      <h3 className="text-xl font-medium text-orange-900 mb-2">Profile Setup Complete</h3>
+                      <p className="text-orange-700">
                         Thanks for taking the time to set up your profile! We&apos;ll use this information to create personalized cover letters that match your skills and experience.
                       </p>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card className="border-teal-100">
+                      <Card className="border-orange-100">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <FileText className="h-8 w-8 mx-auto text-teal-600 mb-3" />
+                            <FileText className="h-8 w-8 mx-auto text-orange-600 mb-3" />
                             <h4 className="font-medium mb-1">Create Cover Letter</h4>
                             <p className="text-xs text-muted-foreground mb-4">
                               Start creating a personalized cover letter
@@ -1002,7 +1002,7 @@ export default function Onboarding() {
                             <Button 
                               asChild
                               size="sm" 
-                              className="w-full bg-teal-600 hover:bg-teal-700"
+                              className="w-full bg-orange-600 hover:bg-orange-700"
                             >
                               <Link href="/dashboard/cover-letters?tab=create">
                                 Get Started
@@ -1012,10 +1012,10 @@ export default function Onboarding() {
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-teal-100">
+                      <Card className="border-orange-100">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <FileUp className="h-8 w-8 mx-auto text-teal-600 mb-3" />
+                            <FileUp className="h-8 w-8 mx-auto text-orange-600 mb-3" />
                             <h4 className="font-medium mb-1">Create Resume</h4>
                             <p className="text-xs text-muted-foreground mb-4">
                               Build a professional resume
@@ -1033,10 +1033,10 @@ export default function Onboarding() {
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-teal-100">
+                      <Card className="border-orange-100">
                         <CardContent className="pt-6">
                           <div className="text-center">
-                            <Sparkles className="h-8 w-8 mx-auto text-teal-600 mb-3" />
+                            <Sparkles className="h-8 w-8 mx-auto text-orange-600 mb-3" />
                             <h4 className="font-medium mb-1">Upgrade Plan</h4>
                             <p className="text-xs text-muted-foreground mb-4">
                               Get unlimited cover letters and more
@@ -1068,7 +1068,7 @@ export default function Onboarding() {
                         type="button"
                         onClick={completeOnboarding}
                         disabled={loading}
-                        className="bg-teal-600 hover:bg-teal-700"
+                        className="bg-orange-600 hover:bg-orange-700"
                       >
                         {loading ? (
                           <>

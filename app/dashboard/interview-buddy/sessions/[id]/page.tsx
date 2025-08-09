@@ -288,7 +288,7 @@ export default function InterviewSessionPage() {
   if (isLoading) {
     return (
       <div className="min-h-[50vh] flex justify-center items-center bg-white">
-        <LoadingSpinner className="h-6 w-6 md:h-8 md:w-8 text-teal-600" />
+        <LoadingSpinner className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
       </div>
     );
   }
@@ -296,7 +296,7 @@ export default function InterviewSessionPage() {
   if (error) {
     return (
       <div className="space-y-4 md:space-y-6 bg-white p-4 md:p-6">
-        <Button variant="outline" asChild className="border-teal-200 text-teal-700 hover:bg-teal-50">
+        <Button variant="outline" asChild className="border-orange-200 text-orange-700 hover:bg-orange-50">
           <Link href="/dashboard/interview-buddy">
             <ArrowLeft className="mr-2 h-3 w-3 md:h-4 md:w-4" />
             Back to Interview Buddy
@@ -313,14 +313,14 @@ export default function InterviewSessionPage() {
   if (!session) {
     return (
       <div className="space-y-4 md:space-y-6 bg-white p-4 md:p-6">
-        <Button variant="outline" asChild className="border-teal-200 text-teal-700 hover:bg-teal-50">
+        <Button variant="outline" asChild className="border-orange-200 text-orange-700 hover:bg-orange-50">
           <Link href="/dashboard/interview-buddy">
             <ArrowLeft className="mr-2 h-3 w-3 md:h-4 md:w-4" />
             Back to Interview Buddy
           </Link>
         </Button>
         
-        <Alert className="bg-teal-50 border-teal-200 text-teal-800">
+        <Alert className="bg-orange-50 border-orange-200 text-orange-800">
           <AlertDescription>Interview session not found</AlertDescription>
         </Alert>
       </div>
@@ -331,7 +331,7 @@ export default function InterviewSessionPage() {
     <div className="space-y-4 md:space-y-6 bg-white p-4 md:p-6">
       {/* Header with navigation */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button variant="outline" asChild className="border-teal-200 text-teal-700 hover:bg-teal-50 mb-2 sm:mb-0">
+        <Button variant="outline" asChild className="border-orange-200 text-orange-700 hover:bg-orange-50 mb-2 sm:mb-0">
           <Link href="/dashboard/interview-buddy">
             <ArrowLeft className="mr-2 h-3 w-3 md:h-4 md:w-4" />
             Back to Interview Buddy
@@ -342,7 +342,7 @@ export default function InterviewSessionPage() {
           <Button 
             variant="outline" 
             onClick={handleCopyToClipboard}
-            className="text-xs md:text-sm border-teal-200 text-teal-700 hover:bg-teal-50"
+            className="text-xs md:text-sm border-orange-200 text-orange-700 hover:bg-orange-50"
             size="sm"
           >
             <Copy className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
@@ -352,7 +352,7 @@ export default function InterviewSessionPage() {
           <Button 
             variant="outline" 
             onClick={handleDownload}
-            className="text-xs md:text-sm border-teal-200 text-teal-700 hover:bg-teal-50"
+            className="text-xs md:text-sm border-orange-200 text-orange-700 hover:bg-orange-50"
             size="sm"
           >
             <Download className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
@@ -370,7 +370,7 @@ export default function InterviewSessionPage() {
                 <span className="hidden xs:inline">Delete</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="border-teal-100">
+            <DialogContent className="border-orange-100">
               <DialogHeader>
                 <DialogTitle className="text-gray-800">Delete Interview Session</DialogTitle>
                 <DialogDescription className="text-gray-600">
@@ -381,7 +381,7 @@ export default function InterviewSessionPage() {
                 <DialogClose asChild>
                   <Button 
                     variant="outline"
-                    className="border-teal-200 text-teal-700 hover:bg-teal-50"
+                    className="border-orange-200 text-orange-700 hover:bg-orange-50"
                   >
                     Cancel
                   </Button>
@@ -402,18 +402,18 @@ export default function InterviewSessionPage() {
       </div>
       
       {/* Session Info Card */}
-      <Card className="border-teal-100">
-        <CardHeader className="bg-teal-50/50 pb-4 md:pb-6">
+      <Card className="border-orange-100">
+        <CardHeader className="bg-orange-50/50 pb-4 md:pb-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
               <CardTitle className="text-xl md:text-2xl flex items-center gap-2 text-gray-800">
-                <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 text-teal-600" />
+                <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
                 {session.jobTitle}
               </CardTitle>
               <CardDescription className="mt-2 text-gray-600">
                 <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
                   <div className="flex items-center text-xs md:text-sm">
-                    <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1 text-teal-500" />
+                    <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1 text-orange-500" />
                     {new Date(session.createdAt || '').toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'short',
@@ -421,7 +421,7 @@ export default function InterviewSessionPage() {
                     })}
                   </div>
                   <div className="flex items-center text-xs md:text-sm">
-                    <Briefcase className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1 text-teal-500" />
+                    <Briefcase className="h-3 w-3 md:h-3.5 md:w-3.5 mr-1 text-orange-500" />
                     Resume: {session.resumeTitle || 'Unnamed Resume'}
                   </div>
                 </div>
@@ -429,10 +429,10 @@ export default function InterviewSessionPage() {
             </div>
             
             <div className="flex gap-2">
-              <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 text-xs">
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
                 {session.interviewType.charAt(0).toUpperCase() + session.interviewType.slice(1)}
               </Badge>
-              <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 text-xs">
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
                 {session.difficulty.charAt(0).toUpperCase() + session.difficulty.slice(1)}
               </Badge>
             </div>
@@ -443,7 +443,7 @@ export default function InterviewSessionPage() {
           <CardContent className="pt-4 px-4 md:px-6">
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-gray-800">Job Description</h3>
-              <div className="bg-teal-50/30 p-3 rounded-md text-xs md:text-sm whitespace-pre-line text-gray-700 border border-teal-100/50">
+              <div className="bg-orange-50/30 p-3 rounded-md text-xs md:text-sm whitespace-pre-line text-gray-700 border border-orange-100/50">
                 {session.jobDescription}
               </div>
             </div>
@@ -454,17 +454,17 @@ export default function InterviewSessionPage() {
       {/* Questions List */}
       <div>
         <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4 flex items-center text-gray-800">
-          <FileText className="h-4 w-4 md:h-5 md:w-5 mr-2 text-teal-600" />
+          <FileText className="h-4 w-4 md:h-5 md:w-5 mr-2 text-orange-600" />
           Interview Questions ({session.questions.length})
         </h2>
         <InterviewQuestionList questions={session.questions} />
       </div>
       
       {/* Notes Section */}
-      <Card className="border-teal-100">
-        <CardHeader className="pb-3 bg-teal-50/50">
+      <Card className="border-orange-100">
+        <CardHeader className="pb-3 bg-orange-50/50">
           <CardTitle className="text-base md:text-lg flex items-center text-gray-800">
-            <StickyNote className="h-4 w-4 md:h-5 md:w-5 mr-2 text-teal-600" />
+            <StickyNote className="h-4 w-4 md:h-5 md:w-5 mr-2 text-orange-600" />
             My Notes
           </CardTitle>
           <CardDescription className="text-sm text-gray-600">
@@ -476,14 +476,14 @@ export default function InterviewSessionPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add your own notes, preparation tips, or questions you want to ask the interviewer..."
-            className="min-h-[120px] md:min-h-[150px] border-teal-200 focus:ring-teal-500"
+            className="min-h-[120px] md:min-h-[150px] border-orange-200 focus:ring-orange-500"
           />
         </CardContent>
-        <CardFooter className="flex justify-end border-t border-teal-100 pt-3 px-4 md:px-6">
+        <CardFooter className="flex justify-end border-t border-orange-100 pt-3 px-4 md:px-6">
           <Button 
             onClick={handleSaveNotes} 
             disabled={isSavingNotes}
-            className="bg-teal-600 hover:bg-teal-700 text-white"
+            className="bg-orange-600 hover:bg-orange-700 text-white"
           >
             {isSavingNotes ? (
               <>

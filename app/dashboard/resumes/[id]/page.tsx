@@ -146,7 +146,7 @@ export default function EditResumePage() {
               </Button>
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  <FileSpreadsheet className="h-5 w-5 text-teal-600" />
+                  <FileSpreadsheet className="h-5 w-5 text-orange-600" />
                   {resume?.title || 'Resume'}
                 </h1>
                 <Button
@@ -166,15 +166,15 @@ export default function EditResumePage() {
 
       {/* Content Section - Full Width */}
       <div className="w-full px-0">
-        <Card className="border-2 border-teal-100 mb-6 w-full">
-          <CardHeader className="border-b bg-teal-50/50 py-2">
-            <CardTitle className="text-lg text-teal-800">Resume Actions</CardTitle>
+        <Card className="border-2 border-orange-100 mb-6 w-full">
+          <CardHeader className="border-b bg-orange-50/50 py-2">
+            <CardTitle className="text-lg text-orange-800">Resume Actions</CardTitle>
           </CardHeader>
           <CardContent className="p-2">
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant={activeTab === 'edit' ? 'default' : 'outline'}
-                className="h-12 flex items-center justify-start px-4 bg-teal-600 hover:bg-teal-700"
+                className="h-12 flex items-center justify-start px-4 bg-orange-600 hover:bg-orange-700"
                 onClick={() => setActiveTab('edit')}
               >
                 <Edit className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -184,9 +184,9 @@ export default function EditResumePage() {
               <Button
                 variant="outline"
                 onClick={() => router.push(`/dashboard/resumes/${resumeId}/tailor`)}
-                className="h-12 flex items-center justify-start px-4 border-2 hover:bg-teal-50"
+                className="h-12 flex items-center justify-start px-4 border-2 hover:bg-orange-50"
               >
-                <Sparkles className="h-4 w-4 mr-3 flex-shrink-0 text-teal-600" />
+                <Sparkles className="h-4 w-4 mr-3 flex-shrink-0 text-orange-600" />
                 <div className="font-semibold text-sm">Tailor to Job</div>
               </Button>
             </div>

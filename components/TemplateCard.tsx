@@ -110,7 +110,7 @@ export default function TemplateCard({
     <>
       <Card
         className={`group relative transition-all duration-200 hover:shadow-lg cursor-pointer 
-          ${isSelected ? "ring-2 ring-teal-500" : "hover:border-teal-300"}
+          ${isSelected ? "ring-2 ring-orange-500" : "hover:border-orange-300"}
           w-full sm:w-[320px] md:w-[360px] lg:w-[400px] overflow-hidden bg-white border border-gray-200
         `}
         onClick={showPreviewOnly ? () => setShowPreview(true) : onSelect}
@@ -141,7 +141,7 @@ export default function TemplateCard({
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg 
-                flex items-center gap-2 text-teal-700 hover:text-teal-900 border border-teal-100"
+                flex items-center gap-2 text-orange-700 hover:text-orange-900 border border-orange-100"
               onClick={handlePreviewClick}
             >
               <Eye className="h-4 w-4" />

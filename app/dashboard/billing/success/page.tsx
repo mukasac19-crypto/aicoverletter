@@ -125,7 +125,7 @@ export default function SubscriptionSuccessPage() {
               </Link>
             </Button>
             <Button 
-              className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"
+              className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
               onClick={() => window.location.reload()}
             >
               Try Again
@@ -143,10 +143,10 @@ export default function SubscriptionSuccessPage() {
   
   return (
     <div className="container max-w-lg py-12 px-4">
-      <Card className="border-teal-200">
+      <Card className="border-orange-200">
         <CardHeader className="pb-4 text-center">
-          <div className="mx-auto rounded-full bg-teal-100 p-3 w-16 h-16 flex items-center justify-center mb-4">
-            <CheckCircle className="h-8 w-8 text-teal-600" />
+          <div className="mx-auto rounded-full bg-orange-100 p-3 w-16 h-16 flex items-center justify-center mb-4">
+            <CheckCircle className="h-8 w-8 text-orange-600" />
           </div>
           <CardTitle className="text-2xl">Subscription Activated!</CardTitle>
           <CardDescription>
@@ -154,8 +154,8 @@ export default function SubscriptionSuccessPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 pb-6">
-          <div className="bg-teal-50 rounded-lg border border-teal-100 p-4 mb-6">
-            <h3 className="font-medium text-teal-800 mb-2">Subscription Details</h3>
+          <div className="bg-orange-50 rounded-lg border border-orange-100 p-4 mb-6">
+            <h3 className="font-medium text-orange-800 mb-2">Subscription Details</h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Plan:</span>
@@ -183,7 +183,7 @@ export default function SubscriptionSuccessPage() {
           <ul className="space-y-2 mb-6">
             {plan?.features.map((feature, index) => (
               <li key={index} className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}
@@ -205,7 +205,7 @@ export default function SubscriptionSuccessPage() {
             </Link>
           </Button>
           <Button 
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"
+            className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
             asChild
           >
             <Link href="/dashboard">

@@ -37,14 +37,14 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-teal-50/20">
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
       {/* Enhanced Navigation Header */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-100 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-8">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-lg flex items-center justify-center">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -54,16 +54,16 @@ export default function LandingPage() {
               
               {/* Desktop Navigation */}
               <nav className="hidden md:flex items-center space-x-6">
-                <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                   Features
                 </Link>
-                <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                   Pricing
                 </Link>
-                <Link href="/templates" className="text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                <Link href="/templates" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                   Templates
                 </Link>
-                <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors">
+                <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                   Resources
                 </Link>
               </nav>
@@ -72,7 +72,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-4">
               {user ? (
                 <Link href="/dashboard">
-                  <Button className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25">
+                  <Button className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-lg shadow-orange-500/25">
                     Go to Dashboard
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -80,12 +80,12 @@ export default function LandingPage() {
               ) : (
                 <>
                   <Link href="/auth/login" className="hidden sm:block">
-                    <Button variant="ghost" className="text-gray-700 hover:text-teal-700">
+                    <Button variant="ghost" className="text-gray-700 hover:text-orange-700">
                       Log In
                     </Button>
                   </Link>
                   <Link href="/auth/register">
-                    <Button className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25">
+                    <Button className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-lg shadow-orange-500/25">
                       Start Free Trial
                     </Button>
                   </Link>
@@ -107,16 +107,16 @@ export default function LandingPage() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white">
             <nav className="container mx-auto px-4 py-4 space-y-2">
-              <Link href="/features" className="block py-2 text-sm font-medium text-gray-600 hover:text-teal-600">
+              <Link href="/features" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
                 Features
               </Link>
-              <Link href="/pricing" className="block py-2 text-sm font-medium text-gray-600 hover:text-teal-600">
+              <Link href="/pricing" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
                 Pricing
               </Link>
-              <Link href="/templates" className="block py-2 text-sm font-medium text-gray-600 hover:text-teal-600">
+              <Link href="/templates" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
                 Templates
               </Link>
-              <Link href="/blog" className="block py-2 text-sm font-medium text-gray-600 hover:text-teal-600">
+              <Link href="/blog" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
                 Resources
               </Link>
             </nav>
@@ -128,7 +128,7 @@ export default function LandingPage() {
       <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
         {/* Background decorations */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-10 h-72 w-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-20 left-10 h-72 w-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
           <div className="absolute top-40 right-10 h-72 w-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute -bottom-8 left-20 h-72 w-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
@@ -136,9 +136,9 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             {/* Trust badge */}
-            <div className="inline-flex items-center gap-2 bg-teal-50 border border-teal-200 rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-2 mb-6">
               <Star className="h-4 w-4 text-yellow-500 fill-current" />
-              <span className="text-sm font-medium text-teal-800">Rated 4.9/5 by 10,000+ professionals</span>
+              <span className="text-sm font-medium text-orange-800">Rated 4.9/5 by 10,000+ professionals</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -146,7 +146,7 @@ export default function LandingPage() {
                 Land Your Dream Job with
               </span>
               <br />
-              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-600 to-emerald-600 bg-clip-text text-transparent">
                 AI-Powered Applications
               </span>
             </h1>
@@ -157,13 +157,13 @@ export default function LandingPage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/auth/register">
-                <Button size="lg" className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-xl shadow-teal-500/25 px-8">
+                <Button size="lg" className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-xl shadow-orange-500/25 px-8">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free - No Card Required
                 </Button>
               </Link>
               <Link href="/demo">
-                <Button size="lg" variant="outline" className="border-gray-300 hover:border-teal-300 hover:bg-teal-50">
+                <Button size="lg" variant="outline" className="border-gray-300 hover:border-orange-300 hover:bg-orange-50">
                   Watch 2-min Demo
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -219,24 +219,24 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-teal-600 to-emerald-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-orange-600 to-emerald-600 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold mb-2">100K+</div>
-              <div className="text-teal-100">Active Users</div>
+              <div className="text-orange-100">Active Users</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold mb-2">2.5M+</div>
-              <div className="text-teal-100">Documents Created</div>
+              <div className="text-orange-100">Documents Created</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold mb-2">85%</div>
-              <div className="text-teal-100">Interview Success Rate</div>
+              <div className="text-orange-100">Interview Success Rate</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold mb-2">4.9/5</div>
-              <div className="text-teal-100">User Rating</div>
+              <div className="text-orange-100">User Rating</div>
             </div>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function LandingPage() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="inline-block rounded-full bg-teal-100 px-4 py-2 text-sm font-semibold text-teal-800 mb-4">
+            <span className="inline-block rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-800 mb-4">
               HOW IT WORKS
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -259,14 +259,14 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             {/* Connection lines for desktop */}
-            <div className="hidden md:block absolute top-20 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200"></div>
+            <div className="hidden md:block absolute top-20 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200"></div>
             
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <FileText className="h-8 w-8 text-white" />
                 </div>
-                <div className="absolute -top-4 -right-4 bg-teal-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                <div className="absolute -top-4 -right-4 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
                   1
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-center">Paste Job Description</h3>
@@ -275,15 +275,15 @@ export default function LandingPage() {
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">Auto-extracts key requirements</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">Identifies important keywords</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
                     <span className="text-sm text-gray-700">Understands company culture</span>
                   </li>
                 </ul>
@@ -292,7 +292,7 @@ export default function LandingPage() {
 
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <Upload className="h-8 w-8 text-white" />
                 </div>
                 <div className="absolute -top-4 -right-4 bg-emerald-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
@@ -351,7 +351,7 @@ export default function LandingPage() {
 
           <div className="text-center mt-12">
             <Link href="/auth/register">
-              <Button size="lg" className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-xl shadow-teal-500/25 px-8">
+              <Button size="lg" className="bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 text-white shadow-xl shadow-orange-500/25 px-8">
                 Try It Now - Free Forever Plan
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -390,7 +390,7 @@ export default function LandingPage() {
             </Card>
 
             <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-orange-600 rounded-xl flex items-center justify-center mb-4">
                 <Globe className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Multi-Language Support</h3>
@@ -485,7 +485,7 @@ export default function LandingPage() {
                 "The AI understood exactly what Tesla was looking for. My tailored resume got me an interview on the first try!"
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
                   M
                 </div>
                 <div>
@@ -522,7 +522,7 @@ export default function LandingPage() {
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
          <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="inline-block rounded-full bg-gradient-to-r from-teal-100 to-emerald-100 px-4 py-2 text-sm font-semibold text-teal-800 mb-4">
+            <span className="inline-block rounded-full bg-gradient-to-r from-orange-100 to-emerald-100 px-4 py-2 text-sm font-semibold text-orange-800 mb-4">
               SIMPLE PRICING
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -541,7 +541,7 @@ export default function LandingPage() {
               >
                 {tier === "PRO" && (
                   <div className="absolute -top-5 left-0 right-0 flex justify-center">
-                    <span className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                    <span className="bg-gradient-to-r from-orange-600 to-emerald-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
                       Most Popular
                     </span>
                   </div>
@@ -549,7 +549,7 @@ export default function LandingPage() {
                 <Card
                   className={`h-full ${
                     tier === "PRO"
-                      ? "border-2 border-teal-500 shadow-2xl scale-105"
+                      ? "border-2 border-orange-500 shadow-2xl scale-105"
                       : "border border-gray-200 shadow-lg"
                   } hover:shadow-xl transition-all duration-300 bg-white rounded-2xl overflow-hidden`}
                 >
@@ -557,7 +557,7 @@ export default function LandingPage() {
                     tier === "FREE" 
                       ? "bg-gradient-to-br from-gray-50 to-white"
                       : tier === "PRO"
-                      ? "bg-gradient-to-br from-teal-50 to-white"
+                      ? "bg-gradient-to-br from-orange-50 to-white"
                       : "bg-gradient-to-br from-purple-50 to-white"
                   }`}>
                     <div className="mb-4">
@@ -575,7 +575,7 @@ export default function LandingPage() {
                         )}
                       </div>
                       {tier === "PRO" && (
-                        <p className="text-sm text-teal-600 mt-2">
+                        <p className="text-sm text-orange-600 mt-2">
                           Save 20% with annual billing
                         </p>
                       )}
@@ -588,7 +588,7 @@ export default function LandingPage() {
                             tier === "FREE" 
                               ? "text-gray-400"
                               : tier === "PRO"
-                              ? "text-teal-500"
+                              ? "text-orange-500"
                               : "text-purple-500"
                           }`} />
                           <span className="text-sm text-gray-700">{feature}</span>
@@ -602,7 +602,7 @@ export default function LandingPage() {
                           tier === "FREE"
                             ? "bg-gray-900 hover:bg-gray-800"
                             : tier === "PRO"
-                            ? "bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-500/25"
+                            ? "bg-gradient-to-r from-orange-600 to-emerald-600 hover:from-orange-700 hover:to-emerald-700 shadow-lg shadow-orange-500/25"
                             : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         }`}
                       >
@@ -619,7 +619,7 @@ export default function LandingPage() {
             <p className="text-gray-600 mb-4">
               All plans include: Unlimited downloads • 24/7 support • SSL encryption
             </p>
-            <Link href="/pricing" className="text-teal-600 hover:text-teal-700 font-medium">
+            <Link href="/pricing" className="text-orange-600 hover:text-orange-700 font-medium">
               View detailed feature comparison →
             </Link>
           </div>
@@ -639,7 +639,7 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-6">
-            <Card className="p-6 border border-gray-200 hover:border-teal-300 transition-colors">
+            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
                 How does the AI personalization work?
               </h3>
@@ -648,7 +648,7 @@ export default function LandingPage() {
               </p>
             </Card>
 
-            <Card className="p-6 border border-gray-200 hover:border-teal-300 transition-colors">
+            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
                 Is my data safe and private?
               </h3>
@@ -657,7 +657,7 @@ export default function LandingPage() {
               </p>
             </Card>
 
-            <Card className="p-6 border border-gray-200 hover:border-teal-300 transition-colors">
+            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
                 Can I use Resume Mate AI for multiple job applications?
               </h3>
@@ -666,7 +666,7 @@ export default function LandingPage() {
               </p>
             </Card>
 
-            <Card className="p-6 border border-gray-200 hover:border-teal-300 transition-colors">
+            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
                 What makes this better than other resume builders?
               </h3>
@@ -675,7 +675,7 @@ export default function LandingPage() {
               </p>
             </Card>
 
-            <Card className="p-6 border border-gray-200 hover:border-teal-300 transition-colors">
+            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
                 Do you offer refunds?
               </h3>
@@ -688,7 +688,7 @@ export default function LandingPage() {
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-4">Still have questions?</p>
             <Link href="/support">
-              <Button variant="outline" className="border-teal-300 text-teal-700 hover:bg-teal-50">
+              <Button variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50">
                 Contact Support Team
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -698,7 +698,7 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-teal-600 via-emerald-600 to-teal-700 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-orange-600 via-emerald-600 to-orange-700 text-white relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 bg-grid-white/10"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -714,13 +714,13 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
               Ready to 10x Your Job Search Success?
             </h2>
-            <p className="text-xl mb-8 text-teal-50 max-w-2xl mx-auto">
+            <p className="text-xl mb-8 text-orange-50 max-w-2xl mx-auto">
               Join over 100,000 professionals who've landed their dream jobs. Start creating winning applications in minutes.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/auth/register">
-                <Button size="lg" className="bg-white text-teal-700 hover:bg-gray-100 shadow-2xl px-8 py-6 text-lg font-semibold">
+                <Button size="lg" className="bg-white text-orange-700 hover:bg-gray-100 shadow-2xl px-8 py-6 text-lg font-semibold">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free Trial Now
                 </Button>
@@ -758,7 +758,7 @@ export default function LandingPage() {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-emerald-600 rounded-lg flex items-center justify-center">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">Resume Mate AI</span>
@@ -767,17 +767,17 @@ export default function LandingPage() {
                 AI-powered resume and cover letter builder helping professionals land their dream jobs.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="hover:text-teal-400 transition-colors">
+                <a href="#" className="hover:text-orange-400 transition-colors">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                   </svg>
                 </a>
-                <a href="#" className="hover:text-teal-400 transition-colors">
+                <a href="#" className="hover:text-orange-400 transition-colors">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                   </svg>
                 </a>
-                <a href="#" className="hover:text-teal-400 transition-colors">
+                <a href="#" className="hover:text-orange-400 transition-colors">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
@@ -789,11 +789,11 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/features" className="hover:text-teal-400 transition-colors">Features</Link></li>
-                <li><Link href="/templates" className="hover:text-teal-400 transition-colors">Templates</Link></li>
-                <li><Link href="/pricing" className="hover:text-teal-400 transition-colors">Pricing</Link></li>
-                <li><Link href="/demo" className="hover:text-teal-400 transition-colors">Live Demo</Link></li>
-                <li><Link href="/api" className="hover:text-teal-400 transition-colors">API</Link></li>
+                <li><Link href="/features" className="hover:text-orange-400 transition-colors">Features</Link></li>
+                <li><Link href="/templates" className="hover:text-orange-400 transition-colors">Templates</Link></li>
+                <li><Link href="/pricing" className="hover:text-orange-400 transition-colors">Pricing</Link></li>
+                <li><Link href="/demo" className="hover:text-orange-400 transition-colors">Live Demo</Link></li>
+                <li><Link href="/api" className="hover:text-orange-400 transition-colors">API</Link></li>
               </ul>
             </div>
 
@@ -801,11 +801,11 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/blog" className="hover:text-teal-400 transition-colors">Blog</Link></li>
-                <li><Link href="/guides" className="hover:text-teal-400 transition-colors">Career Guides</Link></li>
-                <li><Link href="/examples" className="hover:text-teal-400 transition-colors">Resume Examples</Link></li>
-                <li><Link href="/cover-letter-examples" className="hover:text-teal-400 transition-colors">Cover Letter Examples</Link></li>
-                <li><Link href="/help" className="hover:text-teal-400 transition-colors">Help Center</Link></li>
+                <li><Link href="/blog" className="hover:text-orange-400 transition-colors">Blog</Link></li>
+                <li><Link href="/guides" className="hover:text-orange-400 transition-colors">Career Guides</Link></li>
+                <li><Link href="/examples" className="hover:text-orange-400 transition-colors">Resume Examples</Link></li>
+                <li><Link href="/cover-letter-examples" className="hover:text-orange-400 transition-colors">Cover Letter Examples</Link></li>
+                <li><Link href="/help" className="hover:text-orange-400 transition-colors">Help Center</Link></li>
               </ul>
             </div>
 
@@ -813,11 +813,11 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/about" className="hover:text-teal-400 transition-colors">About Us</Link></li>
-                <li><Link href="/careers" className="hover:text-teal-400 transition-colors">Careers</Link></li>
-                <li><Link href="/contact" className="hover:text-teal-400 transition-colors">Contact</Link></li>
-                <li><Link href="/partners" className="hover:text-teal-400 transition-colors">Partners</Link></li>
-                <li><Link href="/affiliates" className="hover:text-teal-400 transition-colors">Affiliates</Link></li>
+                <li><Link href="/about" className="hover:text-orange-400 transition-colors">About Us</Link></li>
+                <li><Link href="/careers" className="hover:text-orange-400 transition-colors">Careers</Link></li>
+                <li><Link href="/contact" className="hover:text-orange-400 transition-colors">Contact</Link></li>
+                <li><Link href="/partners" className="hover:text-orange-400 transition-colors">Partners</Link></li>
+                <li><Link href="/affiliates" className="hover:text-orange-400 transition-colors">Affiliates</Link></li>
               </ul>
             </div>
           </div>
@@ -829,10 +829,10 @@ export default function LandingPage() {
                 © {new Date().getFullYear()} Resume Mate AI. All rights reserved.
               </p>
               <div className="flex flex-wrap gap-6 text-sm">
-                <Link href="/privacy" className="hover:text-teal-400 transition-colors">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-teal-400 transition-colors">Terms of Service</Link>
-                <Link href="/cookies" className="hover:text-teal-400 transition-colors">Cookie Policy</Link>
-                <Link href="/sitemap" className="hover:text-teal-400 transition-colors">Sitemap</Link>
+                <Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link>
+                <Link href="/terms" className="hover:text-orange-400 transition-colors">Terms of Service</Link>
+                <Link href="/cookies" className="hover:text-orange-400 transition-colors">Cookie Policy</Link>
+                <Link href="/sitemap" className="hover:text-orange-400 transition-colors">Sitemap</Link>
               </div>
             </div>
           </div>

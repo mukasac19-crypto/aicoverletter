@@ -394,7 +394,7 @@ export default function DashboardPage() {
         
         {/* Profile Status Alert */}
         {(hasCVUploaded || hasLinkedInConnected) && (
-          <Alert className="mb-4 sm:mb-8 bg-teal-50 border-orange-200 shadow-sm text-xs sm:text-sm">
+          <Alert className="mb-4 sm:mb-8 bg-orange-50 border-orange-200 shadow-sm text-xs sm:text-sm">
             <div className="flex items-center">
               <CheckCircle2 className="h-4 sm:h-5 w-4 sm:w-5 text-orange-500 mr-1 sm:mr-2 flex-shrink-0" />
               <AlertDescription className="text-orange-700 py-1">
@@ -500,7 +500,7 @@ export default function DashboardPage() {
        {/* Main Content Grid */}
        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
           {/* Recent Cover Letters Section */}
-          {/* <Card className="border-l-4 border-l-teal-400 shadow-md h-fit">
+          {/* <Card className="border-l-4 border-l-orange-400 shadow-md h-fit">
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base sm:text-lg">Recent Cover Letters</CardTitle>
@@ -537,10 +537,10 @@ export default function DashboardPage() {
                                       `${daysAgo} days ago`;
                     
                     return (
-                      <div key={letter.id} className="p-2 sm:p-3 rounded-md hover:bg-teal-50 transition-colors border border-gray-100">
+                      <div key={letter.id} className="p-2 sm:p-3 rounded-md hover:bg-orange-50 transition-colors border border-gray-100">
                         <div className="flex items-start justify-between gap-1 sm:gap-2">
                           <div className="flex items-start flex-1 min-w-0">
-                            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
+                            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
                             <div className="min-w-0">
                               <p 
                                 className="font-medium text-xs sm:text-sm truncate" 
@@ -581,12 +581,12 @@ export default function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <div className="text-center py-4 sm:py-8 bg-teal-50/50 rounded-lg border border-dashed border-teal-200">
-                  <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-teal-400 mx-auto mb-1 sm:mb-2" />
+                <div className="text-center py-4 sm:py-8 bg-orange-50/50 rounded-lg border border-dashed border-orange-200">
+                  <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-orange-400 mx-auto mb-1 sm:mb-2" />
                   <h3 className="text-xs sm:text-sm font-medium mb-1">No recent cover letters</h3>
                   <p className="text-xs text-gray-500 mb-2">No cover letters created or edited this month</p>
                   <Link href="/dashboard/cover-letters?tab=create">
-                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-teal-600 hover:bg-teal-700">
+                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
                       <Plus className="h-3 w-3 mr-1" />
                       Create Letter
                     </Button>
@@ -597,7 +597,7 @@ export default function DashboardPage() {
           </Card> */}
 
           {/* Recent Resumes Section */}
-          {/* <Card className="border-l-4 border-l-teal-400 shadow-md h-fit">
+          {/* <Card className="border-l-4 border-l-orange-400 shadow-md h-fit">
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base sm:text-lg">Recent Resumes</CardTitle>
@@ -638,10 +638,10 @@ export default function DashboardPage() {
                                       `${daysAgo} days ago`;
                     
                     return (
-                      <div key={resume.id} className="p-2 sm:p-3 rounded-md hover:bg-teal-50 transition-colors border border-gray-100">
+                      <div key={resume.id} className="p-2 sm:p-3 rounded-md hover:bg-orange-50 transition-colors border border-gray-100">
                         <div className="flex items-start justify-between gap-1 sm:gap-2">
                           <div className="flex items-start flex-1 min-w-0">
-                            <FileBadge className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
+                            <FileBadge className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
                             <div className="min-w-0">
                               <p 
                                 className="font-medium text-xs sm:text-sm truncate" 
@@ -684,12 +684,12 @@ export default function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <div className="text-center py-4 sm:py-8 bg-teal-50/50 rounded-lg border border-dashed border-teal-200">
-                  <FileBadge className="h-8 w-8 sm:h-10 sm:w-10 text-teal-400 mx-auto mb-1 sm:mb-2" />
+                <div className="text-center py-4 sm:py-8 bg-orange-50/50 rounded-lg border border-dashed border-orange-200">
+                  <FileBadge className="h-8 w-8 sm:h-10 sm:w-10 text-orange-400 mx-auto mb-1 sm:mb-2" />
                   <h3 className="text-xs sm:text-sm font-medium mb-1">No recent resumes</h3>
                   <p className="text-xs text-gray-500 mb-2">No resumes created or updated this month</p>
                   <Link href="/dashboard/resumes/new">
-                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-teal-600 hover:bg-teal-700">
+                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
                       <Plus className="h-3 w-3 mr-1" />
                       Create Resume
                     </Button>
@@ -778,7 +778,7 @@ export default function DashboardPage() {
                   <p className="text-xl font-bold text-orange-600">{stats.totalLetters}</p>
                   <p className="text-xs text-gray-600">Total Letters</p>
                 </div>
-                <div className="bg-teal-50 border border-teal-100 p-3 rounded-lg transition-transform hover:shadow-md">
+                <div className="bg-orange-50 border border-orange-100 p-3 rounded-lg transition-transform hover:shadow-md">
                   <p className="text-xl font-bold text-orange-600">{recentResumes.length}</p>
                   <p className="text-xs text-gray-600">Total Resumes</p>
                 </div>

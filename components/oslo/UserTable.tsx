@@ -109,7 +109,7 @@ export function UserTable({
                         userSubscriptions[user.id].plan_id === 'business' ? 'outline' : 'secondary'
                       }
                       className={
-                        userSubscriptions[user.id].plan_id === 'pro' ? 'bg-teal-500' :
+                        userSubscriptions[user.id].plan_id === 'pro' ? 'bg-orange-500' :
                         userSubscriptions[user.id].plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                       }
                     >
