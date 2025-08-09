@@ -303,7 +303,7 @@ export default function EnhancedProfilePage() {
             <p className="text-gray-600">Manage your account information and preferences</p>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            {/* <Badge variant="outline" className="pl-2 pr-2 py-1">
+            <Badge variant="outline" className="pl-2 pr-2 py-1">
               <span className="font-normal text-gray-600 mr-1">Account:</span>
               <span className="text-teal-700">{user?.email}</span>
             </Badge>
@@ -318,38 +318,17 @@ export default function EnhancedProfilePage() {
                   Sign Out
                 </>
               )}
-            </Button> */}
+            </Button>
           </div>
         </div>
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6 w-fit flex bg-muted/50 rounded-lg p-1 gap-2">
-          <TabsTrigger 
-          value="personal" 
-          className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-          > 
-          <User className="w-4 h-4 mr-2" /> Personal
-        </TabsTrigger>
-
-        <TabsTrigger 
-          value="security" 
-          className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-          > 
-           <Key className="w-4 h-4 mr-2" /> 
-           Security 
-        </TabsTrigger>
-
-        <TabsTrigger 
-        value="billing" 
-        className="flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
-        > 
-        <CreditCard className="w-4 h-4 mr-2" /> Billing 
-        </TabsTrigger>
-          <TabsTrigger value="general" className="flex items-center"> 
-          <Settings className="w-4 h-4 mr-2" /> 
-          General
-        </TabsTrigger>
+        <TabsList className="mb-6 flex flex-wrap text-gray-700">
+          <TabsTrigger value="personal" className="flex items-center"> <User className="w-4 h-4 mr-2" /> Personal</TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center"> <Key className="w-4 h-4 mr-2" /> Security </TabsTrigger>
+          <TabsTrigger value="billing" className="flex items-center"> <CreditCard className="w-4 h-4 mr-2" /> Billing </TabsTrigger>
+          <TabsTrigger value="general" className="flex items-center"> <Settings className="w-4 h-4 mr-2" /> General</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">

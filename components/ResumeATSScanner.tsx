@@ -1,3 +1,5 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\ResumeATSScanner.tsx
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link'; // Corrected: Added missing import for Link
 import { 
