@@ -3,13 +3,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  FileText, 
+import {
+  FileText,
   User,
-  Briefcase, 
-  Menu, 
-  Home, 
-  FileOutput, 
+  Briefcase,
+  Menu,
+  Home,
+  FileOutput,
   LayoutTemplate,
   History,
   ChevronLeft,
@@ -17,16 +17,25 @@ import {
   MessagesSquare,
   X,
   FileSpreadsheet,
-  ScanSearch // Added ScanSearch icon for ATS
+  ScanSearch, // Added ScanSearch icon for ATS
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -38,7 +47,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  
+
   // Navigation items - Removed Billing item
   const navItems = [
     {
@@ -46,7 +55,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: "/dashboard",
       icon: Home,
     },
-    
+
     {
       title: "Cover Letters",
       href: "/dashboard/cover-letters",
@@ -58,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: FileSpreadsheet,
     },
     {
-      title: "Jobs", 
+      title: "Jobs",
       href: "/dashboard/jobs",
       icon: Briefcase,
     },
@@ -67,7 +76,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: "/dashboard/interview-buddy",
       icon: MessagesSquare,
     },
-    
+
     {
       title: "ATS Scanner",
       href: "/dashboard/ats-scanner",
@@ -75,11 +84,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     },
 
     //{
-      //title: "Templates",
-      //href: "/dashboard/templates",
-      //icon: LayoutTemplate,
+    //title: "Templates",
+    //href: "/dashboard/templates",
+    //icon: LayoutTemplate,
     //},
-    
+
     {
       title: "Profile",
       href: "/dashboard/profile",
@@ -97,14 +106,95 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-orange-50/20">
+    <div className="min-h-screen max-h-screen flex flex-col bg-orange-50/20">
+      {/* lg header */}
+
+      <div className=" sticky top-0 left-0 right-0 w-full min-h-[80px]  bg-white border-b border-gray-100 hidden lg:flex items-center justify-between px-4 lg:px-8">
+        <div className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-orange-600 mr-2" />
+          <span className="font-bold text-gray-800 text-lg hidden sm:inline">
+            Resume Mate AI
+          </span>
+
+          <div onClick={() => setIsCollapsed(!isCollapsed)}>
+            {isCollapsed ? (
+                <ChevronRight className="h-4 w-4 text-orange-600" />
+              ) : (
+                <ChevronLeft className="h-4 w-4 text-orange-600" />
+              )}
+          </div>
+        </div>
+
+         {/* <div
+            className={cn(
+              "flex h-16 items-center border-b px-4 bg-orange-50",
+              isCollapsed ? "justify-center" : "justify-between"
+            )}
+          >
+            {!isCollapsed && (
+              <Link href="/" className="flex items-center">
+                <FileText className="h-6 w-6 text-orange-600 mr-2" />
+                <h1 className="text-lg font-bold text-gray-800">
+                  Resume Mate AI
+                </h1>
+              </Link>
+            )}
+            {isCollapsed && <FileText className="h-6 w-6 text-orange-600" />}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className={cn(
+                "p-0 h-8 w-8 text-gray-600 hover:text-orange-600 hover:bg-orange-100",
+                isCollapsed ? "ml-0" : "ml-2"
+              )}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div> */}
+        <div className="flex items-center gap-4">
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg shadow hover:shadow-md transition relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                  aria-label="User menu"
+                >
+                  {user.user_metadata?.full_name?.[0]?.toUpperCase() ||
+                    user.email?.[0]?.toUpperCase() ||
+                    "U"}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40 mt-2">
+                <DropdownMenuItem
+                  className="text-red-600 cursor-pointer hover:bg-orange-50"
+                  onClick={() => {
+                    window.location.href = "/auth/logout";
+                  }}
+                >
+                  Log Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </div>
+
       {/* Mobile Header - Always visible on mobile and small screens */}
       <header className="border-b sticky top-0 z-40 bg-white shadow-sm lg:hidden">
         <div className="flex h-16 items-center px-4 justify-between">
           <div className="flex items-center">
             <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-700 hover:text-orange-600">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 hover:text-orange-600"
+                >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -112,11 +202,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <SheetContent side="left" className="p-0 w-[250px] bg-white">
                 <div className="flex h-full flex-col">
                   <div className="flex items-center justify-between h-16 border-b px-4 bg-orange-50">
-                    <Link href="/" className="flex items-center" onClick={() => setIsMobileOpen(false)}>
+                    <Link
+                      href="/"
+                      className="flex items-center"
+                      onClick={() => setIsMobileOpen(false)}
+                    >
                       <FileText className="h-6 w-6 text-orange-600 mr-2" />
-                      <h1 className="text-xl font-bold text-gray-800">Resume Mate AI</h1>
+                      <h1 className="text-xl font-bold text-gray-800">
+                        Resume Mate AI
+                      </h1>
                     </Link>
-                    <Button variant="ghost" size="icon" onClick={() => setIsMobileOpen(false)} className="text-gray-700 hover:text-orange-600">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="text-gray-700 hover:text-orange-600"
+                    >
                       <X className="h-5 w-5" />
                     </Button>
                   </div>
@@ -124,9 +225,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <ul className="space-y-2 px-2">
                       {navItems.map((item) => (
                         <li key={item.href}>
-                          <Link href={item.href} onClick={() => setIsMobileOpen(false)}>
+                          <Link
+                            href={item.href}
+                            onClick={() => setIsMobileOpen(false)}
+                          >
                             <Button
-                              variant={pathname === item.href ? "secondary" : "ghost"}
+                              variant={
+                                pathname === item.href ? "secondary" : "ghost"
+                              }
                               className={cn(
                                 "w-full justify-start",
                                 pathname === item.href
@@ -157,38 +263,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Desktop Layout */}
       <div className="flex-1 flex">
         {/* Sidebar Navigation - Desktop Only (Hidden on mobile/small screens) */}
-        <aside 
+        <aside
           className={cn(
             "hidden lg:flex h-screen flex-col border-r fixed transition-all duration-300 ease-in-out bg-white shadow-sm",
             isCollapsed ? "w-16" : "w-52"
           )}
         >
-          <div className={cn(
-            "flex h-16 items-center border-b px-4 bg-orange-50",
-            isCollapsed ? "justify-center" : "justify-between"
-          )}>
-            {!isCollapsed && (
-              <Link href="/" className="flex items-center">
-                <FileText className="h-6 w-6 text-orange-600 mr-2" />
-                <h1 className="text-lg font-bold text-gray-800">Resume Mate AI</h1>
-              </Link>
-            )}
-            {isCollapsed && (
-              <FileText className="h-6 w-6 text-orange-600" />
-            )}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className={cn("p-0 h-8 w-8 text-gray-600 hover:text-orange-600 hover:bg-orange-100", isCollapsed ? "ml-0" : "ml-2")}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+         
           <nav className="flex-1 overflow-auto py-4 px-2 bg-white">
             <ul className="space-y-2 px-1">
               <TooltipProvider>
@@ -199,7 +280,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         <TooltipTrigger asChild>
                           <Link href={item.href}>
                             <Button
-                              variant={pathname === item.href ? "secondary" : "ghost"}
+                              variant={
+                                pathname === item.href ? "secondary" : "ghost"
+                              }
                               size="icon"
                               className={cn(
                                 "w-full h-10",
@@ -213,14 +296,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             </Button>
                           </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="right" className="bg-gray-800 text-white">
+                        <TooltipContent
+                          side="right"
+                          className="bg-gray-800 text-white"
+                        >
                           {item.title}
                         </TooltipContent>
                       </Tooltip>
                     ) : (
                       <Link href={item.href}>
                         <Button
-                          variant={pathname === item.href ? "secondary" : "ghost"}
+                          variant={
+                            pathname === item.href ? "secondary" : "ghost"
+                          }
                           className={cn(
                             "w-full justify-start",
                             pathname === item.href
@@ -243,9 +331,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Toggle button for collapsed sidebar - visible on hover (desktop only) */}
         {isCollapsed && (
           <div className="hidden lg:block fixed left-16 top-16 z-50">
-            <Button 
-              variant="secondary" 
-              size="sm" 
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => setIsCollapsed(false)}
               className="h-8 w-8 p-0 rounded-full shadow-md opacity-80 hover:opacity-100 bg-orange-500 hover:bg-orange-600 text-white"
             >
@@ -255,20 +343,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
 
         {/* Main Content - with thin orange-gray margins */}
-        <main className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          isCollapsed ? "lg:pl-16" : "lg:pl-52"
-        )}>
+        <main
+          className={cn(
+            "flex-1 transition-all duration-300 ease-in-out",
+            isCollapsed ? "lg:pl-16" : "lg:pl-52"
+          )}
+        >
           {/* Content wrapper with thin orange-gray colored margins */}
           <div className="w-full flex">
             {/* Thin margin left - orange-gray color */}
             <div className="w-1 bg-orange-100/30"></div>
-            
+
             {/* Main content area */}
-            <div className="flex-1 bg-white">
-              {children}
-            </div>
-            
+            <div className="flex-1 bg-white">{children}</div>
+
             {/* Thin margin right - orange-gray color */}
             <div className="w-1 bg-orange-100/30"></div>
           </div>

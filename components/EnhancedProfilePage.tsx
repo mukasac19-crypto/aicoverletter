@@ -303,7 +303,7 @@ export default function EnhancedProfilePage() {
             <p className="text-gray-600">Manage your account information and preferences</p>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <Badge variant="outline" className="pl-2 pr-2 py-1">
+            {/* <Badge variant="outline" className="pl-2 pr-2 py-1">
               <span className="font-normal text-gray-600 mr-1">Account:</span>
               <span className="text-teal-700">{user?.email}</span>
             </Badge>
@@ -318,7 +318,7 @@ export default function EnhancedProfilePage() {
                   Sign Out
                 </>
               )}
-            </Button>
+            </Button> */}
           </div>
         </div>
       </header>
