@@ -460,8 +460,8 @@ export default function ResumeDashboardPage() {
     <div className="w-full xs:w-auto overflow-x-auto pb-1">
       <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
         <TabsList className="w-[40%] xs:w-auto grid grid-cols-2 xs:inline-flex bg-muted/50">
-          <TabsTrigger value="all" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50">All Resumes</TabsTrigger>
-          <TabsTrigger value="recent" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50">Recent</TabsTrigger>
+          <TabsTrigger value="all" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">All Resumes</TabsTrigger>
+          <TabsTrigger value="recent" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">Recent</TabsTrigger>
         </TabsList>
       </Tabs>
     </div>
