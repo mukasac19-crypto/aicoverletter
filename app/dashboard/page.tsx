@@ -1,9 +1,13 @@
+// /app/dashboard/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useSubscription } from "@/hooks/useSubscription";
+import UsageLimits from "@/components/UsageLimits";
+import LimitedActionButton from "@/components/LimitedActionButton";
 import { 
   FileText, 
   History, 
@@ -18,7 +22,9 @@ import {
   FileIcon,
   ChevronDown,
   MailCheck,
-  Rocket
+  Rocket,
+  Sparkles,
+  TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -29,6 +35,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatDistance } from 'date-fns';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import OnboardingModal from '@/components/OnboardingModal';
+import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,7 +64,7 @@ interface Resume {
   personal_info?: any;
   work_experience?: any;
   source_cv?: string | null;
-  [key: string]: any;  // Allow for additional properties
+  [key: string]: any;
 }
 
 interface Stats {
@@ -66,11 +73,12 @@ interface Stats {
   averageLength: number;
 }
 
-// Filename: app/dashboard/page.tsx
 export default function DashboardPage() {
   const { profile, loading } = useProfile();
   const { toast } = useToast();
   const { user } = useAuth();
+  const router = useRouter();
+  const { tier, getUsage, loading: subLoading } = useSubscription();
   const [hasCVUploaded, setHasCVUploaded] = useState(false);
   const [hasLinkedInConnected, setHasLinkedInConnected] = useState(false);
   const [inProgress, setInProgress] = useState(false);
@@ -92,10 +100,14 @@ export default function DashboardPage() {
     averageLength: 450
   });
 
+  // Get usage data
+  const resumeUsage = getUsage('resumes');
+  const coverLetterUsage = getUsage('coverLetters');
+  const atsUsage = getUsage('atsScans');
+
   // Check onboarding status on initial load
   useEffect(() => {
     if (!isCheckingStatus && onboardingCompleted === false) {
-      // Show onboarding modal if onboarding is not completed
       setShowOnboardingModal(true);
     }
   }, [onboardingCompleted, isCheckingStatus]);
@@ -118,41 +130,36 @@ export default function DashboardPage() {
         setLoadingResumes(true);
         const supabase = createBrowserClient();
         
-        // Calculate start of current month
         const currentDate = new Date();
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const startOfMonthISO = startOfMonth.toISOString();
         
-        // Fetch recent resumes from the current month
         const { data, error } = await supabase
           .from('resumes')
           .select('*')
           .eq('user_id', user.id)
           .or(`created_at.gte.${startOfMonthISO},updated_at.gte.${startOfMonthISO}`)
-          .order('updated_at', { ascending: false, nullsFirst: false }) // FIX: Changed nullsLast to nullsFirst
+          .order('updated_at', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
-          .limit(5); // Increased limit since we're filtering by month
+          .limit(5);
         
         if (error) throw error;
         
-        // Filter out duplicates and format the data
         const formattedResumes = (data || [])
           .filter((resume, index, array) => {
-            // Remove duplicates by id
             return array.findIndex(r => r.id === resume.id) === index;
           })
           .map(resume => {
-            // Create a shorter title for display
             const originalTitle = resume.title || 'Resume';
             const shortTitle = originalTitle.length > 25 ? originalTitle.substring(0, 25) + '...' : originalTitle;
             
             return {
               ...resume,
               title: shortTitle,
-              original_title: originalTitle // Store original for hover tooltip
+              original_title: originalTitle
             };
           })
-          .slice(0, 2); // Show only 2 most recent for dashboard
+          .slice(0, 2);
         
         setRecentResumes(formattedResumes);
       } catch (err) {
@@ -176,42 +183,35 @@ export default function DashboardPage() {
         setLoadingLetters(true);
         const supabase = createBrowserClient();
         
-        // Calculate start of current month
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const startOfMonthISO = startOfMonth.toISOString();
         
-        // Fetch recent cover letters from the current month
         const { data, error } = await supabase
           .from('cover_letters')
           .select('*')
           .eq('user_id', user.id)
           .or(`created_at.gte.${startOfMonthISO},updated_at.gte.${startOfMonthISO}`)
-          .order('updated_at', { ascending: false, nullsFirst: false }) // FIX: Changed nullsLast to nullsFirst
+          .order('updated_at', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
-          .limit(5); // Increased limit since we're filtering by month
+          .limit(5);
         
         if (error) throw error;
         
-        // Format the cover letter data and filter out duplicates
         const formattedLetters: CoverLetter[] = (data || [])
           .filter((letter, index, array) => {
-            // Remove duplicates by id
             return array.findIndex(l => l.id === letter.id) === index;
           })
           .map(letter => {
-            // Use the most recent date between created_at and updated_at
             const createdDate = letter.created_at ? new Date(letter.created_at) : null;
             const updatedDate = letter.updated_at ? new Date(letter.updated_at) : null;
             const mostRecentDate = updatedDate && createdDate 
               ? (updatedDate > createdDate ? updatedDate : createdDate)
               : createdDate || updatedDate || new Date();
             
-            // Create a shorter title for display
             const jobTitle = letter.job_title || 'Position';
             const companyName = letter.company_name || 'Company';
             
-            // Truncate job title and company name if too long
             const shortJobTitle = jobTitle.length > 15 ? jobTitle.substring(0, 15) + '...' : jobTitle;
             const shortCompanyName = companyName.length > 12 ? companyName.substring(0, 12) + '...' : companyName;
             
@@ -226,11 +226,10 @@ export default function DashboardPage() {
               content: letter.content
             };
           })
-          .slice(0, 2); // Show only 2 most recent for dashboard
+          .slice(0, 2);
         
         setRecentLetters(formattedLetters);
         
-        // Fetch statistics
         const { data: statsData, error: statsError } = await supabase
           .from('cover_letters')
           .select('id, created_at, content', { count: 'exact' })
@@ -238,10 +237,8 @@ export default function DashboardPage() {
         
         if (statsError) throw statsError;
         
-        // Calculate statistics
         const total = statsData?.length || 0;
         
-        // Calculate letters created this month
         const now = new Date();
         const thisMonth = statsData?.filter(letter => {
           const letterDate = new Date(letter.created_at || '');
@@ -249,7 +246,6 @@ export default function DashboardPage() {
                  letterDate.getFullYear() === now.getFullYear();
         }).length || 0;
         
-        // Calculate average length
         const totalWords = statsData?.reduce((sum, letter) => {
           const wordCount = letter.content ? letter.content.split(/\s+/).length : 0;
           return sum + wordCount;
@@ -283,12 +279,10 @@ export default function DashboardPage() {
         setLoadingFollowUps(true);
         const supabase = createBrowserClient();
         
-        // Calculate start of current month
         const presentDate = new Date();
         const startOfMonth = new Date(presentDate.getFullYear(), presentDate.getMonth(), 1);
         const startOfMonthISO = startOfMonth.toISOString();
         
-        // Fetch recent follow-up emails from the current month
         const { data, error } = await supabase
           .from('follow_up_emails')
           .select('*')
@@ -299,7 +293,6 @@ export default function DashboardPage() {
         
         if (error) throw error;
         
-        // Format the follow-up email data
         const formattedFollowUps = (data || []).map(email => ({
           id: email.id,
           title: `Follow-Up for ${email.job_title || 'Position'} at ${email.company_name || 'Company'}`,
@@ -329,11 +322,9 @@ export default function DashboardPage() {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       
-      // Simulate upload process
       setInProgress(true);
       
       setTimeout(() => {
-        // Save CV information to local storage
         const cvData = {
           name: selectedFile.name,
           size: selectedFile.size,
@@ -353,7 +344,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
+  if (loading || subLoading) {
     return (
       <div className="flex justify-center items-center min-h-[80vh]">
         <LoadingSpinner />
@@ -366,31 +357,47 @@ export default function DashboardPage() {
       <div className="container px-3 sm:px-6 mx-auto py-4 sm:py-6 max-w-7xl">
         {/* Dashboard Header */}
 
-      <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row gap-4">
-  {/* Resumes Card */}
-  <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
-    <div className="flex items-center gap-3 mb-2">
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
-        <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 2v4M16 2v4M4 10h16"/></svg>
-      </span>
-    </div>
-    <span className="text-3xl font-bold text-orange-600">{recentResumes.length}</span>
-    <div className="text-sm font-medium text-gray-700 tracking-wide">Resumes</div>
-    <div className="text-xs text-gray-400 mt-1">Total uploaded or created</div>
-  </div>
-  {/* Cover Letters Card */}
-  <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
-    <div className="flex items-center gap-3 mb-2">
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
-        <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
-      </span>
-    </div>
-      <span className="text-3xl font-bold text-orange-600">{stats.totalLetters}</span>
+        {/* Usage Overview Section - NEW */}
+        <div className="mb-4 sm:mb-6">
+          <UsageLimits showCard={true} />
+        </div>
 
-    <div className="text-sm font-medium text-gray-700 tracking-wide">Cover Letters</div>
-    <div className="text-xs text-gray-400 mt-1">Total created</div>
-    </div>
-   </div>
+        <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row gap-4">
+          {/* Resumes Card */}
+          <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 2v4M16 2v4M4 10h16"/></svg>
+              </span>
+            </div>
+            <span className="text-3xl font-bold text-orange-600">{recentResumes.length}</span>
+            <div className="text-sm font-medium text-gray-700 tracking-wide">Resumes</div>
+            <div className="text-xs text-gray-400 mt-1">
+              {resumeUsage && !resumeUsage.unlimited ? (
+                <span>{resumeUsage.used} / {resumeUsage.limit} used</span>
+              ) : (
+                <span>Total uploaded or created</span>
+              )}
+            </div>
+          </div>
+          {/* Cover Letters Card */}
+          <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
+              </span>
+            </div>
+            <span className="text-3xl font-bold text-orange-600">{stats.totalLetters}</span>
+            <div className="text-sm font-medium text-gray-700 tracking-wide">Cover Letters</div>
+            <div className="text-xs text-gray-400 mt-1">
+              {coverLetterUsage && !coverLetterUsage.unlimited ? (
+                <span>{coverLetterUsage.used} / {coverLetterUsage.limit} used</span>
+              ) : (
+                <span>Total created</span>
+              )}
+            </div>
+          </div>
+        </div>
         
         {/* Profile Status Alert */}
         {(hasCVUploaded || hasLinkedInConnected) && (
@@ -398,7 +405,7 @@ export default function DashboardPage() {
             <div className="flex items-center">
               <CheckCircle2 className="h-4 sm:h-5 w-4 sm:w-5 text-orange-500 mr-1 sm:mr-2 flex-shrink-0" />
               <AlertDescription className="text-orange-700 py-1">
-               <span className="font-semibold">Profile data ready:</span>{' '}
+                <span className="font-semibold">Profile data ready:</span>{' '}
                 {hasCVUploaded && <span className="mr-2">✓ CV uploaded</span>}
                 {hasLinkedInConnected && <span>✓ LinkedIn connected</span>}
               </AlertDescription>
@@ -406,50 +413,83 @@ export default function DashboardPage() {
           </Alert>
         )}
 
-       
         <section className="mb-4 sm:mb-8 md:flex md:justify-end">
           {/* recents */}
           <div className="w-full h-auto flex flex-col justify-start items-start px-2">
 
-
-           <div className="w-full h-auto flex justify-between px-4">
-           <h3 className="text-gray-800 text-xl font-bold">Rescent Resume</h3>
-           <Link href="/dashboard/resumes">
-                <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
-                  <span className="sr-only sm:not-sr-only sm:inline-block text-xs text-orange-600">View All</span>
-                  <ChevronRight className="h-4 w-4 text-orange-600" />
-                </Button>
-           </Link>
-           </div>
-           
-           <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
-
-           </div>
-            
-           <div className="w-full h-auto flex justify-between px-4">
-              <h3 className="text-gray-800 text-xl font-bold">Rescent Cover Letter</h3>
-
-               <Link href="/dashboard/cover-letters?tab=recent">
+            <div className="w-full h-auto flex justify-between px-4">
+              <h3 className="text-gray-800 text-xl font-bold">Recent Resume</h3>
+              <Link href="/dashboard/resumes">
                 <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
                   <span className="sr-only sm:not-sr-only sm:inline-block text-xs text-orange-600">View All</span>
                   <ChevronRight className="h-4 w-4 text-orange-600" />
                 </Button>
               </Link>
             </div>
-           
-           <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
-
-           </div>
+            
+            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
+              {loadingResumes ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : recentResumes.length > 0 ? (
+                <div className="w-full flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileBadge className="h-4 w-4 text-orange-500" />
+                    <span className="text-sm font-medium truncate max-w-[200px]">
+                      {recentResumes[0].title}
+                    </span>
+                  </div>
+                  <Link href={`/dashboard/resumes/${recentResumes[0].id}`}>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-400">No recent resumes</span>
+              )}
+            </div>
+            
+            <div className="w-full h-auto flex justify-between px-4">
+              <h3 className="text-gray-800 text-xl font-bold">Recent Cover Letter</h3>
+              <Link href="/dashboard/cover-letters?tab=recent">
+                <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
+                  <span className="sr-only sm:not-sr-only sm:inline-block text-xs text-orange-600">View All</span>
+                  <ChevronRight className="h-4 w-4 text-orange-600" />
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
+              {loadingLetters ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : recentLetters.length > 0 ? (
+                <div className="w-full flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-orange-500" />
+                    <span className="text-sm font-medium truncate max-w-[200px]">
+                      {recentLetters[0].title}
+                    </span>
+                  </div>
+                  <Link href={`/dashboard/cover-letters?edit=${recentLetters[0].id}`}>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-400">No recent cover letters</span>
+              )}
+            </div>
 
           </div>
-          {/* quck actions */}
+          {/* quick actions */}
           <div className="w-[20px] h-auto"></div>
-          <Card  className="w-full md:w-[36%] lg:w-[36%] h-[250px] border-t-4 border-t-orange-500 shadow-md overflow-hidden rounded-sm">
+          <Card className="w-full md:w-[36%] lg:w-[36%] h-[250px] border-t-4 border-t-orange-500 shadow-md overflow-hidden rounded-sm">
             <CardHeader className="text-center py-2 sm:py-4">
               <div className="w-full h-auto flex justify-center items-center">
-                      <div className="w-[40px] h-[40px] bg-orange-600 rounded-full flex justify-center items-center p-2">
-                       <Rocket size={30} color="white" />
-                      </div>
+                <div className="w-[40px] h-[40px] bg-orange-600 rounded-full flex justify-center items-center p-2">
+                  <Rocket size={30} color="white" />
+                </div>
               </div>
               <CardTitle className="text-lg sm:text-2xl">Quick Actions</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -469,239 +509,68 @@ export default function DashboardPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center" className="w-48 sm:w-56">
-                      <Link href="/dashboard/cover-letters?tab=create" className="block w-full">
-                        <DropdownMenuItem className="cursor-pointer py-2 sm:py-3 flex items-center text-xs sm:text-sm">
+                      <DropdownMenuItem asChild className="cursor-pointer py-2 sm:py-3">
+                        <LimitedActionButton
+                          feature="coverLetters"
+                          featureName="Cover Letter"
+                          onAllowed={() => router.push('/dashboard/cover-letters?tab=create')}
+                          variant="ghost"
+                          className="w-full justify-start text-xs sm:text-sm"
+                        >
                           <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-orange-500" />
                           <span>Cover Letter</span>
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href="/dashboard/resumes/new" className="block w-full">
-                        <DropdownMenuItem className="cursor-pointer py-2 sm:py-3 flex items-center text-xs sm:text-sm">
+                          {coverLetterUsage && !coverLetterUsage.unlimited && (
+                            <span className="ml-auto text-[10px] text-gray-500">
+                              {coverLetterUsage.used}/{coverLetterUsage.limit}
+                            </span>
+                          )}
+                        </LimitedActionButton>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer py-2 sm:py-3">
+                        <LimitedActionButton
+                          feature="resumes"
+                          featureName="Resume"
+                          onAllowed={() => router.push('/dashboard/resumes/new')}
+                          variant="ghost"
+                          className="w-full justify-start text-xs sm:text-sm"
+                        >
                           <FileBadge className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-orange-500" />
                           <span>Resume</span>
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href="/dashboard/cover-letters?tab=follow-up" className="block w-full">
-                        <DropdownMenuItem className="cursor-pointer py-2 sm:py-3 flex items-center text-xs sm:text-sm">
+                          {resumeUsage && !resumeUsage.unlimited && (
+                            <span className="ml-auto text-[10px] text-gray-500">
+                              {resumeUsage.used}/{resumeUsage.limit}
+                            </span>
+                          )}
+                        </LimitedActionButton>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer py-2 sm:py-3 text-xs sm:text-sm">
+                        <Link href="/dashboard/cover-letters?tab=follow-up" className="flex items-center w-full">
                           <MailCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-orange-500" />
                           <span>Follow-Up Email</span>
-                        </DropdownMenuItem>
-                      </Link>
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               </div>
+              {tier === 'FREE' && (
+                <div className="mt-3 text-center">
+                  <Link href="/pricing">
+                    <Button variant="link" size="sm" className="text-xs text-orange-600">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Upgrade for unlimited access
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </CardContent>
           </Card>
         </section>
 
-
-
-       {/* Main Content Grid */}
-       <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-          {/* Recent Cover Letters Section */}
-          {/* <Card className="border-l-4 border-l-orange-400 shadow-md h-fit">
-            <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-base sm:text-lg">Recent Cover Letters</CardTitle>
-                <CardDescription className="text-xs">Latest creations</CardDescription>
-              </div>
-              <Link href="/dashboard/cover-letters?tab=recent">
-                <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
-                  <span className="sr-only sm:not-sr-only sm:inline-block text-xs">View All</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent className="p-2 sm:p-4">
-              {loadingLetters ? (
-                <div className="flex justify-center py-4">
-                  <LoadingSpinner />
-                </div>
-              ) : recentLetters.length > 0 ? (
-                <div className="space-y-2">
-                  {recentLetters.map((letter) => {
-                    // Determine if it was recently created or edited
-                    const createdDate = letter.created_at ? new Date(letter.created_at) : null;
-                    const updatedDate = letter.updated_at ? new Date(letter.updated_at) : null;
-                    const displayDate = new Date(letter.date);
-                    
-                    // Check if it was edited (updated date is different from created date)
-                    const wasEdited = updatedDate && createdDate && 
-                      Math.abs(updatedDate.getTime() - createdDate.getTime()) > 60000; // More than 1 minute difference
-                    
-                    // Calculate days ago
-                    const daysAgo = Math.floor((new Date().getTime() - displayDate.getTime()) / (1000 * 60 * 60 * 24));
-                    const timeAgoText = daysAgo === 0 ? 'Today' : 
-                                      daysAgo === 1 ? 'Yesterday' : 
-                                      `${daysAgo} days ago`;
-                    
-                    return (
-                      <div key={letter.id} className="p-2 sm:p-3 rounded-md hover:bg-orange-50 transition-colors border border-gray-100">
-                        <div className="flex items-start justify-between gap-1 sm:gap-2">
-                          <div className="flex items-start flex-1 min-w-0">
-                            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
-                            <div className="min-w-0">
-                              <p 
-                                className="font-medium text-xs sm:text-sm truncate" 
-                                title={`${letter.job_title || 'Position'} at ${letter.company_name || 'Company'}`}
-                              >
-                                {letter.title}
-                              </p>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <span>{timeAgoText}</span>
-                                {wasEdited && (
-                                  <span className="bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                                    Edited
-                                  </span>
-                                )}
-                                {daysAgo === 0 && (
-                                  <span className="bg-green-100 text-green-600 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                                    New
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Link href={`/dashboard/cover-letters?edit=${letter.id}`}>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0">
-                                <span className="sr-only">Edit</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                              </Button>
-                            </Link>
-                            <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0">
-                              <span className="sr-only">Download</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-4 sm:py-8 bg-orange-50/50 rounded-lg border border-dashed border-orange-200">
-                  <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-orange-400 mx-auto mb-1 sm:mb-2" />
-                  <h3 className="text-xs sm:text-sm font-medium mb-1">No recent cover letters</h3>
-                  <p className="text-xs text-gray-500 mb-2">No cover letters created or edited this month</p>
-                  <Link href="/dashboard/cover-letters?tab=create">
-                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
-                      <Plus className="h-3 w-3 mr-1" />
-                      Create Letter
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card> */}
-
-          {/* Recent Resumes Section */}
-          {/* <Card className="border-l-4 border-l-orange-400 shadow-md h-fit">
-            <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-base sm:text-lg">Recent Resumes</CardTitle>
-                <CardDescription className="text-xs">Latest creations</CardDescription>
-              </div>
-              <Link href="/dashboard/resumes">
-                <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
-                  <span className="sr-only sm:not-sr-only sm:inline-block text-xs">View All</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </CardHeader> */}
-            {/* <CardContent className="p-2 sm:p-4">
-              {loadingResumes ? (
-                <div className="flex justify-center py-4">
-                  <LoadingSpinner />
-                </div>
-              ) : recentResumes.length > 0 ? (
-                <div className="space-y-2">
-                  {recentResumes.map((resume) => {
-                    // Determine if it was recently created or edited
-                    const createdDate = resume.created_at ? new Date(resume.created_at) : null;
-                    const updatedDate = resume.updated_at ? new Date(resume.updated_at) : null;
-                    
-                    // Use the most recent date for display
-                    const mostRecentDate = updatedDate && createdDate 
-                      ? (updatedDate > createdDate ? updatedDate : createdDate)
-                      : updatedDate || createdDate || new Date();
-                    
-                    // Check if it was edited (updated date is different from created date)
-                    const wasEdited = updatedDate && createdDate && 
-                      Math.abs(updatedDate.getTime() - createdDate.getTime()) > 60000; // More than 1 minute difference
-                    
-                    // Calculate days ago
-                    const daysAgo = Math.floor((new Date().getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
-                    const timeAgoText = daysAgo === 0 ? 'Today' : 
-                                      daysAgo === 1 ? 'Yesterday' : 
-                                      `${daysAgo} days ago`;
-                    
-                    return (
-                      <div key={resume.id} className="p-2 sm:p-3 rounded-md hover:bg-orange-50 transition-colors border border-gray-100">
-                        <div className="flex items-start justify-between gap-1 sm:gap-2">
-                          <div className="flex items-start flex-1 min-w-0">
-                            <FileBadge className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 mt-0.5 mr-1 sm:mr-2 flex-shrink-0" />
-                            <div className="min-w-0">
-                              <p 
-                                className="font-medium text-xs sm:text-sm truncate" 
-                                title={resume.original_title || resume.title}
-                              >
-                                {resume.title}
-                              </p>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <span>{timeAgoText}</span>
-                                {wasEdited && (
-                                  <span className="bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                                    Edited
-                                  </span>
-                                )}
-                                {daysAgo === 0 && (
-                                  <span className="bg-green-100 text-green-600 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                                    New
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Link href={`/dashboard/resumes/${resume.id}`}>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0">
-                                <span className="sr-only">Edit</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                              </Button>
-                            </Link>
-                            <Link href={`/dashboard/resumes/${resume.id}/preview`}>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0">
-                                <span className="sr-only">Preview</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                              </Button>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-4 sm:py-8 bg-orange-50/50 rounded-lg border border-dashed border-orange-200">
-                  <FileBadge className="h-8 w-8 sm:h-10 sm:w-10 text-orange-400 mx-auto mb-1 sm:mb-2" />
-                  <h3 className="text-xs sm:text-sm font-medium mb-1">No recent resumes</h3>
-                  <p className="text-xs text-gray-500 mb-2">No resumes created or updated this month</p>
-                  <Link href="/dashboard/resumes/new">
-                    <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
-                      <Plus className="h-3 w-3 mr-1" />
-                      Create Resume
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent> */}
-          {/* </Card> */}
-
-          {/* Recent Follow-Up Emails Section - Changed to half-width */}
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+          {/* Recent Follow-Up Emails Section */}
           <Card className="border-t-orange-400 shadow-sm h-[350px]">
-
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base sm:text-lg">Recent Follow-Ups</CardTitle>
@@ -741,7 +610,7 @@ export default function DashboardPage() {
                           </Link>
                           <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0">
                             <span className="sr-only">Copy</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                           </Button>
                         </div>
                       </div>
@@ -754,37 +623,74 @@ export default function DashboardPage() {
                   <h3 className="text-xs sm:text-sm font-medium mb-1">No follow-ups yet</h3>
                   <p className="text-xs text-gray-500 mb-2">No follow-up emails created this month</p>
                   <Link href="/dashboard/cover-letters?tab=follow-up">
-
                     <Button size="sm" className="mt-1 sm:mt-2 text-xs h-7 bg-orange-600 hover:bg-orange-700">
                       <Plus className="h-3 w-3 mr-1" />
                       Create Follow-Up
                     </Button>
-
                   </Link>
                 </div>
               )}
             </CardContent>
           </Card>
           
-          {/* Activity Stats Card - Changed to half-width */}
+          {/* Activity Stats Card */}
           <Card className="border-t-orange-400 shadow-sm h-[350px]">
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100">
-              <CardTitle className="text-base sm:text-lg">Your Activity</CardTitle>
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-orange-600" />
+                Your Activity
+              </CardTitle>
               <CardDescription className="text-xs">Application stats and metrics</CardDescription>
             </CardHeader>
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col gap-3">
                 <div className="bg-orange-50 border border-orange-100 p-3 rounded-lg transition-transform hover:shadow-md">
-                  <p className="text-xl font-bold text-orange-600">{stats.totalLetters}</p>
-                  <p className="text-xs text-gray-600">Total Letters</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xl font-bold text-orange-600">{stats.totalLetters}</p>
+                      <p className="text-xs text-gray-600">Total Letters</p>
+                    </div>
+                    {coverLetterUsage && !coverLetterUsage.unlimited && (
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Monthly limit</p>
+                        <p className="text-sm font-medium text-orange-600">
+                          {coverLetterUsage.used} / {coverLetterUsage.limit}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="bg-orange-50 border border-orange-100 p-3 rounded-lg transition-transform hover:shadow-md">
-                  <p className="text-xl font-bold text-orange-600">{recentResumes.length}</p>
-                  <p className="text-xs text-gray-600">Total Resumes</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xl font-bold text-orange-600">{recentResumes.length}</p>
+                      <p className="text-xs text-gray-600">Total Resumes</p>
+                    </div>
+                    {resumeUsage && !resumeUsage.unlimited && (
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Monthly limit</p>
+                        <p className="text-sm font-medium text-orange-600">
+                          {resumeUsage.used} / {resumeUsage.limit}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="bg-purple-50 border border-purple-100 p-3 rounded-lg transition-transform hover:shadow-md">
-                  <p className="text-xl font-bold text-orange-600">{recentFollowUps.length}</p>
-                  <p className="text-xs text-gray-600">Total Follow-Ups</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xl font-bold text-orange-600">{recentFollowUps.length}</p>
+                      <p className="text-xs text-gray-600">Total Follow-Ups</p>
+                    </div>
+                    {atsUsage && !atsUsage.unlimited && (
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">ATS Scans</p>
+                        <p className="text-sm font-medium text-purple-600">
+                          {atsUsage.used} / {atsUsage.limit}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>

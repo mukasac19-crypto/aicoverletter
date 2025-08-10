@@ -1,5 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\ResumeBuilder.tsx
-
+// /components/ResumeBuilder.tsx
 "use client";
 
 import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
@@ -18,6 +17,8 @@ import { createBrowserClient } from "@/lib/supabase";
 import { ImportGuide } from '@/components/ImportGuide';
 import ResumeTailoringModal from './ResumeTailoringModal';
 import TemplateSelectionModal from './TemplateSelectionModal';
+import { useSubscription } from "@/hooks/useSubscription";
+import LimitedActionButton from '@/components/LimitedActionButton';
 import {
   FileText, Plus, Trash2, Clock, Search, Filter, Upload, Save, Download, Copy, Eye, CheckCircle2,
   AlertTriangle, X, Info, MoveUp, MoveDown, Folder, FileBadge, Palette, ChevronDown, ZoomIn, ZoomOut,
@@ -97,6 +98,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   const [exportResult, setExportResult] = useState<ExportResult | null>(null);
 
   const { user, loading: authLoading } = useAuth();
+  const { canAccess, getUsage } = useSubscription();
 
   const router = useRouter();
   const params = useParams();
@@ -107,9 +109,11 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
   const resumeId = initialResumeId || (params.id as string);
 
+  // Get ATS scan usage for display
+  const atsUsage = getUsage('atsScans');
+  const canAccessATS = canAccess('atsScans');
+
   // *** FIX #1: SYNCHRONIZE WITH INCOMING DATA ***
-  // This hook ensures the component's internal state updates
-  // when the `initialData` prop from the parent page changes.
   useEffect(() => {
     if (initialData) {
       console.log("ResumeBuilder: initialData prop received, updating internal state.", initialData);
@@ -127,8 +131,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   }, []);
 
   // *** FIX #2: SIMPLIFY INITIALIZATION LOGIC ***
-  // This hook no longer fetches the resume (the parent page does that).
-  // It now waits for `resumeData` to be populated, then fetches templates.
   useEffect(() => {
     const initializeComponent = async () => {
       if (authLoading) {
@@ -138,9 +140,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       }
       
       if (!resumeData) {
-        // If resumeData is not yet available from the parent, wait.
-        // The parent will pass it via `initialData`, triggering the first useEffect.
-        setIsLoading(true); // Keep showing loading until we have data
+        setIsLoading(true);
         return;
       }
 
@@ -167,7 +167,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
           if (foundTemplate) {
             setSelectedTemplate(foundTemplate);
           } else {
-            // If no valid template ID on resume, default to the first template
             setSelectedTemplate(templates[0]);
             setResumeData(prev => prev ? { ...prev, templateId: templates[0].id } : null);
           }
@@ -183,7 +182,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
     initializeComponent();
   }, [resumeData, authLoading, supabase, toast]);
-
 
   const updateSection = <K extends keyof ResumeData>(
     section: K,
@@ -503,11 +501,24 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 {resumeData.title || 'Untitled Resume'}
               </h1>
               {resumeId && (
-                <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)} className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white">
-                  <ScanSearch className="h-3.5 w-3.5 mr-1" /> ATS Scan
-                </Button>
+                <LimitedActionButton
+                  feature="atsScans"
+                  featureName="ATS Scan"
+                  variant="outline"
+                  size="sm"
+                  onAllowed={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)}
+                  className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white"
+                >
+                  <ScanSearch className="h-3.5 w-3.5 mr-1" />
+                  ATS Scan
+                  {atsUsage && !atsUsage.unlimited && (
+                    <span className="ml-1 text-[10px] opacity-80">
+                      ({atsUsage.used}/{atsUsage.limit})
+                    </span>
+                  )}
+                </LimitedActionButton>
               )}
-            </div>
+              </div>
             {!isMobileView && (
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" onClick={() => setShowTemplateModal(true)} className="h-9 bg-white border-gray-300 text-gray-700 hover:bg-gray-50">

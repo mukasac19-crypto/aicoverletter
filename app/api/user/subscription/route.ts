@@ -1,3 +1,4 @@
+// app/api/user/subscription/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
       interval: subscription.interval,
       currentPeriodEnd: subscription.current_period_end,
       cancelAtPeriodEnd: subscription.cancel_at_period_end || 
-                         (stripeSubscription?.cancel_at_period_end || false),
+                          (stripeSubscription?.cancel_at_period_end || false),
       status: subscription.status,
     };
     
@@ -81,13 +82,41 @@ export async function GET(request: NextRequest) {
 
 /**
  * Map subscription plan ID to subscription tier
+ * This handles both simple plan names and Stripe price IDs
  */
 function mapPlanIdToTier(planId: string): SubscriptionTier {
-  // Map from plan ID to our tier enum
-  const planTierMap: Record<string, SubscriptionTier> = {
+  // First check if it's a simple plan name
+  const simplePlanMap: Record<string, SubscriptionTier> = {
+    'free': 'FREE',
     'pro': 'PRO',
     'business': 'BUSINESS',
   };
   
-  return planTierMap[planId] || 'FREE';
+  if (simplePlanMap[planId.toLowerCase()]) {
+    return simplePlanMap[planId.toLowerCase()];
+  }
+  
+  // Create a reverse map of Stripe price IDs to tiers
+  const stripePriceToTier: Record<string, SubscriptionTier> = {};
+  
+  Object.entries(SUBSCRIPTION_PLANS).forEach(([tier, plan]) => {
+    if (plan.stripePriceIds.monthly) {
+      stripePriceToTier[plan.stripePriceIds.monthly] = tier as SubscriptionTier;
+    }
+    if (plan.stripePriceIds.quarterly) {
+      stripePriceToTier[plan.stripePriceIds.quarterly] = tier as SubscriptionTier;
+    }
+    if (plan.stripePriceIds.annually) {
+      stripePriceToTier[plan.stripePriceIds.annually] = tier as SubscriptionTier;
+    }
+  });
+  
+  // Check if the planId matches any Stripe price ID
+  if (stripePriceToTier[planId]) {
+    return stripePriceToTier[planId];
+  }
+  
+  // Default to FREE if no match found
+  console.warn(`Unknown plan ID: ${planId}, defaulting to FREE tier`);
+  return 'FREE';
 }

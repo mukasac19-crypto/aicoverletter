@@ -1,19 +1,16 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\JobDescriptionInput.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Link as LinkIcon, Info, PenTool, CheckCircle2 } from "lucide-react";
+import { FileText, Link as LinkIcon, PenTool, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import LimitedActionButton from "@/components/LimitedActionButton";
 
-// Filename: components/JobDescriptionInput.tsx
 interface JobDescriptionInputProps {
   onSubmit: (description: string, tone: string) => void;
   cvUploaded?: boolean;
@@ -37,7 +34,6 @@ export default function JobDescriptionInput({
 }: JobDescriptionInputProps) {
   const [description, setDescription] = useState(initialJobDescription);
   const [jobUrl, setJobUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("paste");
   const [selectedTone, setSelectedTone] = useState("professional");
 
@@ -48,11 +44,10 @@ export default function JobDescriptionInput({
     }
   }, [initialJobDescription]);
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    // Pass both the description/URL and the selected tone
+  const handleSubmit = () => {
+    // The LimitedActionButton will handle the loading state.
+    // We just need to pass the form data to the parent component.
     onSubmit(activeTab === "paste" ? description : jobUrl, selectedTone);
-    setIsLoading(false);
   };
 
   return (
@@ -74,17 +69,17 @@ export default function JobDescriptionInput({
             {isPrePopulated ? "Review Description" : "Paste Description"}
           </TabsTrigger>
           {/*
-<TabsTrigger value="url">
-  <LinkIcon className="w-4 h-4 mr-2" />
-  Job URL
-</TabsTrigger>
-*/}
+            <TabsTrigger value="url">
+              <LinkIcon className="w-4 h-4 mr-2" />
+              Job URL
+            </TabsTrigger>
+          */}
         </TabsList>
 
         <TabsContent value="paste">
           <Textarea
             placeholder={isPrePopulated ? "Review the auto-loaded job description..." : "Paste the job description here..."}
-              className="min-h-[200px] mb-4 focus-visible:border-orange-600"
+            className="min-h-[200px] mb-4 focus-visible:border-orange-600"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -101,7 +96,7 @@ export default function JobDescriptionInput({
         </TabsContent>
       </Tabs>
 
-      {/* Tone selection - moved from settings page */}
+      {/* Tone selection */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
           <PenTool className="h-4 w-4 text-muted-foreground" />
@@ -119,20 +114,20 @@ export default function JobDescriptionInput({
             <SelectItem value="confident">Confident</SelectItem>
           </SelectContent>
         </Select>
-        
       </div>
 
-      <Button
-        onClick={handleSubmit}
-        disabled={isLoading || (activeTab === "paste" ? !description : !jobUrl)}
+      <LimitedActionButton
+        feature="coverLetters"
+        featureName="Cover Letter"
+        onAllowed={handleSubmit}
+        disabled={(activeTab === "paste" ? !description : !jobUrl)}
         className="w-full bg-orange-700"
       >
-        {isLoading ? "Analyzing..." : isPrePopulated ? "Continue with Job Details" : "Generate"}
-      </Button>
+        {isPrePopulated ? "Continue with Job Details" : "Generate"}
+      </LimitedActionButton>
 
       {!cvUploaded && !linkedInConnected && (
         <p className="text-center text-sm text-muted-foreground mt-4">
-         
         </p>
       )}
     </div>

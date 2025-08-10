@@ -1,4 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\webhook\route.js
+// /app/api/webhook/route.js
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
@@ -219,7 +219,29 @@ async function handleInvoicePaymentFailed(invoice) {
 
 async function storeSubscription(subscription, userId, tier, interval) {
   const item = subscription.items.data[0];
-  const planId = tier;
+  
+  // The tier from metadata should already be 'PRO' or 'BUSINESS'
+  // But let's add validation to be safe
+  let planId = tier ? tier.toLowerCase() : 'free';
+  
+  // Additional validation - if somehow a price ID got passed as tier
+  const priceIdToPlan = {
+    'price_1RK5xpBh2Msdef2rOP2A93hO': 'pro', // Monthly Pro
+    'price_1RK6FHBh2Msdef2rzti7qMbN': 'pro', // Annual Pro
+    // Add other price IDs here as needed
+  };
+  
+  // If the tier is a price ID, convert it to plan name
+  if (priceIdToPlan[tier]) {
+    planId = priceIdToPlan[tier];
+  } else if (tier && tier.startsWith('price_')) {
+    // If it's a price ID we don't recognize, default to 'pro'
+    console.warn(`Unknown price ID passed as tier: ${tier}, defaulting to 'pro'`);
+    planId = 'pro';
+  }
+  
+  // Ensure planId is lowercase to match your mapPlanIdToTier function
+  planId = planId.toLowerCase();
   
   const subscriptionInterval = interval || getIntervalFromStripeInterval(item.plan.interval);
   
@@ -231,7 +253,6 @@ async function storeSubscription(subscription, userId, tier, interval) {
       .eq('stripe_subscription_id', subscription.id)
       .single();
     
-    const startTime = subscription.start_date * 1000;
     const currentPeriodStart = subscription.current_period_start * 1000;
     const currentPeriodEnd = subscription.current_period_end * 1000;
     
@@ -246,11 +267,13 @@ async function storeSubscription(subscription, userId, tier, interval) {
     };
     
     if (existingSubscription) {
+      console.log(`Updating existing subscription for user ${userId} with plan_id: ${planId}`);
       await supabase
         .from('subscriptions')
         .update(subscriptionData)
         .eq('id', existingSubscription.id);
     } else {
+      console.log(`Creating new subscription for user ${userId} with plan_id: ${planId}`);
       await supabase
         .from('subscriptions')
         .insert({
@@ -261,6 +284,8 @@ async function storeSubscription(subscription, userId, tier, interval) {
           ...subscriptionData
         });
     }
+    
+    console.log(`Subscription stored/updated - User: ${userId}, Plan: ${planId}, Status: ${subscription.status}`);
   } catch (error) {
     console.error('Error storing subscription:', error);
     throw error;
@@ -272,9 +297,25 @@ async function updateSubscription(subscription, userId) {
     const currentPeriodStart = subscription.current_period_start * 1000;
     const currentPeriodEnd = subscription.current_period_end * 1000;
     
+    // Get the price ID from the subscription
+    const priceId = subscription.items.data[0]?.price?.id;
+    
+    // Map price ID to plan_id
+    const priceIdToPlan = {
+      'price_1RK5xpBh2Msdef2rOP2A93hO': 'pro', // Monthly Pro
+      'price_1RK6FHBh2Msdef2rzti7qMbN': 'pro', // Annual Pro
+      // Add other price IDs here as needed
+    };
+    
+    let planId = 'free'; // Default
+    if (priceIdToPlan[priceId]) {
+      planId = priceIdToPlan[priceId];
+    }
+    
     await supabase
       .from('subscriptions')
       .update({
+        plan_id: planId,
         status: subscription.status,
         current_period_start: new Date(currentPeriodStart).toISOString(),
         current_period_end: new Date(currentPeriodEnd).toISOString(),
@@ -283,6 +324,8 @@ async function updateSubscription(subscription, userId) {
       })
       .eq('user_id', userId)
       .eq('stripe_subscription_id', subscription.id);
+      
+    console.log(`Subscription updated for user ${userId} with plan_id: ${planId}`);
   } catch (error) {
     console.error('Error updating subscription:', error);
     throw error;

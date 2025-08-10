@@ -1,5 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\resumes\[id]\page.tsx
-
+// /app/dashboard/resumes/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscription } from '@/hooks/useSubscription';
 import ResumeBuilder from '@/components/ResumeBuilder';
+import LimitedActionButton from '@/components/LimitedActionButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -51,8 +52,13 @@ export default function EditResumePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const supabase = createBrowserClient();
+  const { canAccess, getUsage } = useSubscription();
 
   const resumeId = params.id as string;
+
+  // Check if user can access ATS scanning
+  const canAccessATS = canAccess('atsScans');
+  const atsUsage = getUsage('atsScans');
 
   useEffect(() => {
     // We only fetch the data once when the user is available.
@@ -149,15 +155,22 @@ export default function EditResumePage() {
                   <FileSpreadsheet className="h-5 w-5 text-orange-600" />
                   {resume?.title || 'Resume'}
                 </h1>
-                <Button
+                <LimitedActionButton
+                  feature="atsScans"
+                  featureName="ATS Scan"
                   variant="outline"
                   size="sm"
-                  onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)}
+                  onAllowed={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)}
                   className="ml-auto sm:ml-0 h-7 bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 hover:from-violet-600 hover:to-purple-700 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105"
                 >
                   <ScanSearch className="h-3.5 w-3.5 mr-1.5" />
                   <span className="text-xs font-medium">ATS Scan</span>
-                </Button>
+                  {atsUsage && !atsUsage.unlimited && (
+                    <span className="ml-1 text-[10px] opacity-90">
+                      ({atsUsage.used}/{atsUsage.limit})
+                    </span>
+                  )}
+                </LimitedActionButton>
               </div>
             </div>
           </div>
