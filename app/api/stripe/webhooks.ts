@@ -142,14 +142,13 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  // FIX: Cast invoice to 'any' to bypass the incorrect type definition and access the 'subscription' property.
-  const typedInvoice = invoice as any;
-  const subscriptionId = typeof typedInvoice.subscription === 'string' ? typedInvoice.subscription : null;
-  
-  if (!subscriptionId || !invoice.customer) {
-    console.log('No subscription or customer in invoice');
-    return;
-  }
+  // Re-introducing 'as any' to bypass incorrect type definition.
+  const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : null;
+  
+  if (!subscriptionId || !invoice.customer) {
+    console.log('No subscription or customer in invoice');
+    return;
+  }
   
   const customerId = invoice.customer as string;
   
@@ -185,14 +184,13 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  // FIX: Cast invoice to 'any' here as well.
-  const typedInvoice = invoice as any;
-  const subscriptionId = typeof typedInvoice.subscription === 'string' ? typedInvoice.subscription : null;
-  
-  if (!subscriptionId || !invoice.customer) {
-    console.log('No subscription or customer in invoice');
-    return;
-  }
+  // Re-introducing 'as any' to bypass incorrect type definition.
+  const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : null;
+  
+  if (!subscriptionId || !invoice.customer) {
+    console.log('No subscription or customer in invoice');
+    return;
+  }
   
   const customerId = invoice.customer as string;
   
@@ -222,87 +220,87 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function storeSubscription(
-  subscription: Stripe.Subscription,
-  userId: string,
-  tier: string,
-  interval?: string
+  subscription: Stripe.Subscription,
+  userId: string,
+  tier: string,
+  interval?: string
 ) {
-  // FIX: Cast subscription to 'any' to bypass the type collision with your local 'Subscription' type.
+  // Re-introducing 'as any' to bypass type collision.
   const sub = subscription as any;
-  const item = sub.items.data[0];
-  const planId = tier;
-  
-  const subscriptionInterval = interval || getIntervalFromStripeInterval(item.plan.interval);
-  
-  try {
-    const { data: existingSubscription } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('stripe_subscription_id', sub.id)
-      .single();
-    
-    const startTime = sub.start_date * 1000;
-    const currentPeriodStart = sub.current_period_start * 1000;
-    const currentPeriodEnd = sub.current_period_end * 1000;
-    
-    const subscriptionData = {
-      plan_id: planId,
-      status: sub.status,
-      current_period_start: new Date(currentPeriodStart).toISOString(),
-      current_period_end: new Date(currentPeriodEnd).toISOString(),
-      cancel_at_period_end: sub.cancel_at_period_end,
-      interval: subscriptionInterval,
-      updated_at: new Date().toISOString(),
-    };
-    
-    if (existingSubscription) {
-      await supabase
-        .from('subscriptions')
-        .update(subscriptionData)
-        .eq('id', existingSubscription.id);
-    } else {
-      await supabase
-        .from('subscriptions')
-        .insert({
-          user_id: userId,
-          stripe_customer_id: sub.customer as string,
-          stripe_subscription_id: sub.id,
-          created_at: new Date().toISOString(),
-          ...subscriptionData
-        });
-    }
-  } catch (error) {
-    console.error('Error storing subscription:', error);
-    throw error;
-  }
+  const item = sub.items.data[0];
+  const planId = tier;
+  
+  const subscriptionInterval = interval || getIntervalFromStripeInterval(item.plan.interval);
+  
+  try {
+    const { data: existingSubscription } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('stripe_subscription_id', sub.id)
+      .single();
+    
+    const startTime = sub.start_date * 1000;
+    const currentPeriodStart = sub.current_period_start * 1000;
+    const currentPeriodEnd = sub.current_period_end * 1000;
+    
+    const subscriptionData = {
+      plan_id: planId,
+      status: sub.status,
+      current_period_start: new Date(currentPeriodStart).toISOString(),
+      current_period_end: new Date(currentPeriodEnd).toISOString(),
+      cancel_at_period_end: sub.cancel_at_period_end,
+      interval: subscriptionInterval,
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (existingSubscription) {
+      await supabase
+        .from('subscriptions')
+        .update(subscriptionData)
+        .eq('id', existingSubscription.id);
+    } else {
+      await supabase
+        .from('subscriptions')
+        .insert({
+          user_id: userId,
+          stripe_customer_id: sub.customer as string,
+          stripe_subscription_id: sub.id,
+          created_at: new Date().toISOString(),
+          ...subscriptionData
+        });
+    }
+  } catch (error) {
+    console.error('Error storing subscription:', error);
+    throw error;
+  }
 }
 
 async function updateSubscription(
-  subscription: Stripe.Subscription,
-  userId: string
+  subscription: Stripe.Subscription,
+  userId: string
 ) {
-  // FIX: Cast subscription to 'any' here as well to resolve the type collision.
+  // Re-introducing 'as any' to bypass type collision.
   const sub = subscription as any;
-  try {
-    const currentPeriodStart = sub.current_period_start * 1000;
-    const currentPeriodEnd = sub.current_period_end * 1000;
-    
-    await supabase
-      .from('subscriptions')
-      .update({
-        status: sub.status,
-        current_period_start: new Date(currentPeriodStart).toISOString(),
-        current_period_end: new Date(currentPeriodEnd).toISOString(),
-        cancel_at_period_end: sub.cancel_at_period_end,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', userId)
-      .eq('stripe_subscription_id', sub.id);
-  } catch (error) {
-    console.error('Error updating subscription:', error);
-    throw error;
-  }
+  try {
+    const currentPeriodStart = sub.current_period_start * 1000;
+    const currentPeriodEnd = sub.current_period_end * 1000;
+    
+    await supabase
+      .from('subscriptions')
+      .update({
+        status: sub.status,
+        current_period_start: new Date(currentPeriodStart).toISOString(),
+        current_period_end: new Date(currentPeriodEnd).toISOString(),
+        cancel_at_period_end: sub.cancel_at_period_end,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('user_id', userId)
+      .eq('stripe_subscription_id', sub.id);
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    throw error;
+  }
 }
 
 function getIntervalFromStripeInterval(stripeInterval: string): 'monthly' | 'quarterly' | 'annually' {
