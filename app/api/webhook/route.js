@@ -163,6 +163,19 @@ async function handleInvoicePaymentSucceeded(invoice) {
   
   const userId = users[0].id;
   
+  // Fix: Ensure all timestamps are valid
+  const createdAt = invoice.created 
+    ? new Date(invoice.created * 1000).toISOString() 
+    : new Date().toISOString();
+    
+  const periodStart = invoice.period_start 
+    ? new Date(invoice.period_start * 1000).toISOString() 
+    : new Date().toISOString();
+    
+  const periodEnd = invoice.period_end 
+    ? new Date(invoice.period_end * 1000).toISOString() 
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  
   await supabase
     .from('invoices')
     .insert({
@@ -172,9 +185,9 @@ async function handleInvoicePaymentSucceeded(invoice) {
       amount: invoice.amount_paid,
       currency: invoice.currency,
       status: invoice.status,
-      created_at: new Date(invoice.created * 1000).toISOString(),
-      period_start: new Date(invoice.period_start * 1000).toISOString(),
-      period_end: new Date(invoice.period_end * 1000).toISOString(),
+      created_at: createdAt,
+      period_start: periodStart,
+      period_end: periodEnd,
       invoice_pdf: invoice.invoice_pdf,
       description: invoice.description,
     });
@@ -253,14 +266,20 @@ async function storeSubscription(subscription, userId, tier, interval) {
       .eq('stripe_subscription_id', subscription.id)
       .single();
     
-    const currentPeriodStart = subscription.current_period_start * 1000;
-    const currentPeriodEnd = subscription.current_period_end * 1000;
+    // Fix: Properly handle timestamps
+    const currentPeriodStart = subscription.current_period_start 
+      ? new Date(subscription.current_period_start * 1000).toISOString()
+      : new Date().toISOString();
+    
+    const currentPeriodEnd = subscription.current_period_end 
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     
     const subscriptionData = {
       plan_id: planId,
       status: subscription.status,
-      current_period_start: new Date(currentPeriodStart).toISOString(),
-      current_period_end: new Date(currentPeriodEnd).toISOString(),
+      current_period_start: currentPeriodStart,
+      current_period_end: currentPeriodEnd,
       cancel_at_period_end: subscription.cancel_at_period_end,
       interval: subscriptionInterval,
       updated_at: new Date().toISOString(),
@@ -294,8 +313,14 @@ async function storeSubscription(subscription, userId, tier, interval) {
 
 async function updateSubscription(subscription, userId) {
   try {
-    const currentPeriodStart = subscription.current_period_start * 1000;
-    const currentPeriodEnd = subscription.current_period_end * 1000;
+    // Fix: Properly handle timestamps
+    const currentPeriodStart = subscription.current_period_start 
+      ? new Date(subscription.current_period_start * 1000).toISOString()
+      : new Date().toISOString();
+    
+    const currentPeriodEnd = subscription.current_period_end 
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     
     // Get the price ID from the subscription
     const priceId = subscription.items.data[0]?.price?.id;
@@ -317,8 +342,8 @@ async function updateSubscription(subscription, userId) {
       .update({
         plan_id: planId,
         status: subscription.status,
-        current_period_start: new Date(currentPeriodStart).toISOString(),
-        current_period_end: new Date(currentPeriodEnd).toISOString(),
+        current_period_start: currentPeriodStart,
+        current_period_end: currentPeriodEnd,
         cancel_at_period_end: subscription.cancel_at_period_end,
         updated_at: new Date().toISOString(),
       })
