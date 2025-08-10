@@ -1,3 +1,4 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\contexts\AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
