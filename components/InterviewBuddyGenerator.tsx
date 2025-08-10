@@ -1,3 +1,5 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\InterviewBuddyGenerator.tsx
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
