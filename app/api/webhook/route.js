@@ -302,8 +302,8 @@ async function updateSubscription(subscription, userId) {
     
     // Map price ID to plan_id
     const priceIdToPlan = {
-      'price_1RK5xpBh2Msdef2rOP2A93hO': 'pro', // Monthly Pro
-      'price_1RK6FHBh2Msdef2rzti7qMbN': 'pro', // Annual Pro
+      'price_1RtDXSBh2Msdef2rXoitZKF1': 'pro', // Monthly Pro
+      'price_1RtDYPBh2Msdef2rAIfipwXI': 'pro', // Annual Pro
       // Add other price IDs here as needed
     };
     
