@@ -113,7 +113,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-orange-600 mr-2" />
           <span className="font-bold text-gray-800 text-lg hidden sm:inline">
-            Resume Mate AI
+            CareerThings AI
           </span>
 
           <div onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -135,7 +135,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <Link href="/" className="flex items-center">
                 <FileText className="h-6 w-6 text-orange-600 mr-2" />
                 <h1 className="text-lg font-bold text-gray-800">
-                  Resume Mate AI
+                  CareerThings AI
                 </h1>
               </Link>
             )}
@@ -209,7 +209,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     >
                       <FileText className="h-6 w-6 text-orange-600 mr-2" />
                       <h1 className="text-xl font-bold text-gray-800">
-                        Resume Mate AI
+                        CareerThings AI
                       </h1>
                     </Link>
                     <Button
@@ -254,7 +254,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <div className="flex items-center">
             <FileText className="h-6 w-6 text-orange-600 mr-2" />
-            <h1 className="text-xl font-bold text-gray-800">Resume Mate AI</h1>
+            <h1 className="text-xl font-bold text-gray-800">CareerThings AI</h1>
           </div>
           <div className="w-10"></div> {/* Placeholder for alignment */}
         </div>
