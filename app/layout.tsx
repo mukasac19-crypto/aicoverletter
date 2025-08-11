@@ -2,14 +2,15 @@
 
 import './globals.css';
 import type { Metadata } from 'next';
-import { AuthContextProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Montserrat } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
+import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Resumemate',
+  title: 'CareerThings',
   description: 'Create professional resumes, cover letters with AI',
 };
 
@@ -23,10 +24,11 @@ export default function RootLayout({
       
         {/* Only use the one context provider we have been debugging */}
       <body className={montserrat.className}>
-        <AuthContextProvider>
+        <AuthProvider>
+          <ImpersonationBanner />
           {children}
           <Toaster />
-        </AuthContextProvider>
+        </AuthProvider>
       </body>
     </html>
   );

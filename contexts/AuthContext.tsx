@@ -1,62 +1,94 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\contexts\AuthContext.tsx
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { getBrowserClient } from '@/lib/supabase-browser';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createBrowserClient } from '@/lib/supabase';
+import { Session, User, Provider, AuthResponse, OAuthResponse, AuthError, UserResponse } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  impersonated: boolean;
+  exitImpersonation: () => Promise<void>;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
-  signInWithProvider: (provider: 'google', options?: any) => Promise<{ data: any; error: any }>;
-  signUp: (email: string, password: string) => Promise<{ data: any; error: any }>;
-  signOut: () => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
-  updatePassword: (newPassword: string) => Promise<{ error: any }>;
-  checkOnboardingStatus: () => Promise<boolean>;
+  signIn: (email: string, password: string) => Promise<AuthResponse>;
+  signUp: (email: string, password: string) => Promise<AuthResponse>;
+  signInWithProvider: (provider: Provider) => Promise<OAuthResponse>;
+  resetPassword: (email: string) => Promise<{ data: {}; error: null; } | { data: null; error: AuthError; }>;
+  updatePassword: (password: string) => Promise<UserResponse>;
+  signOut: () => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthContextProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const supabase = createBrowserClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [impersonated, setImpersonated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { toast } = useToast();
-  const [supabase] = useState(() => getBrowserClient());
 
+  const signIn = (email: string, password: string) => {
+    return supabase.auth.signInWithPassword({ email, password });
+  };
+
+  const signUp = (email: string, password: string) => {
+    return supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/login?message=Check your email to confirm your account.`,
+      },
+    });
+  };
+
+  const signInWithProvider = (provider: Provider) => {
+    return supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback`,
+      },
+    });
+  };
+
+  const resetPassword = (email: string) => {
+    return supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/update-password`,
+    });
+  };
+
+  const updatePassword = (password: string) => {
+    return supabase.auth.updateUser({ password });
+  };
+  
+  const signOut = () => {
+    return supabase.auth.signOut();
+  };
+  
   useEffect(() => {
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
-      } catch (error) {
-        console.error('Error fetching initial session:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
+      async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Handle specific auth events
-        if (event === 'SIGNED_IN') {
-          router.refresh();
-        } else if (event === 'SIGNED_OUT') {
-          router.push('/');
+        setLoading(false);
+
+        if (session?.user?.email) {
+            const { data: tokenData, error } = await supabase
+              .from('impersonation_tokens')
+              .select('id, expires_at, used_at')
+              .eq('email', session.user.email)
+              .is('used_at', null)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single();
+
+            if (tokenData && new Date(tokenData.expires_at) > new Date()) {
+              setImpersonated(true);
+            } else {
+              setImpersonated(false);
+            }
+        } else {
+          setImpersonated(false);
         }
       }
     );
@@ -64,141 +96,24 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, router]);
-
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { data, error };
-    } catch (error: any) {
-      console.error('Error signing in:', error);
-      return { data: null, error };
-    }
   }, [supabase]);
 
-  const signInWithProvider = useCallback(async (
-    provider: 'google',
-    options?: { redirectTo?: string }
-  ) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          // CORRECTED: Point to your server-side API route for the callback
-          redirectTo: `${window.location.origin}/api/auth/callback`,
-        }
-      });
-      
-      return { data, error };
-    } catch (error: any) {
-      console.error(`Error signing in with ${provider}:`, error);
-      return { data: null, error };
-    }
-  }, [supabase]);
-
-  const signUp = useCallback(async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/login`,
-        },
-      });
-
-      if (!error && data) {
-        localStorage.setItem('pendingOnboarding', 'true');
-        toast({
-          title: "Account created! ✅",
-          description: "Please check your email to confirm your account.",
-        });
-      }
-
-      return { data, error };
-    } catch (error: any) {
-      console.error('Error signing up:', error);
-      return { data: null, error };
-    }
-  }, [supabase, toast]);
-
-  const signOut = useCallback(async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (!error) {
-        localStorage.removeItem('pendingOnboarding');
-      }
-      return { error };
-    } catch (error: any) {
-      console.error('Error signing out:', error);
-      return { error };
-    }
-  }, [supabase]);
-
-  const resetPassword = useCallback(async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
-      });
-      return { error };
-    } catch (error: any) {
-      console.error('Error resetting password:', error);
-      return { error };
-    }
-  }, [supabase]);
-
-  const updatePassword = useCallback(async (newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      return { error };
-    } catch (error: any) {
-      console.error('Error updating password:', error);
-      return { error };
-    }
-  }, [supabase]);
-
-  const checkOnboardingStatus = useCallback(async () => {
-    if (!user) return false;
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-      return data?.onboarding_completed || false;
-    } catch (error) {
-      console.error('Error checking onboarding status:', error);
-      return false;
-    }
-  }, [supabase, user]);
-
-  const value = {
-    user,
-    session,
-    loading,
-    signIn,
-    signInWithProvider,
-    signUp,
-    signOut,
-    resetPassword,
-    updatePassword,
-    checkOnboardingStatus,
+  const exitImpersonation = async () => {
+    await fetch('/api/oslo/auth/exit-impersonation', { method: 'POST' });
+    window.location.reload();
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, session, impersonated, exitImpersonation, loading, signIn, signUp, signInWithProvider, resetPassword, updatePassword, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthContextProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}

@@ -116,7 +116,8 @@ export default function EnhancedProfilePage() {
   const handleSignOut = async () => {
     setSignOutLoading(true);
     try {
-      await signOut();
+      const { error } = await signOut();
+      if (error) throw error;
       router.push("/");
     } catch (error) {
       console.error("Error signing out:", error);

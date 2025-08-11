@@ -48,7 +48,7 @@ export default function LandingPage() {
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  Resume Mate AI
+                  CareerThings
                 </span>
               </Link>
               
@@ -462,7 +462,7 @@ export default function LandingPage() {
                 ))}
               </div>
               <p className="text-gray-700 mb-4 italic">
-                "Landed my dream job at Google within 2 weeks of using Resume Mate AI. The ATS optimization was a game-changer!"
+                "Landed my dream job at Google within 2 weeks of using CareerThings AI. The ATS optimization was a game-changer!"
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
@@ -659,7 +659,7 @@ export default function LandingPage() {
 
             <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
               <h3 className="text-lg font-semibold mb-3">
-                Can I use Resume Mate AI for multiple job applications?
+                Can I use CareerThings AI for multiple job applications?
               </h3>
               <p className="text-gray-600">
                 Yes! You can create unlimited tailored resumes and cover letters for different positions. Our system saves your base profile and creates new versions optimized for each specific job.
@@ -761,7 +761,7 @@ export default function LandingPage() {
                 <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">Resume Mate AI</span>
+                <span className="text-xl font-bold text-white">CareerThings AI</span>
               </div>
               <p className="text-sm text-gray-400 mb-4">
                 AI-powered resume and cover letter builder helping professionals land their dream jobs.
@@ -826,7 +826,7 @@ export default function LandingPage() {
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-gray-400 mb-4 md:mb-0">
-                © {new Date().getFullYear()} Resume Mate AI. All rights reserved.
+                © {new Date().getFullYear()} CareerThings. All rights reserved.
               </p>
               <div className="flex flex-wrap gap-6 text-sm">
                 <Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link>
