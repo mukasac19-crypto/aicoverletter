@@ -25,7 +25,7 @@ export default function OnboardingModal({ open, onOpenChange }: OnboardingModalP
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[90%] md:max-w-[425px] sm:mx-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <User className="h-5 w-5 mr-2 text-orange-600" />
