@@ -160,7 +160,7 @@ export default function UsageLimits({ showCard = true }: { showCard?: boolean })
       {tier === 'FREE' && (
         <div className="mt-6 pt-4 border-t">
           <Button 
-            className="w-full bg-teal-600 hover:bg-teal-700"
+            className="w-full bg-orange-600 hover:bg-orange-700"
             asChild
           >
             <Link href="/pricing">

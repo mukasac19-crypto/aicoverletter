@@ -305,10 +305,10 @@ export default function EnhancedProfilePage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Badge variant="outline" className="pl-2 pr-2 py-1">
               <span className="font-normal text-gray-600 mr-1">Account:</span>
-              <span className="text-teal-700">{user?.email}</span>
+              <span className="text-orange-700">{user?.email}</span>
             </Badge>
             <Button
-              className="w-full sm:w-auto text-teal-700 border-teal-600 hover:bg-teal-100"
+              className="w-full sm:w-auto text-orange-700 border-orange-600 hover:bg-orange-100"
               onClick={handleSignOut}
               disabled={signOutLoading}
             >
@@ -377,7 +377,7 @@ export default function EnhancedProfilePage() {
                     <Label htmlFor="confirm-password" className="text-gray-600">Confirm New Password</Label>
                     <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" disabled={isUpdatingPassword} className="text-white bg-teal-600 hover:bg-teal-700">
+                  <Button type="submit" disabled={isUpdatingPassword} className="text-white bg-orange-600 hover:bg-orange-700">
                     {isUpdatingPassword ? <LoadingSpinner /> : "Update Password"}
                   </Button>
                 </form>
@@ -440,7 +440,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center">
-                      <CreditCard className="h-5 w-5 mr-2 text-teal-600" />
+                      <CreditCard className="h-5 w-5 mr-2 text-orange-600" />
                       Payment Method
                     </CardTitle>
                     <CardDescription>
@@ -478,7 +478,7 @@ export default function EnhancedProfilePage() {
                         <p className="text-sm text-muted-foreground mb-4">
                           You are currently on the Free plan. Upgrade to add a payment method.
                         </p>
-                        <Button asChild className="bg-teal-600 hover:bg-teal-700">
+                        <Button asChild className="bg-orange-600 hover:bg-orange-700">
                           <Link href="/pricing">
                             <Sparkles className="mr-2 h-4 w-4" />
                             Upgrade Now
@@ -500,7 +500,7 @@ export default function EnhancedProfilePage() {
                         <BillingPortalButton 
                           label="Manage Subscription"
                           showIcon={true}
-                          className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
+                          className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
                           returnUrl={`${window.location.origin}/dashboard/profile`}
                         />
                         
@@ -532,7 +532,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center">
-                      <Shield className="h-5 w-5 mr-2 text-teal-600" />
+                      <Shield className="h-5 w-5 mr-2 text-orange-600" />
                       Security & Privacy
                     </CardTitle>
                   </CardHeader>
@@ -552,7 +552,7 @@ export default function EnhancedProfilePage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center">
-                      <Receipt className="h-5 w-5 mr-2 text-teal-600" />
+                      <Receipt className="h-5 w-5 mr-2 text-orange-600" />
                       Billing History
                     </CardTitle>
                     <CardDescription>
@@ -612,7 +612,7 @@ export default function EnhancedProfilePage() {
                       <div className="text-center py-8">
                         <p className="text-muted-foreground mb-2">No invoices yet</p>
                         {subscription && subscription.tier === 'FREE' && (
-                          <Button asChild className="mt-2 bg-teal-600 hover:bg-teal-700">
+                          <Button asChild className="mt-2 bg-orange-600 hover:bg-orange-700">
                             <Link href="/pricing">
                               <Sparkles className="mr-2 h-4 w-4" />
                               Upgrade to Pro
@@ -688,7 +688,7 @@ export default function EnhancedProfilePage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveSettings} disabled={isSettingsSaving} className="text-white bg-teal-600 hover:bg-teal-700">
+              <Button onClick={handleSaveSettings} disabled={isSettingsSaving} className="text-white bg-orange-600 hover:bg-orange-700">
                 {isSettingsSaving ? <LoadingSpinner /> : "Save Settings"}
               </Button>
             </CardFooter>

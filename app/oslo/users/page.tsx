@@ -645,7 +645,7 @@ export default function UsersPage() {
                               </DropdownMenuItem>
                               {user.stripe_customer_id && (
                                 <DropdownMenuItem onClick={() => handleManageBilling(user.stripe_customer_id!)}>
-                                  <CreditCard className="h-4 w-4 mr-2 text-teal-500" />
+                                  <CreditCard className="h-4 w-4 mr-2 text-orange-500" />
                                   Manage Billing
                                 </DropdownMenuItem>
                               )}

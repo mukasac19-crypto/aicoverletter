@@ -291,7 +291,7 @@ export default function ATSScannerPage() {
 							</Button>
 							<div>
 								<h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-									<Scan className="h-5 w-5 text-teal-600" />
+									<Scan className="h-5 w-5 text-orange-600" />
 									ATS Scanner
 								</h1>
 								<p className="text-sm text-muted-foreground">
@@ -323,10 +323,10 @@ export default function ATSScannerPage() {
 			<div className="container py-6 px-4 md:px-6">
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					<div className="lg:col-span-2">
-						<Card className="border-2 border-teal-100">
-							<CardHeader className="pb-4 border-b bg-teal-50/50">
-								<CardTitle className="text-lg flex items-center text-teal-800">
-									<Zap className="h-5 w-5 mr-2 text-teal-600" />
+						<Card className="border-2 border-orange-100">
+							<CardHeader className="pb-4 border-b bg-orange-50/50">
+								<CardTitle className="text-lg flex items-center text-orange-800">
+									<Zap className="h-5 w-5 mr-2 text-orange-600" />
 									Run New Analysis
 								</CardTitle>
 								<CardDescription>
@@ -348,7 +348,7 @@ export default function ATSScannerPage() {
 										featureName="ATS Scan"
 										onAllowed={handleScan}
 										disabled={!jobDescription.trim()}
-										className="w-full bg-teal-600 hover:bg-teal-700"
+										className="w-full bg-orange-600 hover:bg-orange-700"
 									>
 										<Scan className="h-4 w-4 mr-2" />
 										Analyze Compatibility
