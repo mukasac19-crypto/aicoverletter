@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FileText,
   User,
@@ -36,6 +36,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -43,10 +49,15 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const { user, signOut } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [signOutLoading, setSignOutLoading] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Navigation items - Removed Billing item
   const navItems = [
@@ -101,9 +112,59 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const avatarButton = document.getElementById("avatarButton");
+      const userDropdown = document.getElementById("userDropdown");
+      if (
+        avatarButton &&
+        userDropdown &&
+        !avatarButton.contains(event.target as Node) &&
+        !userDropdown.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
+  // useEffect(()=>{
+  //   async function init(){
+  //      try {
+  //       await handleSignOut()
+  //      } catch (error) {
+  //       console.log(error,'===========log out fail')
+  //      }
+  //   }
+  // },[])
+
   if (!isMounted) {
     return null;
   }
+
+  const handleSignOut = async () => {
+    setSignOutLoading(true);
+    try {
+      await signOut();
+      router.replace("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSignOutLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen max-h-screen flex flex-col bg-orange-50/20">
@@ -113,19 +174,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-orange-600 mr-2" />
           <span className="font-bold text-gray-800 text-lg hidden sm:inline">
-            CareerThings
+            CareerThings AI
           </span>
 
           <div onClick={() => setIsCollapsed(!isCollapsed)}>
             {isCollapsed ? (
-                <ChevronRight className="h-4 w-4 text-orange-600" />
-              ) : (
-                <ChevronLeft className="h-4 w-4 text-orange-600" />
-              )}
+              <ChevronRight className="h-4 w-4 text-orange-600" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 text-orange-600" />
+            )}
           </div>
         </div>
 
-         {/* <div
+        {/* <div
             className={cn(
               "flex h-16 items-center border-b px-4 bg-orange-50",
               isCollapsed ? "justify-center" : "justify-between"
@@ -135,7 +196,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <Link href="/" className="flex items-center">
                 <FileText className="h-6 w-6 text-orange-600 mr-2" />
                 <h1 className="text-lg font-bold text-gray-800">
-                  Resume Mate AI
+                  CareerThings AI
                 </h1>
               </Link>
             )}
@@ -158,28 +219,68 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div> */}
         <div className="flex items-center gap-4">
           {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg shadow hover:shadow-md transition relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                  aria-label="User menu"
-                >
-                  {user.user_metadata?.full_name?.[0]?.toUpperCase() ||
-                    user.email?.[0]?.toUpperCase() ||
-                    "U"}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 mt-2">
-                <DropdownMenuItem
-                  className="text-red-600 cursor-pointer hover:bg-orange-50"
-                  onClick={() => {
-                    window.location.href = "/auth/logout";
-                  }}
+            <div className="relative group">
+              <button
+                id="avatarButton"
+                type="button"
+                data-dropdown-toggle="userDropdown"
+                data-dropdown-placement="bottom-start"
+                className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg shadow hover:shadow-md transition relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                aria-label="User menu"
+                tabIndex={0}
+                onClick={() => setDropdownOpen((open) => !open)}
+              >
+                {user.user_metadata?.full_name?.[0]?.toUpperCase() ||
+                  user.email?.[0]?.toUpperCase() ||
+                  "U"}
+              </button>
+              {/* Popover */}
+              {/* <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity z-50">
+                <Button
+                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-orange-50 rounded-b-lg focus:outline-none"
+                  onClick={handleSignOut}
+                  disabled={signOutLoading}
                 >
                   Log Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </Button>
+              </div> */}
+
+              <div
+                id="userDropdown"
+                className={`z-10 absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-all ${
+                  dropdownOpen ? "block" : "hidden"
+                }`}
+              >
+                <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                  <div className="font-medium truncate">
+                    {user && user.email}
+                  </div>
+                </div>
+                <ul
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                  aria-labelledby="avatarButton"
+                >
+                  {/* <li>
+        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+      </li>
+      <li>
+        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+      </li>
+      <li>
+        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
+      </li> */}
+                </ul>
+                <div className="p-2">
+                  <Button
+                    className="w-full text-left px-4 py-2 text-white hover:text-gray-800 hover:bg-orange-50 rounded-b-lg focus:outline-none"
+                    onClick={handleSignOut}
+                    disabled={signOutLoading}
+                  >
+                    Log Out
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -209,7 +310,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     >
                       <FileText className="h-6 w-6 text-orange-600 mr-2" />
                       <h1 className="text-xl font-bold text-gray-800">
-                        CareerThings
+                        CareerThings AI
                       </h1>
                     </Link>
                     <Button
@@ -246,6 +347,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                           </Link>
                         </li>
                       ))}
+                      <div className="p-2">
+                        <Button
+                          className="w-full text-left px-4 py-2 text-white hover:text-gray-800 hover:bg-orange-50 rounded-b-lg focus:outline-none"
+                          onClick={handleSignOut}
+                          disabled={signOutLoading}
+                        >
+                          Log Out
+                        </Button>
+                      </div>
                     </ul>
                   </nav>
                 </div>
@@ -254,7 +364,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <div className="flex items-center">
             <FileText className="h-6 w-6 text-orange-600 mr-2" />
-            <h1 className="text-xl font-bold text-gray-800">CareerThings</h1>
+            <h1 className="text-xl font-bold text-gray-800">CareerThings AI</h1>
           </div>
           <div className="w-10"></div> {/* Placeholder for alignment */}
         </div>
@@ -269,7 +379,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             isCollapsed ? "w-16" : "w-52"
           )}
         >
-         
           <nav className="flex-1 overflow-auto py-4 px-2 bg-white">
             <ul className="space-y-2 px-1">
               <TooltipProvider>

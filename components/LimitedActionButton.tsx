@@ -132,7 +132,7 @@ export default function LimitedActionButton({
               Cancel
             </Button>
             {tier === 'FREE' && (
-              <Button asChild className="bg-teal-600 hover:bg-teal-700">
+              <Button asChild className="bg-orange-600 hover:bg-orange-700">
                 <Link href="/pricing">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Upgrade to Pro
@@ -155,7 +155,7 @@ export default function LimitedActionButton({
     // Your cover letter generation logic
     await generateCoverLetter();
   }}
-  className="bg-teal-600 hover:bg-teal-700"
+  className="bg-orange-600 hover:bg-orange-700"
 >
   Generate Cover Letter
 </LimitedActionButton>

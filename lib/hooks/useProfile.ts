@@ -32,6 +32,8 @@ export function useProfile() {
         .eq('id', user!.id)
         .single();
 
+        console.log(data)
+
       if (error) {
         console.error('Error fetching profile:', error);
         throw error;

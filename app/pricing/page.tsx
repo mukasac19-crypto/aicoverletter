@@ -25,7 +25,7 @@ export default async function PricingPage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center">
             <FileText className="h-6 w-6 text-primary mr-2" />
-            <h1 className="text-xl font-bold">Resume Mate AI</h1>
+            <h1 className="text-xl font-bold">CareerThings AI</h1>
           </div>
           
           <div className="flex items-center gap-4">
@@ -243,7 +243,7 @@ export default async function PricingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
               <FileText className="h-5 w-5 text-primary mr-2" />
-              <span className="font-semibold">Resume Mate AI</span>
+              <span className="font-semibold">CareerThings AI</span>
             </div>
             <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-sm text-muted-foreground">
               <Link href="#" className="hover:text-foreground transition">Terms of Service</Link>
@@ -252,7 +252,7 @@ export default async function PricingPage() {
             </div>
           </div>
           <div className="mt-8 text-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Resume Mate AI. All rights reserved.
+            © {new Date().getFullYear()} CareeThings AI. All rights reserved.
           </div>
         </div>
       </footer>

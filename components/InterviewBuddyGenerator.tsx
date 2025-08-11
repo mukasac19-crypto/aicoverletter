@@ -273,10 +273,10 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
   return (
     <div className="space-y-4 md:space-y-6">
       {!interviewSession ? (
-        <Card className="border-teal-100">
-          <CardHeader className="bg-teal-50/50 pb-4 md:pb-6">
+        <Card className="border-orange-100">
+          <CardHeader className="bg-orange-50/50 pb-4 md:pb-6">
             <CardTitle className="flex items-center gap-2 text-gray-800 text-lg md:text-xl">
-              <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
               Generate Interview Questions
             </CardTitle>
             <CardDescription className="text-gray-600 text-sm md:text-base">
@@ -294,10 +294,10 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           	<div className="space-y-1 md:space-y-2">
           		<Label htmlFor="resumeSelect" className="text-gray-700 text-sm md:text-base">Select Your Resume</Label>
           		<Select value={resumeId} onValueChange={setResumeId}>
-          			<SelectTrigger id="resumeSelect" className="border-teal-200 focus:ring-teal-500">
+          			<SelectTrigger id="resumeSelect" className="border-orange-200 focus:ring-orange-500">
           				<SelectValue placeholder="Choose a resume" />
           			</SelectTrigger>
-          			<SelectContent className="border-teal-100">
+          			<SelectContent className="border-orange-100">
           				{resumes.map((resume) => (
           					<SelectItem key={resume.id} value={resume.id}>
           						{resume.title}
@@ -317,7 +317,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           			value={jobTitle}
           			onChange={(e) => setJobTitle(e.target.value)}
           			placeholder="Software Engineer, Product Manager, etc."
-          			className="border-teal-200 focus:ring-teal-500"
+          			className="border-orange-200 focus:ring-orange-500"
           		/>
           	</div>
           	
@@ -331,7 +331,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           			onChange={(e) => setJobDescription(e.target.value)}
           			placeholder="Paste the job description for more tailored questions"
           			rows={4}
-          			className="border-teal-200 focus:ring-teal-500"
+          			className="border-orange-200 focus:ring-orange-500"
           		/>
           		<p className="text-xs text-gray-600">
           			Adding a job description will result in more specific interview questions
@@ -346,15 +346,15 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           			className="flex flex-wrap gap-2 md:gap-4"
           		>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="technical" id="technical" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="technical" id="technical" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="technical" className="cursor-pointer text-sm md:text-base text-gray-700">Technical</Label>
           			</div>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="behavioral" id="behavioral" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="behavioral" id="behavioral" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="behavioral" className="cursor-pointer text-sm md:text-base text-gray-700">Behavioral</Label>
           			</div>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="mixed" id="mixed" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="mixed" id="mixed" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="mixed" className="cursor-pointer text-sm md:text-base text-gray-700">Mixed (Both)</Label>
           			</div>
           		</RadioGroup>
@@ -368,15 +368,15 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           			className="flex flex-wrap gap-2 md:gap-4"
           		>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="basic" id="basic" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="basic" id="basic" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="basic" className="cursor-pointer text-sm md:text-base text-gray-700">Basic</Label>
           			</div>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="intermediate" id="intermediate" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="intermediate" id="intermediate" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="intermediate" className="cursor-pointer text-sm md:text-base text-gray-700">Intermediate</Label>
           			</div>
           			<div className="flex items-center space-x-2">
-          				<RadioGroupItem value="advanced" id="advanced" className="text-teal-600 border-teal-300 focus:ring-teal-500" />
+          				<RadioGroupItem value="advanced" id="advanced" className="text-orange-600 border-orange-300 focus:ring-orange-500" />
           				<Label htmlFor="advanced" className="cursor-pointer text-sm md:text-base text-gray-700">Advanced</Label>
           			</div>
           		</RadioGroup>
@@ -385,16 +385,16 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
           	<div className="space-y-1 md:space-y-2">
           		<Label className="text-gray-700 text-sm md:text-base">Number of Questions</Label>
           		<div className="flex items-center gap-2">
-          			<Button type="button" variant="outline" size="sm" onClick={() => setQuestionCount(Math.max(3, questionCount - 1))} disabled={questionCount <= 3} className="border-teal-200 hover:bg-teal-50 text-teal-700">-</Button>
+          			<Button type="button" variant="outline" size="sm" onClick={() => setQuestionCount(Math.max(3, questionCount - 1))} disabled={questionCount <= 3} className="border-orange-200 hover:bg-orange-50 text-orange-700">-</Button>
           			<span className="w-8 text-center text-gray-800">{questionCount}</span>
-          			<Button type="button" variant="outline" size="sm" onClick={() => setQuestionCount(Math.min(10, questionCount + 1))} disabled={questionCount >= 10} className="border-teal-200 hover:bg-teal-50 text-teal-700">+</Button>
+          			<Button type="button" variant="outline" size="sm" onClick={() => setQuestionCount(Math.min(10, questionCount + 1))} disabled={questionCount >= 10} className="border-orange-200 hover:bg-orange-50 text-orange-700">+</Button>
           		</div>
           	</div>
         	</CardContent>
         	
-        	<CardFooter className="flex flex-col sm:flex-row sm:justify-between gap-3 px-4 md:px-6 pb-4 md:pb-6 border-t border-teal-100 pt-4">
+        	<CardFooter className="flex flex-col sm:flex-row sm:justify-between gap-3 px-4 md:px-6 pb-4 md:pb-6 border-t border-orange-100 pt-4">
         		<div className="text-xs md:text-sm text-gray-600 flex items-center">
-        			<Info className="h-3 w-3 md:h-4 md:w-4 mr-1 text-teal-600" />
+        			<Info className="h-3 w-3 md:h-4 md:w-4 mr-1 text-orange-600" />
         			<span>Use specific job details for better results</span>
         		</div>
         		<LimitedActionButton 
@@ -402,7 +402,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
               featureName="Interview Session"
         			onAllowed={handleGenerateInterview} 
         			disabled={isGenerating || !resumeId || (!jobTitle && !jobDescription)}
-        			className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white"
+        			className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white"
         		>
         			<Sparkles className="mr-2 h-3 w-3 md:h-4 md:w-4" />
         			<span className="text-sm md:text-base">Generate Interview</span>
@@ -410,8 +410,8 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         	</CardFooter>
         	
         	{isGenerating && (
-        		<div className="p-4 border-t border-teal-100">
-        			<Progress value={generationProgress} className="h-2 [&>div]:bg-teal-600" />
+        		<div className="p-4 border-t border-orange-100">
+        			<Progress value={generationProgress} className="h-2 [&>div]:bg-orange-600" />
         			<p className="text-xs text-center mt-2 text-gray-600">
         				Generating your interview questions...
         			</p>
@@ -420,8 +420,8 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
       	</Card>
     	) : (
     		<div className="space-y-4 md:space-y-6">
-    			<Card className="border-teal-100">
-    				<CardHeader className="bg-teal-50/50 pb-4 md:pb-6">
+    			<Card className="border-orange-100">
+    				<CardHeader className="bg-orange-50/50 pb-4 md:pb-6">
     					<div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
     						<div>
     							<CardTitle className="text-gray-800 text-lg md:text-xl">Interview Preparation</CardTitle>
@@ -434,7 +434,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         							size="sm" 
         							onClick={handleRegenerate} 
         							disabled={isGenerating}
-        							className="text-xs md:text-sm border-teal-200 hover:bg-teal-50 text-teal-700"
+        							className="text-xs md:text-sm border-orange-200 hover:bg-orange-50 text-orange-700"
         						>
         							{isGenerating ? (
         								<LoadingSpinner className="h-3 w-3 md:h-4 md:w-4" />
@@ -448,7 +448,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         							variant="outline" 
         							size="sm" 
         							onClick={handleCopyToClipboard}
-        							className="text-xs md:text-sm border-teal-200 hover:bg-teal-50 text-teal-700"
+        							className="text-xs md:text-sm border-orange-200 hover:bg-orange-50 text-orange-700"
         						>
         							<Copy className="h-3 w-3 md:h-4 md:w-4 mr-1" />
         							<span className="hidden xs:inline">Copy</span>
@@ -458,7 +458,7 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         							variant="outline" 
         							size="sm" 
         							onClick={handleDownload}
-        							className="text-xs md:text-sm border-teal-200 hover:bg-teal-50 text-teal-700"
+        							className="text-xs md:text-sm border-orange-200 hover:bg-orange-50 text-orange-700"
         						>
         							<Download className="h-3 w-3 md:h-4 md:w-4 mr-1" />
         							<span className="hidden xs:inline">Download</span>
@@ -471,8 +471,8 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         							className={cn(
         								"text-xs md:text-sm",
         								isSaved 
-        									? "bg-teal-100 text-teal-700 hover:bg-teal-100" 
-        									: "bg-teal-600 hover:bg-teal-700 text-white"
+        									? "bg-orange-100 text-orange-700 hover:bg-orange-100" 
+        									: "bg-orange-600 hover:bg-orange-700 text-white"
         							)}
         						>
         							{isSaving ? (
@@ -491,15 +491,15 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         		
         		<InterviewQuestionList questions={interviewSession.questions} />
         		
-        		<Card className="border-teal-100">
-        			<CardHeader className="bg-teal-50/50 pb-4">
+        		<Card className="border-orange-100">
+        			<CardHeader className="bg-orange-50/50 pb-4">
         				<CardTitle className="text-gray-800 text-base md:text-lg">Interview Tips</CardTitle>
         			</CardHeader>
         			<CardContent className="pt-4 px-4 md:px-6">
         				<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-        					<div className="border border-teal-100 rounded-lg p-3 md:p-4">
+        					<div className="border border-orange-100 rounded-lg p-3 md:p-4">
         						<div className="flex items-center gap-2 mb-2">
-        							<Target className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
+        							<Target className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
         							<h3 className="font-medium text-gray-800 text-sm md:text-base">Preparation</h3>
         						</div>
         						<ul className="text-xs md:text-sm space-y-1 ml-5 md:ml-7 text-gray-700">
@@ -510,9 +510,9 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         						</ul>
         					</div>
         					
-        					<div className="border border-teal-100 rounded-lg p-3 md:p-4">
+        					<div className="border border-orange-100 rounded-lg p-3 md:p-4">
         						<div className="flex items-center gap-2 mb-2">
-        							<GraduationCap className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
+        							<GraduationCap className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
         							<h3 className="font-medium text-gray-800 text-sm md:text-base">During the Interview</h3>
         						</div>
         						<ul className="text-xs md:text-sm space-y-1 ml-5 md:ml-7 text-gray-700">
@@ -523,9 +523,9 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         						</ul>
         					</div>
         					
-        					<div className="border border-teal-100 rounded-lg p-3 md:p-4">
+        					<div className="border border-orange-100 rounded-lg p-3 md:p-4">
         						<div className="flex items-center gap-2 mb-2">
-        							<Briefcase className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
+        							<Briefcase className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
         							<h3 className="font-medium text-gray-800 text-sm md:text-base">Technical Questions</h3>
         						</div>
         						<ul className="text-xs md:text-sm space-y-1 ml-5 md:ml-7 text-gray-700">
@@ -536,9 +536,9 @@ export default function InterviewBuddyGenerator({ resumes, initialResumeId = '',
         						</ul>
         					</div>
         					
-        					<div className="border border-teal-100 rounded-lg p-3 md:p-4">
+        					<div className="border border-orange-100 rounded-lg p-3 md:p-4">
         						<div className="flex items-center gap-2 mb-2">
-        							<HelpCircle className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
+        							<HelpCircle className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
         							<h3 className="font-medium text-gray-800 text-sm md:text-base">Follow-up</h3>
         						</div>
         						<ul className="text-xs md:text-sm space-y-1 ml-5 md:ml-7 text-gray-700">

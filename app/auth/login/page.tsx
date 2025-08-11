@@ -46,8 +46,8 @@ export default function LoginPage() {
           title: "Success",
           description: "You've been logged in successfully",
         });
-        router.push("/dashboard");
-        router.refresh();
+        router.replace("/dashboard");
+        // router.refresh();
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred");

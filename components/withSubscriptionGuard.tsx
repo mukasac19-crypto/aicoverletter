@@ -72,10 +72,10 @@ export function withSubscriptionGuard<P extends object>(
 
     return (
       <div className="container max-w-2xl py-8">
-        <Card className="border-teal-200">
+        <Card className="border-orange-200">
           <CardHeader className="text-center pb-6">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-teal-100 flex items-center justify-center">
-              <Lock className="h-8 w-8 text-teal-600" />
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center">
+              <Lock className="h-8 w-8 text-orange-600" />
             </div>
             <CardTitle className="text-2xl">Subscription Required</CardTitle>
             <CardDescription className="text-base mt-2">
@@ -84,10 +84,10 @@ export function withSubscriptionGuard<P extends object>(
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <Alert className="bg-teal-50 border-teal-200">
-              <Sparkles className="h-4 w-4 text-teal-600" />
-              <AlertTitle className="text-teal-800">Upgrade to {requiredTier}</AlertTitle>
-              <AlertDescription className="text-teal-700">
+            <Alert className="bg-orange-50 border-orange-200">
+              <Sparkles className="h-4 w-4 text-orange-600" />
+              <AlertTitle className="text-orange-800">Upgrade to {requiredTier}</AlertTitle>
+              <AlertDescription className="text-orange-700">
                 Unlock this feature and enjoy:
                 <ul className="mt-2 space-y-1 list-disc list-inside">
                   <li>Unlimited cover letters and resumes</li>
@@ -105,7 +105,7 @@ export function withSubscriptionGuard<P extends object>(
                   Go Back
                 </Link>
               </Button>
-              <Button asChild className="flex-1 bg-teal-600 hover:bg-teal-700">
+              <Button asChild className="flex-1 bg-orange-600 hover:bg-orange-700">
                 <Link href="/pricing">
                   <Sparkles className="mr-2 h-4 w-4" />
                   View Pricing Plans

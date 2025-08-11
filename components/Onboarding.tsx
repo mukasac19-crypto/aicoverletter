@@ -365,7 +365,7 @@ export default function Onboarding() {
         
         toast({
           title: "Onboarding Complete",
-          description: "Welcome to Resume Mate AI! You're all set up and ready to go.",
+          description: "Welcome to Careerthings AI! You're all set up and ready to go.",
         });
         
         // Redirect to dashboard

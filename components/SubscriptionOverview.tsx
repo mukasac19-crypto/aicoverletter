@@ -46,14 +46,14 @@ export default function SubscriptionOverview() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-teal-50 to-blue-50 dark:from-teal-950 dark:to-blue-950">
+      <CardHeader className="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-950 dark:to-blue-950">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-xl flex items-center gap-2">
               Your Subscription
               <Badge 
                 variant={tier === 'PRO' ? 'default' : 'secondary'}
-                className={tier === 'PRO' ? 'bg-teal-600' : ''}
+                className={tier === 'PRO' ? 'bg-orange-600' : ''}
               >
                 {plan.name}
               </Badge>
@@ -63,7 +63,7 @@ export default function SubscriptionOverview() {
           	</CardDescription>
           </div>
           {tier === 'FREE' && (
-            <Button size="sm" asChild className="bg-teal-600 hover:bg-teal-700">
+            <Button size="sm" asChild className="bg-orange-600 hover:bg-orange-700">
               <Link href="/pricing">
                 <Sparkles className="mr-1 h-3 w-3" />
                 Upgrade
@@ -153,7 +153,7 @@ export default function SubscriptionOverview() {
         			</Link>
         		</Button>
         		{tier !== 'PRO' && (
-        			<Button size="sm" asChild className="flex-1 bg-teal-600 hover:bg-teal-700">
+        			<Button size="sm" asChild className="flex-1 bg-orange-600 hover:bg-orange-700">
         				<Link href="/pricing">
         					View Plans
         				</Link>
