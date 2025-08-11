@@ -112,7 +112,7 @@ export default function EnhancedProfilePage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [newFeatures, setNewFeatures] = useState(true);
   const [isSettingsSaving, setIsSettingsSaving] = useState(false);
-  const [signOutLoading, setSignOutLoading] = useState(false);
+ 
 
   // Billing state with separate loading states
   const [subscription, setSubscription] = useState<SubscriptionStatusType | null>(null);
@@ -250,22 +250,22 @@ export default function EnhancedProfilePage() {
     }, 800);
   };
 
-  const handleSignOut = async () => {
-    setSignOutLoading(true);
-    try {
-      await signOut();
-      router.push("/");
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setSignOutLoading(false);
-    }
-  };
+  // const handleSignOut = async () => {
+  //   setSignOutLoading(true);
+  //   try {
+  //     await signOut();
+  //     router.push("/");
+  //   } catch (error) {
+  //     console.error("Error signing out:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to sign out. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setSignOutLoading(false);
+  //   }
+  // };
 
   // Show minimal loading state only for auth
   if (authLoading) {
