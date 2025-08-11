@@ -9,6 +9,8 @@ import Link from "next/link"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
+import { useRouter } from 'next/navigation'
+import SplashScreen from '@/components/SplashScreen'
 
 // Company logos data with actual image paths
 const companyLogos = [
@@ -25,7 +27,8 @@ const companyLogos = [
 ]
 
 export default function LandingPage() {
-  const { user } = useAuth()
+  const { user,loading } = useAuth()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
 
@@ -35,6 +38,18 @@ export default function LandingPage() {
     }, 30)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(()=>{
+    if(!loading && user){
+       router.replace('/dashboard')
+    }
+  },[user,loading,router])
+
+
+   if (loading || user) {
+    // Optionally, show a spinner here instead of null
+    return <SplashScreen/>;
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
@@ -73,7 +88,7 @@ export default function LandingPage() {
               {user ? (
                 <Link href="/dashboard">
                   <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
-                    Go to Dashboard
+                    <div className='hidden md:block'>Go to Dashboard</div>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
