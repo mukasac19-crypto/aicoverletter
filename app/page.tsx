@@ -1,33 +1,60 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react'
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { FileText, Upload, ArrowRight, CheckCircle, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Users, TrendingUp, Award, Clock, Target, Briefcase, Menu, X } from "lucide-react"
+import { FileText, Upload, ArrowRight, CheckCircle, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Users, TrendingUp, Award, Clock, Target, Briefcase, Menu, X, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
 
-// Company logos data with actual image paths
+// Company logos data with actual image paths matching your files
 const companyLogos = [
-  { name: "Google", logo: "/logos/google.png" },
+  { name: "Apple", logo: "/logos/Apple-Logo.png" },
   { name: "Tesla", logo: "/logos/tesla.png" },
-  { name: "Microsoft", logo: "/logos/microsoft.png" },
-  { name: "Apple", logo: "/logos/apple.png" },
-  { name: "Amazon", logo: "/logos/amazon.png" },
-  { name: "Meta", logo: "/logos/meta.png" },
-  { name: "Netflix", logo: "/logos/netflix.png" },
-  { name: "Spotify", logo: "/logos/spotify.png" },
-  { name: "Adobe", logo: "/logos/adobe.png" },
-  { name: "Salesforce", logo: "/logos/salesforce.png" }
+  { name: "Hero", logo: "/logos/hero_image.png" },
+  { name: "RM", logo: "/logos/rm-logo.png" },
+  // Repeat for scrolling effect
+  { name: "Apple", logo: "/logos/Apple-Logo.png" },
+  { name: "Tesla", logo: "/logos/tesla.png" },
+  { name: "Hero", logo: "/logos/hero_image.png" },
+  { name: "RM", logo: "/logos/rm-logo.png" },
+  { name: "Apple", logo: "/logos/Apple-Logo.png" },
+  { name: "Tesla", logo: "/logos/tesla.png" }
+]
+
+// FAQ data structure
+const faqData = [
+  {
+    question: "How does the AI personalization work?",
+    answer: "Our AI analyzes the job description and your experience to create perfectly matched content. It identifies key requirements, extracts relevant keywords, and tailors your achievements to align with what employers are looking for."
+  },
+  {
+    question: "Is my data safe and private?",
+    answer: "Absolutely. We use bank-level encryption for all data. Your information is never shared with third parties, and you can delete your data anytime. We're fully GDPR and CCPA compliant."
+  },
+  {
+    question: "Can I use CareerThings AI for multiple job applications?",
+    answer: "Yes! You can create unlimited tailored resumes and cover letters for different positions. Our system saves your base profile and creates new versions optimized for each specific job."
+  },
+  {
+    question: "What makes this better than other resume builders?",
+    answer: "Unlike template-based builders, we use advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen."
+  },
+  {
+    question: "Do you offer refunds?",
+    answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied with our service, contact support for a full refund. No questions asked."
+  }
 ]
 
 export default function LandingPage() {
   const { user } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
+  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,6 +62,10 @@ export default function LandingPage() {
     }, 30)
     return () => clearInterval(interval)
   }, [])
+
+  const toggleFAQ = (index: number) => {
+    setOpenFAQIndex(openFAQIndex === index ? null : index)
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
@@ -78,18 +109,11 @@ export default function LandingPage() {
                   </Button>
                 </Link>
               ) : (
-                <>
-                  <Link href="/auth/login" className="hidden sm:block">
-                    <Button variant="ghost" className="text-gray-700 hover:text-orange-700">
-                      Log In
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
-                      Start Free Trial
-                    </Button>
-                  </Link>
-                </>
+                <Link href="/auth/login">
+                  <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
+                    Log In
+                  </Button>
+                </Link>
               )}
               
               {/* Mobile menu button */}
@@ -162,12 +186,7 @@ export default function LandingPage() {
                   Start Free - No Card Required
                 </Button>
               </Link>
-              <Link href="/demo">
-                <Button size="lg" variant="outline" className="border-gray-300 hover:border-orange-300 hover:bg-orange-50">
-                  Watch 2-min Demo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              
             </div>
             
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -188,7 +207,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Company Logos Section - Animated Slider */}
+      {/* Company Logos Section - Animated Slider - FIXED */}
       <section className="py-12 bg-white border-y border-gray-100">
         <div className="container mx-auto px-4">
           <p className="text-center text-sm text-gray-500 mb-6 font-medium">
@@ -198,16 +217,16 @@ export default function LandingPage() {
             <div className="flex items-center gap-12 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {/* Duplicate logos for seamless scrolling */}
               {[...companyLogos, ...companyLogos, ...companyLogos].map((company, index) => (
-                // The parent div is styled to just hold the logo
                 <div key={index} className="flex items-center justify-center px-5 py-3 bg-gray-50 rounded-lg">
-                  <Image
+                  <img
                     src={company.logo}
-                    alt={`${company.name} logo`} // Keep alt text for accessibility
-                    width={32}                   // Increased size for better visibility
-                    height={32}
-                    className="h-8 w-8 object-contain"
+                    alt={`${company.name} logo`}
+                    className="h-8 w-auto object-contain"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      e.currentTarget.src = `https://via.placeholder.com/120x40/CCCCCC/666666?text=${company.name}`;
+                    }}
                   />
-                  {/* The company name <span> element has been removed from here */}
                 </div>
               ))}
             </div>
@@ -227,7 +246,7 @@ export default function LandingPage() {
               <div className="text-orange-100">Active Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold mb-2">2.5M+</div>
+              <div className="text-3xl md:text-4xl font-bold mb-2">1.5M+</div>
               <div className="text-orange-100">Documents Created</div>
             </div>
             <div className="text-center">
@@ -363,85 +382,6 @@ export default function LandingPage() {
       {/* Document Examples Section */}
       <DocumentExamples />
 
-      {/* Enhanced Features Grid */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="inline-block rounded-full bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-800 mb-4">
-              POWERFUL FEATURES
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything You Need to Succeed
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Advanced AI technology combined with industry best practices
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-4">
-                <Target className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">ATS Optimization</h3>
-              <p className="text-gray-600 text-sm">
-                Beat applicant tracking systems with optimized keywords and formatting that gets you noticed.
-              </p>
-            </Card>
-
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4">
-                <Globe className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Multi-Language Support</h3>
-              <p className="text-gray-600 text-sm">
-                Create documents in 25+ languages with native-level writing quality and cultural adaptation.
-              </p>
-            </Card>
-
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mb-4">
-                <Clock className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">60-Second Generation</h3>
-              <p className="text-gray-600 text-sm">
-                From job posting to tailored documents in under a minute. Save hours on each application.
-              </p>
-            </Card>
-
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center mb-4">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Privacy First</h3>
-              <p className="text-gray-600 text-sm">
-                Your data is encrypted and never shared. Full GDPR compliance with data deletion options.
-              </p>
-            </Card>
-
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center mb-4">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Success Analytics</h3>
-              <p className="text-gray-600 text-sm">
-                Track application performance with insights on views, downloads, and interview conversion rates.
-              </p>
-            </Card>
-
-            <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center mb-4">
-                <Award className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Industry Templates</h3>
-              <p className="text-gray-600 text-sm">
-                500+ professionally designed templates for every industry, from tech to healthcare to finance.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -520,7 +460,7 @@ export default function LandingPage() {
 
       {/* Enhanced Pricing Section */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-         <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-block rounded-full bg-gradient-to-r from-orange-100 to-orange-100 px-4 py-2 text-sm font-semibold text-orange-800 mb-4">
               SIMPLE PRICING
@@ -603,6 +543,7 @@ export default function LandingPage() {
                             ? "bg-gray-900 hover:bg-gray-800"
                             : tier === "PRO"
                             ? "bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg shadow-orange-500/25"
+                            
                             : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         }`}
                       >
@@ -626,7 +567,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section with Collapsible Cards */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
@@ -638,51 +579,41 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          <div className="space-y-6">
-            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
-              <h3 className="text-lg font-semibold mb-3">
-                How does the AI personalization work?
-              </h3>
-              <p className="text-gray-600">
-                Our AI analyzes the job description and your experience to create perfectly matched content. It identifies key requirements, extracts relevant keywords, and tailors your achievements to align with what employers are looking for.
-              </p>
-            </Card>
-
-            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
-              <h3 className="text-lg font-semibold mb-3">
-                Is my data safe and private?
-              </h3>
-              <p className="text-gray-600">
-                Absolutely. We use bank-level encryption for all data. Your information is never shared with third parties, and you can delete your data anytime. We're fully GDPR and CCPA compliant.
-              </p>
-            </Card>
-
-            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
-              <h3 className="text-lg font-semibold mb-3">
-                Can I use CareerThings AI for multiple job applications?
-              </h3>
-              <p className="text-gray-600">
-                Yes! You can create unlimited tailored resumes and cover letters for different positions. Our system saves your base profile and creates new versions optimized for each specific job.
-              </p>
-            </Card>
-
-            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
-              <h3 className="text-lg font-semibold mb-3">
-                What makes this better than other resume builders?
-              </h3>
-              <p className="text-gray-600">
-                Unlike template-based builders, we use advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen.
-              </p>
-            </Card>
-
-            <Card className="p-6 border border-gray-200 hover:border-orange-300 transition-colors">
-              <h3 className="text-lg font-semibold mb-3">
-                Do you offer refunds?
-              </h3>
-              <p className="text-gray-600">
-                Yes, we offer a 30-day money-back guarantee. If you're not satisfied with our service, contact support for a full refund. No questions asked.
-              </p>
-            </Card>
+          <div className="space-y-4">
+            {faqData.map((faq, index) => (
+              <Card 
+                key={index} 
+                className={`border transition-all duration-300 ${
+                  openFAQIndex === index 
+                    ? 'border-orange-400 shadow-lg' 
+                    : 'border-gray-200 hover:border-orange-300'
+                }`}
+              >
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full p-6 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+                >
+                  <h3 className="text-lg font-semibold pr-4">
+                    {faq.question}
+                  </h3>
+                  <div className={`flex-shrink-0 transition-transform duration-300 ${
+                    openFAQIndex === index ? 'rotate-180' : ''
+                  }`}>
+                    <ChevronDown className="h-5 w-5 text-orange-500" />
+                  </div>
+                </button>
+                
+                <div className={`overflow-hidden transition-all duration-300 ${
+                  openFAQIndex === index ? 'max-h-96' : 'max-h-0'
+                }`}>
+                  <div className="px-6 pb-6">
+                    <p className="text-gray-600">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
 
           <div className="text-center mt-12">
@@ -725,12 +656,7 @@ export default function LandingPage() {
                   Start Free Trial Now
                 </Button>
               </Link>
-              <Link href="/demo">
-                <Button size="lg" variant="outline" className="border-white/50 text-white hover:bg-white/10 backdrop-blur px-8 py-6 text-lg">
-                  Schedule Live Demo
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              
             </div>
             
             <div className="flex items-center justify-center gap-6 text-sm">
@@ -792,8 +718,7 @@ export default function LandingPage() {
                 <li><Link href="/features" className="hover:text-orange-400 transition-colors">Features</Link></li>
                 <li><Link href="/templates" className="hover:text-orange-400 transition-colors">Templates</Link></li>
                 <li><Link href="/pricing" className="hover:text-orange-400 transition-colors">Pricing</Link></li>
-                <li><Link href="/demo" className="hover:text-orange-400 transition-colors">Live Demo</Link></li>
-                <li><Link href="/api" className="hover:text-orange-400 transition-colors">API</Link></li>
+                
               </ul>
             </div>
 
@@ -802,9 +727,6 @@ export default function LandingPage() {
               <h3 className="text-white font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/blog" className="hover:text-orange-400 transition-colors">Blog</Link></li>
-                <li><Link href="/guides" className="hover:text-orange-400 transition-colors">Career Guides</Link></li>
-                <li><Link href="/examples" className="hover:text-orange-400 transition-colors">Resume Examples</Link></li>
-                <li><Link href="/cover-letter-examples" className="hover:text-orange-400 transition-colors">Cover Letter Examples</Link></li>
                 <li><Link href="/help" className="hover:text-orange-400 transition-colors">Help Center</Link></li>
               </ul>
             </div>
@@ -814,10 +736,8 @@ export default function LandingPage() {
               <h3 className="text-white font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/about" className="hover:text-orange-400 transition-colors">About Us</Link></li>
-                <li><Link href="/careers" className="hover:text-orange-400 transition-colors">Careers</Link></li>
                 <li><Link href="/contact" className="hover:text-orange-400 transition-colors">Contact</Link></li>
-                <li><Link href="/partners" className="hover:text-orange-400 transition-colors">Partners</Link></li>
-                <li><Link href="/affiliates" className="hover:text-orange-400 transition-colors">Affiliates</Link></li>
+               
               </ul>
             </div>
           </div>

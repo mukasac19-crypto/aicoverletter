@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,12 +7,19 @@ import { DollarSign, Users, CreditCard, Activity } from "lucide-react";
 
 export default function OsloDashboard() {
   const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('/api/oslo/dashboard');
-      const data = await response.json();
-      setData(data);
+      try {
+        const response = await fetch('/api/oslo/dashboard');
+        const data = await response.json();
+        setData(data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -28,7 +36,9 @@ export default function OsloDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${data?.totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">
+              ${loading ? '...' : (data?.totalRevenue ?? 0).toFixed(2)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
@@ -42,7 +52,9 @@ export default function OsloDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{data?.subscriptionCount}</div>
+            <div className="text-2xl font-bold">
+              +{loading ? '...' : (data?.subscriptionCount ?? 0)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +180.1% from last month
             </p>
@@ -54,7 +66,9 @@ export default function OsloDashboard() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{data?.userCount}</div>
+            <div className="text-2xl font-bold">
+              +{loading ? '...' : (data?.userCount ?? 0)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +19% from last month
             </p>

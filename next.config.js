@@ -10,7 +10,7 @@ const nextConfig = {
 
   // === ADD THIS LINE ===
   transpilePackages: ['undici'],
-  // =====================
+  // =====================a
 
   // === REMOVE THIS ENTIRE BLOCK ===
   // webpack: (config, { isServer, dev }) => {
