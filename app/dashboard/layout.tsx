@@ -113,27 +113,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   useEffect(() => {
-  function handleClickOutside(event: MouseEvent) {
-    const avatarButton = document.getElementById("avatarButton");
-    const userDropdown = document.getElementById("userDropdown");
-    if (
-      avatarButton &&
-      userDropdown &&
-      !avatarButton.contains(event.target as Node) &&
-      !userDropdown.contains(event.target as Node)
-    ) {
-      setDropdownOpen(false);
+    function handleClickOutside(event: MouseEvent) {
+      const avatarButton = document.getElementById("avatarButton");
+      const userDropdown = document.getElementById("userDropdown");
+      if (
+        avatarButton &&
+        userDropdown &&
+        !avatarButton.contains(event.target as Node) &&
+        !userDropdown.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
     }
-  }
-  if (dropdownOpen) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
-  }
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [dropdownOpen]);
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   // useEffect(()=>{
   //   async function init(){
@@ -221,10 +221,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {user && (
             <div className="relative group">
               <button
-                
-                id="avatarButton" 
-                type="button" 
-                data-dropdown-toggle="userDropdown" 
+                id="avatarButton"
+                type="button"
+                data-dropdown-toggle="userDropdown"
                 data-dropdown-placement="bottom-start"
                 className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg shadow hover:shadow-md transition relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
                 aria-label="User menu"
@@ -247,17 +246,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div> */}
 
               <div
-      id="userDropdown"
-      className={`z-10 absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-all ${
-        dropdownOpen ? "block" : "hidden"
-      }`}
-    >
-    <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-      
-      <div className="font-medium truncate">{user && user.email}</div>
-    </div>
-    <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
-      {/* <li>
+                id="userDropdown"
+                className={`z-10 absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-all ${
+                  dropdownOpen ? "block" : "hidden"
+                }`}
+              >
+                <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                  <div className="font-medium truncate">
+                    {user && user.email}
+                  </div>
+                </div>
+                <ul
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                  aria-labelledby="avatarButton"
+                >
+                  {/* <li>
         <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
       </li>
       <li>
@@ -266,20 +269,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <li>
         <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
       </li> */}
-    </ul>
-    <div className="p-2">
-     <Button
-                  className="w-full text-left px-4 py-2 text-white hover:text-gray-800 hover:bg-orange-50 rounded-b-lg focus:outline-none"
-                  onClick={handleSignOut}
-                  disabled={signOutLoading}
-                >
-                  Log Out
-     </Button>
-    </div>
-</div>
-
-  
-
+                </ul>
+                <div className="p-2">
+                  <Button
+                    className="w-full text-left px-4 py-2 text-white hover:text-gray-800 hover:bg-orange-50 rounded-b-lg focus:outline-none"
+                    onClick={handleSignOut}
+                    disabled={signOutLoading}
+                  >
+                    Log Out
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -347,6 +347,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                           </Link>
                         </li>
                       ))}
+                      <div className="p-2">
+                        <Button
+                          className="w-full text-left px-4 py-2 text-white hover:text-gray-800 hover:bg-orange-50 rounded-b-lg focus:outline-none"
+                          onClick={handleSignOut}
+                          disabled={signOutLoading}
+                        >
+                          Log Out
+                        </Button>
+                      </div>
                     </ul>
                   </nav>
                 </div>

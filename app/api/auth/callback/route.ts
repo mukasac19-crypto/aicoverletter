@@ -18,5 +18,6 @@ export async function GET(request: NextRequest) {
 
   // URL to redirect to after sign in process completes
   // This will be the dashboard for existing users or an onboarding page for new ones.
-  return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
+  // return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
+  return NextResponse.redirect(`https://careerthings.co/dashboard`);
 }
