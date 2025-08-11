@@ -10,6 +10,8 @@ import Link from "next/link"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
+import { useRouter } from 'next/navigation'
+// import SplashScreen from '@/components/SplashScreen'
 
 // Company logos data with actual image paths matching your files
 const companyLogos = [

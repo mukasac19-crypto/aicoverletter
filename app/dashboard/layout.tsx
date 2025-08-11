@@ -135,15 +135,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     };
   }, [dropdownOpen]);
 
-  // useEffect(()=>{
-  //   async function init(){
-  //      try {
-  //       await handleSignOut()
-  //      } catch (error) {
-  //       console.log(error,'===========log out fail')
-  //      }
-  //   }
-  // },[])
+  
 
   if (!isMounted) {
     return null;
