@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\pricing\page.tsx
-
 // NO "use client" at the top. This is now a Server Component.
 import { Suspense } from 'react';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
@@ -7,49 +5,19 @@ import { cookies } from 'next/headers';
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, ArrowRight, Mail, CreditCard, Check } from "lucide-react";
+import { CreditCard, Check } from "lucide-react";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import PricingClient from './PricingClient'; // Import the new dynamic component
 
 // The page is now an async function to allow fetching data on the server.
 export default async function PricingPage() {
-  // Fetch user data on the server to correctly render the header and CTA
+  // Fetch user data on the server to correctly render the CTA
   const supabase = createServerComponentClient({ cookies });
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary">
-      {/* Header - This is now rendered on the server */}
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center">
-            <FileText className="h-6 w-6 text-primary mr-2" />
-            <h1 className="text-xl font-bold">CareerThings AI</h1>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            {user ? (
-              <Link href="/dashboard">
-                <Button>
-                  Go to Dashboard
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/auth/login">
-                  <Button variant="outline">Log In</Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button>Sign Up</Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Pricing Hero */}
       <section className="container mx-auto px-4 py-12 md:py-20 text-center max-w-5xl">
         <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
@@ -236,26 +204,6 @@ export default async function PricingPage() {
           </div>
         </div>
       </section>
-
-      {/* Footer - This is static JSX */}
-      <footer className="border-t border-border bg-card py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
-              <FileText className="h-5 w-5 text-primary mr-2" />
-              <span className="font-semibold">CareerThings AI</span>
-            </div>
-            <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-sm text-muted-foreground">
-              <Link href="#" className="hover:text-foreground transition">Terms of Service</Link>
-              <Link href="#" className="hover:text-foreground transition">Privacy Policy</Link>
-              <Link href="#" className="hover:text-foreground transition">Contact Us</Link>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} CareeThings AI. All rights reserved.
-          </div>
-        </div>
-      </footer>
-    </main>
+    </>
   );
 }

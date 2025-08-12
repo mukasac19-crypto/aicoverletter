@@ -1,17 +1,14 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react'
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { FileText, Upload, ArrowRight, CheckCircle, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Users, TrendingUp, Award, Clock, Target, Briefcase, Menu, X, ChevronDown, ChevronUp } from "lucide-react"
+import { FileText, Upload, ArrowRight, CheckCircle, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Users, TrendingUp, Award, Clock, Target, Briefcase, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
-
-// import SplashScreen from '@/components/SplashScreen'
 
 // Company logos data with actual image paths matching your files
 const companyLogos = [
@@ -31,7 +28,6 @@ const companyLogos = [
   { name: "Spotify", logo: "/logos/spotifylogo.png" },
   { name: "Salesforce", logo: "/logos/salesforcelogo.png" },
   { name: "Amazon", logo: "/logos/amazonlogo.png" },
-
 ]
 
 // FAQ data structure
@@ -60,7 +56,6 @@ const faqData = [
 
 export default function LandingPage() {
   const { user } = useAuth()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
@@ -76,92 +71,9 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
-      {/* Enhanced Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-100 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-8">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="h-8 w-auto rounded-lg flex items-center justify-center">
-                  <Image
-                    src="/careerthingslogo.png"
-                    width={200}
-                    height={36}
-                    alt='CareerThings AI logo'
-                   />
-                </div>
-                
-                
-              </Link>
-              
-              {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-6">
-                <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
-                  Features
-                </Link>
-                <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
-                  Pricing
-                </Link>
-                <Link href="/templates" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
-                  Templates
-                </Link>
-                <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
-                  Resources
-                </Link>
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {user ? (
-                <Link href="/dashboard">
-                  <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
-                    Go to Dashboard
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/auth/login">
-                  <Button className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
-                    Log In
-                  </Button>
-                </Link>
-              )}
-              
-              {/* Mobile menu button */}
-              <button
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white">
-            <nav className="container mx-auto px-4 py-4 space-y-2">
-              <Link href="/features" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
-                Features
-              </Link>
-              <Link href="/pricing" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
-                Pricing
-              </Link>
-              <Link href="/templates" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
-                Templates
-              </Link>
-              <Link href="/blog" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
-                Resources
-              </Link>
-            </nav>
-          </div>
-        )}
-      </header>
-
+    <>
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
+      <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
         {/* Background decorations */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-20 left-10 h-72 w-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -198,7 +110,6 @@ export default function LandingPage() {
                   Start Free - No Card Required
                 </Button>
               </Link>
-              
             </div>
             
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -219,7 +130,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Company Logos Section - Animated Slider - FIXED */}
+      {/* Company Logos Section - Animated Slider */}
       <section className="py-12 bg-white border-y border-gray-100">
         <div className="container mx-auto px-4">
           <p className="text-center text-sm text-gray-500 mb-6 font-medium">
@@ -235,7 +146,6 @@ export default function LandingPage() {
                     alt={`${company.name} logo`}
                     width={100}
                     height={80}
-
                     className='w-full h-full object-contain'
                     onError={(e) => {
                       console.log(e,'----------err')
@@ -489,7 +399,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {Object.entries(SUBSCRIPTION_PLANS).map(([tier, plan], index) => (
               <div
                 key={tier}
@@ -559,7 +469,6 @@ export default function LandingPage() {
                             ? "bg-gray-900 hover:bg-gray-800"
                             : tier === "PRO"
                             ? "bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg shadow-orange-500/25"
-                            
                             : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         }`}
                       >
@@ -672,7 +581,6 @@ export default function LandingPage() {
                   Start Free Trial Now
                 </Button>
               </Link>
-              
             </div>
             
             <div className="flex items-center justify-center gap-6 text-sm">
@@ -692,88 +600,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Enhanced Footer */}
-      <footer className="bg-gray-900 text-gray-300">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* Company Info */}
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">CareerThings AI</span>
-              </div>
-              <p className="text-sm text-gray-400 mb-4">
-                AI-powered resume and cover letter builder helping professionals land their dream jobs.
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </a>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                  </svg>
-                </a>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Product Links */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/features" className="hover:text-orange-400 transition-colors">Features</Link></li>
-                <li><Link href="/templates" className="hover:text-orange-400 transition-colors">Templates</Link></li>
-                <li><Link href="/pricing" className="hover:text-orange-400 transition-colors">Pricing</Link></li>
-                
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/blog" className="hover:text-orange-400 transition-colors">Blog</Link></li>
-                <li><Link href="/help" className="hover:text-orange-400 transition-colors">Help Center</Link></li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/about-us" className="hover:text-orange-400 transition-colors">About Us</Link></li>
-                <li><Link href="/contact-us" className="hover:text-orange-400 transition-colors">Contact</Link></li>
-               
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Footer */}
-          <div className="border-t border-gray-800 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-gray-400 mb-4 md:mb-0">
-                © {new Date().getFullYear()} CareerThings. All rights reserved.
-              </p>
-              <div className="flex flex-wrap gap-6 text-sm">
-                <Link href="/legal/privacy-policy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link>
-                <Link href="/legal/terms-of-use" className="hover:text-orange-400 transition-colors">Terms of Service</Link>
-                <Link href="/legal/cookie-policy" className="hover:text-orange-400 transition-colors">Cookie Policy</Link>
-                <Link href="/sitemap" className="hover:text-orange-400 transition-colors">Sitemap</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       <style jsx>{`
         @keyframes blob {
@@ -795,6 +621,6 @@ export default function LandingPage() {
           background-image: url("data:image/svg+xml,%3csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3e%3cg fill='none' fill-rule='evenodd'%3e%3cg fill='%23ffffff' fill-opacity='0.1'%3e%3cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e");
         }
       `}</style>
-    </main>
+    </>
   )
 }

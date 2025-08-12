@@ -31,7 +31,7 @@ const OsloBlogPage = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [headerImageUrl, setHeaderImageUrl] = useState('');
-    const [relatedArticles, setRelatedArticles] = useState('');
+
 
     useEffect(() => {
         fetchBlogs();
@@ -45,14 +45,19 @@ const OsloBlogPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user) return;
+
+        const body = {
+            title,
+            content,
+            header_image_url: headerImageUrl || null,
+        };
 
         if (editingBlog) {
             // Update existing blog
             const response = await fetch(`/api/blogs/${editingBlog.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, header_image_url: headerImageUrl, related_articles: JSON.parse(relatedArticles) }),
+                body: JSON.stringify(body),
             });
             const updatedBlog = await response.json();
             setBlogs(blogs.map(b => b.id === editingBlog.id ? updatedBlog.blog : b));
@@ -61,7 +66,7 @@ const OsloBlogPage = () => {
             const response = await fetch('/api/blogs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, header_image_url: headerImageUrl, related_articles: JSON.parse(relatedArticles), published_at: new Date().toISOString() }),
+                body: JSON.stringify({ ...body, published_at: new Date().toISOString() }),
             });
             const newBlog = await response.json();
             setBlogs([...blogs, newBlog.blog]);
@@ -70,7 +75,6 @@ const OsloBlogPage = () => {
         setTitle('');
         setContent('');
         setHeaderImageUrl('');
-        setRelatedArticles('');
     };
 
     const handleEdit = (blog: BlogPost) => {
@@ -78,7 +82,6 @@ const OsloBlogPage = () => {
         setTitle(blog.title);
         setContent(blog.content);
         setHeaderImageUrl(blog.header_image_url || '');
-        setRelatedArticles(JSON.stringify(blog.related_articles || []));
     };
 
     const handleDelete = async (id: string) => {
@@ -106,19 +109,15 @@ const OsloBlogPage = () => {
                         onChange={(e) => setTitle(e.target.value)}
                     />
                     <Textarea
-                        placeholder="Content"
+                        placeholder="Content (HTML)"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
+                        rows={10}
                     />
                     <Input
-                        placeholder="Header Image URL"
+                        placeholder="Header Image URL (Optional)"
                         value={headerImageUrl}
                         onChange={(e) => setHeaderImageUrl(e.target.value)}
-                    />
-                    <Textarea
-                        placeholder="Related Articles (JSON)"
-                        value={relatedArticles}
-                        onChange={(e) => setRelatedArticles(e.target.value)}
                     />
                     <Button type="submit">{editingBlog ? 'Update' : 'Create'}</Button>
                     {editingBlog && (
@@ -127,7 +126,6 @@ const OsloBlogPage = () => {
                             setTitle('');
                             setContent('');
                             setHeaderImageUrl('');
-                            setRelatedArticles('');
                         }}>
                             Cancel
                         </Button>

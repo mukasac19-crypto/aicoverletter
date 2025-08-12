@@ -21,11 +21,22 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     const supabase = getServerClient();
     const { id } = params;
-    const { title, content } = await request.json();
+    const { title, content, header_image_url } = await request.json();
+
+    const { data: blogs } = await supabase.from('blogs').select('id, title, content').neq('id', id);
+
+    const related_articles = blogs
+        ?.map(blog => {
+            const score = content.split(' ').filter((word: string) => blog.content.includes(word)).length;
+            return { id: blog.id, title: blog.title, score };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(({ id, title }) => ({ id, title }));
 
     const { data, error } = await supabase
         .from('blogs')
-        .update({ title, content, updated_at: new Date().toISOString() })
+        .update({ title, content, header_image_url, related_articles: related_articles || [], updated_at: new Date().toISOString() })
         .eq('id', id)
         .select();
 

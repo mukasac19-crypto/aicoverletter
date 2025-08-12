@@ -64,19 +64,4 @@ export const SUBSCRIPTION_PLANS: Record<SubscriptionTier, SubscriptionPlan> = {
       annually: 'price_1RK6FHBh2Msdef2rzti7qMbN',
     },
   },
-  BUSINESS: {
-    id: 'business',
-    name: 'Business',
-    description: 'Placeholder for business tier.',
-    features: [],
-    limits: {
-      coverLetters: 0,
-      resumes: 0,
-      templates: 'none',
-      atsScans: 0,
-      interviewSessions: 0,
-    },
-    price: { monthly: 0, quarterly: 0, annually: 0 },
-    stripePriceIds: { monthly: '', quarterly: '', annually: '' },
-  },
 };
