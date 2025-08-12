@@ -116,18 +116,18 @@ export default function InterviewBuddyPage() {
         )}
       </div>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full px-4 md:px-6">
-        <TabsList className="mb-4 md:mb-6 bg-orange-50 border border-orange-100 w-full flex">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="mb-6 w-full flex justify-between bg-muted/50 rounded-lg p-1 gap-2 flex-nowrap">
           <TabsTrigger 
             value="generate" 
-            className="flex-1 data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 data-[state=active]:shadow-none text-gray-700 hover:text-orange-600 text-xs sm:text-sm"
+            className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
             <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
             <span className="hidden xs:inline">Generate</span> Interview
           </TabsTrigger>
           <TabsTrigger 
             value="history"
-            className="flex-1 data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 data-[state=active]:shadow-none text-gray-700 hover:text-orange-600 text-xs sm:text-sm"
+            className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
             <FileText className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
             <span className="hidden xs:inline">Interview</span> History

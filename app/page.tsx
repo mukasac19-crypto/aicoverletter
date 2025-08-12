@@ -10,7 +10,7 @@ import Link from "next/link"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
-import { useRouter } from 'next/navigation'
+
 // import SplashScreen from '@/components/SplashScreen'
 
 // Company logos data with actual image paths matching your files
@@ -220,15 +220,17 @@ export default function LandingPage() {
             OVER 100,000 USERS LANDED JOBS AT LEADING COMPANIES
           </p>
           <div className="relative overflow-hidden">
-            <div className="flex items-center gap-12 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
+            <div className="flex items-center gap-4 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {/* Duplicate logos for seamless scrolling */}
-              {[...companyLogos, ...companyLogos, ...companyLogos].map((company, index) => (
-                <div key={index} className="flex items-center justify-center px-5 py-3 bg-gray-50 rounded-lg">
+              {[...companyLogos].map((company, index) => (
+                <div key={index} className="min-h-[40px] min-w-[60px] flex items-center justify-center px-1 py-1 bg-pink-300 rounded-lg">
                   <Image
-                    src={`/logos/Apple-Logo.png`}
+                    src={`${company.logo}`}
                     alt={`${company.name} logo`}
-                    width={80}
-                    height={80}
+                    width={60}
+                    height={60}
+
+                    className='w-full h-full object-contain'
                     onError={(e) => {
                       console.log(e,'----------err')
                       // Fallback if image fails to load

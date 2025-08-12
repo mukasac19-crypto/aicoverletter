@@ -310,7 +310,7 @@ export default function EnhancedProfilePage() {
         <TabsList className="mb-6 w-full flex justify-between bg-muted/50 rounded-lg p-1 gap-2 flex-nowrap">
           <TabsTrigger 
           value="personal" 
-          className="min-w-[80px] flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+          className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           > 
           <User className="w-4 h-4 mr-2" /> 
           <div className="hidden md:block">Personal</div>
@@ -318,7 +318,7 @@ export default function EnhancedProfilePage() {
 
         <TabsTrigger 
           value="security" 
-          className="min-w-[80px] flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+          className="min-w-[80px] flex flex-1 items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           > 
            <Key className="w-4 h-4 mr-2" /> 
            <div className="hidden md:block">Security </div>
@@ -326,7 +326,7 @@ export default function EnhancedProfilePage() {
 
          <TabsTrigger 
           value="billing" 
-          className="min-w-[80px] flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+          className="min-w-[80px] flex flex-1 items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           > 
          <CreditCard className="w-4 h-4 mr-2" /> 
          <div className="hidden md:block">
@@ -337,7 +337,7 @@ export default function EnhancedProfilePage() {
          
         <TabsTrigger 
         value="general" 
-        className="min-w-[80px] flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400" 
+        className="min-w-[80px] flex  flex-1 items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400" 
 
         > 
           <Settings className="w-4 h-4 mr-2" /> 

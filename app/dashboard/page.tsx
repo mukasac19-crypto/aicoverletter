@@ -1,4 +1,3 @@
-// /app/dashboard/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -356,7 +355,7 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="container px-3 sm:px-6 mx-auto py-4 sm:py-6 max-w-7xl">
+      <div className="container mx-auto py-4 px-4 sm:px-6 md:px-8 max-w-7xl">
         {/* Dashboard Header */}
 
         {/* Usage Overview Section - NEW */}
@@ -364,9 +363,9 @@ export default function DashboardPage() {
           <UsageLimits showCard={true} />
         </div>
 
-        <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row gap-4">
+        <div className="mb-4 sm:mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Resumes Card */}
-          <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
+          <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
                 <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 2v4M16 2v4M4 10h16"/></svg>
@@ -383,7 +382,7 @@ export default function DashboardPage() {
             </div>
           </div>
           {/* Cover Letters Card */}
-          <div className="flex-1 bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
+          <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100">
                 <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
@@ -415,11 +414,10 @@ export default function DashboardPage() {
           </Alert>
         )}
 
-        <section className="mb-4 sm:mb-8 md:flex md:justify-end">
+        <section className="mb-4 sm:mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* recents */}
-          <div className="w-full h-auto flex flex-col justify-start items-start px-2">
-
-            <div className="w-full h-auto flex justify-between px-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
               <h3 className="text-gray-800 text-xl font-bold">Recent Resume</h3>
               <Link href="/dashboard/resumes">
                 <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
@@ -429,29 +427,29 @@ export default function DashboardPage() {
               </Link>
             </div>
             
-            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
+            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex items-center transition-transform hover:scale-[1.02]">
               {loadingResumes ? (
                 <LoadingSpinner className="h-4 w-4" />
               ) : recentResumes.length > 0 ? (
                 <div className="w-full flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileBadge className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm font-medium truncate max-w-[200px]">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileBadge className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm font-medium truncate">
                       {recentResumes[0].title}
                     </span>
                   </div>
-                  <Link href={`/dashboard/resumes/${recentResumes[0].id}`}>
+                  <Link href={`/dashboard/resumes/${recentResumes[0].id}`} className="flex-shrink-0">
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                       Edit
                     </Button>
                   </Link>
                 </div>
               ) : (
-                <span className="text-sm text-gray-400">No recent resumes</span>
+                <span className="text-sm text-gray-400 mx-auto">No recent resumes</span>
               )}
             </div>
             
-            <div className="w-full h-auto flex justify-between px-4">
+            <div className="flex justify-between items-center mt-4">
               <h3 className="text-gray-800 text-xl font-bold">Recent Cover Letter</h3>
               <Link href="/dashboard/cover-letters?tab=recent">
                 <Button variant="ghost" size="sm" className="h-7 sm:h-8 w-7 sm:w-auto px-1 sm:px-2">
@@ -461,34 +459,33 @@ export default function DashboardPage() {
               </Link>
             </div>
             
-            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] my-4">
+            <div className="h-[60px] w-full bg-white rounded-sm shadow-sm border border-gray-100 p-6 flex items-center transition-transform hover:scale-[1.02]">
               {loadingLetters ? (
                 <LoadingSpinner className="h-4 w-4" />
               ) : recentLetters.length > 0 ? (
                 <div className="w-full flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm font-medium truncate max-w-[200px]">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileText className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm font-medium truncate">
                       {recentLetters[0].title}
                     </span>
                   </div>
-                  <Link href={`/dashboard/cover-letters?edit=${recentLetters[0].id}`}>
+                  <Link href={`/dashboard/cover-letters?edit=${recentLetters[0].id}`} className="flex-shrink-0">
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                       Edit
                     </Button>
                   </Link>
                 </div>
               ) : (
-                <span className="text-sm text-gray-400">No recent cover letters</span>
+                <span className="text-sm text-gray-400 mx-auto">No recent cover letters</span>
               )}
             </div>
-
           </div>
+
           {/* quick actions */}
-          <div className="w-[20px] h-auto"></div>
-          <Card className="w-full md:w-[36%] lg:w-[36%] h-[250px] border-t-4 border-t-orange-500 shadow-md overflow-hidden rounded-sm">
+          <Card className="w-full border-t-4 border-t-orange-500 shadow-md overflow-hidden rounded-sm mt-4 md:mt-0">
             <CardHeader className="text-center py-2 sm:py-4">
-              <div className="w-full h-auto flex justify-center items-center">
+              <div className="w-full flex justify-center items-center">
                 <div className="w-[40px] h-[40px] bg-orange-600 rounded-full flex justify-center items-center p-2">
                   <Rocket size={30} color="white" />
                 </div>
@@ -570,7 +567,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Recent Follow-Up Emails Section */}
           <Card className="border-t-orange-400 shadow-sm h-[350px]">
             <CardHeader className="py-2 sm:py-4 border-b border-gray-100 flex flex-row items-center justify-between">
