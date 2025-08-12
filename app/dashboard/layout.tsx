@@ -42,6 +42,7 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -164,10 +165,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className=" sticky top-0 left-0 right-0 w-full min-h-[80px]  bg-white border-b border-gray-100 hidden lg:flex items-center justify-between px-4 lg:px-8">
         <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-orange-600 mr-2" />
-          <span className="font-bold text-gray-800 text-lg hidden sm:inline">
-            CareerThings
-          </span>
+          <div className="h-8 w-auto rounded-lg flex items-center justify-center">
+                            <Image
+                              src="/careerthingslogo.png"
+                              width={200}
+                              height={36}
+                              alt='CareerThings AI logo'
+                             />
+                          </div>
 
           <div onClick={() => setIsCollapsed(!isCollapsed)}>
             {isCollapsed ? (
@@ -279,14 +284,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Mobile Header - Always visible on mobile and small screens */}
       <header className="border-b sticky top-0 z-40 bg-white shadow-sm lg:hidden">
-        <div className="flex h-16 items-center px-4 justify-between">
-          <div className="flex items-center">
-            <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+        <div className="flex h-16 items-center px-4 justify-between w-full">
+
+          <div className="flex items-center justify-between relative w-full">
+
+            <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen} >
+              <div className="h-8 w-auto rounded-lg flex items-center justify-center">
+                              <Image
+                                src="/careerthingslogo.png"
+                                width={160}
+                                height={36}
+                                alt='CareerThings AI logo'
+                               />
+                            </div>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-700 hover:text-orange-600"
+                  className="text-gray-700 hover:text-orange-600 absolute right-0 top-0"
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
@@ -300,10 +315,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       className="flex items-center"
                       onClick={() => setIsMobileOpen(false)}
                     >
-                      <FileText className="h-6 w-6 text-orange-600 mr-2" />
-                      <h1 className="text-xl font-bold text-gray-800">
-                        CareerThings
-                      </h1>
+                      <div className="h-8 w-auto rounded-lg flex items-center justify-center">
+                                        <Image
+                                          src="/careerthingslogo.png"
+                                          width={200}
+                                          height={36}
+                                          alt='CareerThings AI logo'
+                                         />
+                                      </div>
                     </Link>
                     <Button
                       variant="ghost"
@@ -354,10 +373,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </SheetContent>
             </Sheet>
           </div>
-          <div className="flex items-center">
+          {/* <div className="flex items-center bg-green-100">
             <FileText className="h-6 w-6 text-orange-600 mr-2" />
             <h1 className="text-xl font-bold text-gray-800">CareerThings </h1>
-          </div>
+          </div> */}
           <div className="w-10"></div> {/* Placeholder for alignment */}
         </div>
       </header>

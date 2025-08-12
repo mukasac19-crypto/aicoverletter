@@ -77,12 +77,16 @@ export default function LandingPage() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-8">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-white" />
+                <div className="h-8 w-auto rounded-lg flex items-center justify-center">
+                  <Image
+                    src="/careerthingslogo.png"
+                    width={200}
+                    height={36}
+                    alt='CareerThings AI logo'
+                   />
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  CareerThings
-                </span>
+                
+                
               </Link>
               
               {/* Desktop Navigation */}
@@ -220,11 +224,13 @@ export default function LandingPage() {
               {/* Duplicate logos for seamless scrolling */}
               {[...companyLogos, ...companyLogos, ...companyLogos].map((company, index) => (
                 <div key={index} className="flex items-center justify-center px-5 py-3 bg-gray-50 rounded-lg">
-                  <img
-                    src={company.logo}
+                  <Image
+                    src={`/logos/Apple-Logo.png`}
                     alt={`${company.name} logo`}
-                    className="h-8 w-auto object-contain"
+                    width={80}
+                    height={80}
                     onError={(e) => {
+                      console.log(e,'----------err')
                       // Fallback if image fails to load
                       e.currentTarget.src = `https://via.placeholder.com/120x40/CCCCCC/666666?text=${company.name}`;
                     }}
