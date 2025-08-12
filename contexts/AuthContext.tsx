@@ -28,7 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [impersonated, setImpersonated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  console.log(window.location.origin,"====================ccc===========>>>")
+  useEffect(()=>{
+    console.log(window.location.origin,"====================ccc===========>>>")
+  },[])
 
   const signIn = (email: string, password: string) => {
     return supabase.auth.signInWithPassword({ email, password });
