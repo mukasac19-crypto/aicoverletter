@@ -140,6 +140,50 @@ export type Database = {
           },
         ]
       }
+      blogs: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string | null
+          header_image_url: string | null
+          id: string
+          published_at: string | null
+          related_articles: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string | null
+          header_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          related_articles?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string | null
+          header_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          related_articles?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blogs_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_data_sources"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       cover_letters: {
         Row: {
           company_name: string | null

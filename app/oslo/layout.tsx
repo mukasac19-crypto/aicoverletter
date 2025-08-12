@@ -16,6 +16,7 @@ import {
   X,
   BarChart2,
   LayoutTemplate,
+  BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -53,7 +54,11 @@ export default function OsloLayout({ children }: OsloLayoutProps) {
       href: "/oslo/subscriptions",
       icon: CreditCard,
     },
-    
+    {
+      title: "Blog",
+      href: "/oslo/blog",
+      icon: BookOpen,
+    },
     {
       title: "Settings",
       href: "/oslo/settings",
