@@ -16,16 +16,22 @@ import DocumentExamples from "@/components/DocumentExamples"
 // Company logos data with actual image paths matching your files
 const companyLogos = [
   { name: "Apple", logo: "/logos/Apple-Logo.png" },
-  { name: "Tesla", logo: "/logos/tesla.png" },
-  { name: "Hero", logo: "/logos/hero_image.png" },
-  { name: "RM", logo: "/logos/rm-logo.png" },
-  // Repeat for scrolling effect
+  { name: "Tesla", logo: "/logos/teslalogo.png" },
+  { name: "Google", logo: "/logos/googlelogo.png" },
+  { name: "Meta", logo: "/logos/metalogo.png" },
+  { name: "Netflix", logo: "/logos/netflixlogo.png" },
+  { name: "Spotify", logo: "/logos/spotifylogo.png" },
+  { name: "Salesforce", logo: "/logos/salesforcelogo.png" },
+  { name: "Amazon", logo: "/logos/amazonlogo.png" },
   { name: "Apple", logo: "/logos/Apple-Logo.png" },
-  { name: "Tesla", logo: "/logos/tesla.png" },
-  { name: "Hero", logo: "/logos/hero_image.png" },
-  { name: "RM", logo: "/logos/rm-logo.png" },
-  { name: "Apple", logo: "/logos/Apple-Logo.png" },
-  { name: "Tesla", logo: "/logos/tesla.png" }
+  { name: "Tesla", logo: "/logos/teslalogo.png" },
+  { name: "Google", logo: "/logos/googlelogo.png" },
+  { name: "Meta", logo: "/logos/metalogo.png" },
+  { name: "Netflix", logo: "/logos/netflixlogo.png" },
+  { name: "Spotify", logo: "/logos/spotifylogo.png" },
+  { name: "Salesforce", logo: "/logos/salesforcelogo.png" },
+  { name: "Amazon", logo: "/logos/amazonlogo.png" },
+
 ]
 
 // FAQ data structure
@@ -222,13 +228,13 @@ export default function LandingPage() {
           <div className="relative overflow-hidden">
             <div className="flex items-center gap-4 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {/* Duplicate logos for seamless scrolling */}
-              {[...companyLogos].map((company, index) => (
-                <div key={index} className="min-h-[40px] min-w-[60px] flex items-center justify-center px-1 py-1 bg-pink-300 rounded-lg">
+              {[...companyLogos, ...companyLogos].map((company, index) => (
+                <div key={index} className="h-[80px] min-w-[80px] flex items-center justify-center px-1 py-1 rounded-lg">
                   <Image
                     src={`${company.logo}`}
                     alt={`${company.name} logo`}
-                    width={60}
-                    height={60}
+                    width={100}
+                    height={80}
 
                     className='w-full h-full object-contain'
                     onError={(e) => {
