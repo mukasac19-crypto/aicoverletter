@@ -13,8 +13,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { error } = await supabase
-        .from('user_activity')
-        .upsert({ user_id: session.user.id, last_active: new Date().toISOString() }, { onConflict: 'user_id' });
+        .from('activity_logs')
+        .insert({ 
+            user_id: session.user.id, 
+            event_type: 'user_active',
+            details: { last_active: new Date().toISOString() } 
+        });
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
