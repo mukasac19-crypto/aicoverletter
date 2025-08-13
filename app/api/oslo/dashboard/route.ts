@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
 
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const { count: activeNow } = await supabase
-        .from('user_activity')
+        .from('activity_logs')
         .select('*', { count: 'exact' })
-        .gte('last_active', fiveMinutesAgo);
+        .gte('created_at', fiveMinutesAgo);
 
     return NextResponse.json({
       totalRevenue: totalRevenue / 100, // Convert from cents to dollars
