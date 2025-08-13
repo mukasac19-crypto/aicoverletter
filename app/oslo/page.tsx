@@ -80,7 +80,9 @@ export default function OsloDashboard() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
+            <div className="text-2xl font-bold">
+              +{loading ? '...' : (data?.activeNow ?? 0)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +201 since last hour
             </p>

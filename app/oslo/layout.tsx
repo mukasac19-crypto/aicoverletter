@@ -71,6 +71,17 @@ export default function OsloLayout({ children }: OsloLayoutProps) {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    const trackActivity = () => {
+        fetch('/api/user/track-activity', { method: 'POST' });
+    };
+
+    trackActivity();
+    const interval = setInterval(trackActivity, 60000); // Track every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   if (!isMounted) {
     return null;
   }

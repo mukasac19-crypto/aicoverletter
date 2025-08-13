@@ -38,10 +38,17 @@ export async function GET(request: NextRequest) {
         .from('subscriptions')
         .select('*', { count: 'exact' });
 
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count: activeNow } = await supabase
+        .from('user_activity')
+        .select('*', { count: 'exact' })
+        .gte('last_active', fiveMinutesAgo);
+
     return NextResponse.json({
       totalRevenue: totalRevenue / 100, // Convert from cents to dollars
       userCount,
       subscriptionCount,
+      activeNow,
     });
   } catch (error) {
     console.error('Error fetching dashboard data:', error);

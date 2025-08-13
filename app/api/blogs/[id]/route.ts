@@ -15,7 +15,22 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ blog: data });
+    const { data: allBlogs } = await supabase.from('blogs').select('id, title, published_at').order('published_at', { ascending: false });
+
+    let prevArticle = null;
+    let nextArticle = null;
+
+    if (allBlogs) {
+        const currentIndex = allBlogs.findIndex(b => b.id === id);
+        if (currentIndex > 0) {
+            prevArticle = allBlogs[currentIndex - 1];
+        }
+        if (currentIndex !== -1 && currentIndex < allBlogs.length - 1) {
+            nextArticle = allBlogs[currentIndex + 1];
+        }
+    }
+
+    return NextResponse.json({ blog: { ...data, prevArticle, nextArticle } });
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
