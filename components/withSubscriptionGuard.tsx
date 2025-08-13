@@ -40,7 +40,7 @@ export function withSubscriptionGuard<P extends object>(
         const tierValues: Record<SubscriptionTier, number> = {
           'FREE': 0,
           'PRO': 1,
-          'BUSINESS': 2
+          
         };
 
         const userHasAccess = tierValues[tier] >= tierValues[requiredTier];

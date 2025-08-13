@@ -27,9 +27,7 @@ export default function UpgradeButton({
   ...props
 }: UpgradeButtonProps) {
   // Don't show upgrade button for BUSINESS tier (highest tier)
-  if (currentTier === 'BUSINESS') {
-    return null;
-  }
+  
   
   // Determine appropriate label based on current tier
   const buttonLabel = label || (currentTier === 'FREE' ? 'Upgrade to Pro' : 'Upgrade Plan');

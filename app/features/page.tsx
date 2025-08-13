@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\features\page.tsx
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -19,51 +17,10 @@ import {
   ArrowRight,
   MailCheck
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 
 const FeaturesPage = () => {
-  const { user } = useAuth();
   return (
-    <main className="min-h-screen bg-gradient-to-b from-orange-50/20 to-white">
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-50 border-b border-orange-100 bg-white shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/90">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center">
-            <FileText className="h-6 w-6 text-orange-600 mr-2" />
-            <h1 className="text-xl font-bold text-gray-800">CareerThings AI</h1>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors">
-              Pricing
-            </Link>
-            <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors">
-              Features
-            </Link>
-            
-            {user ? (
-              <Link href="/dashboard">
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white">
-                  Go to Dashboard
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/auth/login" className="hidden sm:block">
-                  <Button variant="outline" className="border-orange-200 text-gray-700 hover:text-orange-700 hover:bg-orange-50 hover:border-orange-300">
-                    Log In
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button className="bg-orange-600 hover:bg-orange-700 text-white">Sign Up</Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-orange-50 to-white py-16 md:py-24">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
@@ -377,7 +334,7 @@ const FeaturesPage = () => {
             <p className="text-xl mb-8 text-orange-50">
               Join thousands of job seekers who have improved their application success rate with our AI-powered tools
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+           <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/register">
                 <Button size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
                   Get Started - It's Free
@@ -392,28 +349,7 @@ const FeaturesPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-orange-100 bg-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
-              <FileText className="h-5 w-5 text-orange-600 mr-2" />
-              <span className="font-semibold text-gray-800">CareerThings AI</span>
-            </div>
-            <div className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-8 text-sm text-gray-600">
-              <Link href="#" className="hover:text-orange-600 transition">Terms of Service</Link>
-              <Link href="#" className="hover:text-orange-600 transition">Privacy Policy</Link>
-              <Link href="/pricing" className="hover:text-orange-600 transition">Pricing</Link>
-              <Link href="#" className="hover:text-orange-600 transition">Contact Us</Link>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-xs text-gray-500">
-            © {new Date().getFullYear()} CareerThings AI. All rights reserved.
-          </div>
-        </div>
-      </footer>
-    </main>
+    </>
   );
 };
 

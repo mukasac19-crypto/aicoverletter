@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client";
 import { SubscriptionStatus as SubscriptionStatusType } from "@/types/subscription";
-import { CreditCard, CalendarDays, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { CreditCard, CalendarDays, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import Link from 'next/link';
 
@@ -126,9 +126,8 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
           </div>
         )}
         
-        {/* --- START OF FIX --- */}
-        {/* Usage Stats section updated with optional chaining (?.) and nullish coalescing (??) */}
-        {usageStats && tier !== 'BUSINESS' && (
+        {/* Usage Stats section */}
+        {usageStats && (
           <div className="space-y-3 mt-2">
             <h4 className="text-sm font-medium">Current Usage</h4>
             
@@ -184,16 +183,6 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
             </div>
           </div>
         )}
-        {/* --- END OF FIX --- */}
-        
-        {tier === 'BUSINESS' && (
-          <div className="flex items-start p-3 bg-green-50 border border-green-200 rounded-md">
-            <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-            <p className="text-sm">
-              You have unlimited access to all features with your Business plan.
-            </p>
-          </div>
-        )}
       </CardContent>
       
       <CardFooter className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -210,17 +199,15 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
           </Button>
         )}
         
-        {tier !== 'BUSINESS' && (
-          <Button 
-            size="sm" 
-            className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
-            asChild
-          >
-            <Link href="/pricing">
-              {tier === 'FREE' ? 'Upgrade Plan' : 'Change Plan'}
-            </Link>
-          </Button>
-        )}
+        <Button 
+          size="sm" 
+          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
+          asChild
+        >
+          <Link href="/pricing">
+            {tier === 'FREE' ? 'Upgrade Plan' : 'Change Plan'}
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

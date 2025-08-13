@@ -89,7 +89,7 @@ function mapPlanIdToTier(planId: string): SubscriptionTier {
   const simplePlanMap: Record<string, SubscriptionTier> = {
     'free': 'FREE',
     'pro': 'PRO',
-    'business': 'BUSINESS',
+    
   };
   
   if (simplePlanMap[planId.toLowerCase()]) {

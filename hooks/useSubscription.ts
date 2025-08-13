@@ -84,7 +84,7 @@ export function useSubscription() {
     const tierValues: Record<SubscriptionTier, number> = {
       'FREE': 0,
       'PRO': 1,
-      'BUSINESS': 2
+      
     };
     
     return tierValues[subscription.tier] >= tierValues[requiredTier];

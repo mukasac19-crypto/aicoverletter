@@ -214,7 +214,7 @@ function getTierFromPlanId(planId?: string | null): SubscriptionTier {
   const planIdToTier: Record<string, SubscriptionTier> = {
     'free': 'FREE',
     'pro': 'PRO',
-    'business': 'BUSINESS'
+    
   };
 
   // Also check Stripe price IDs
