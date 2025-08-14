@@ -71,23 +71,32 @@ const FeaturesPage = () => {
     {
       title: "Interview Buddy",
       description: "Practice for interviews with AI-generated questions based on your resume and job description.",
-      icon: <MessagesSquare className="h-6 w-6 text-indigo-600" />,
+      icon: <MessagesSquare className="h-8 w-8 text-indigo-600" />,
       bgColor: "bg-indigo-100",
-      path: "/dashboard/interview-buddy"
+      buttonText: "Practice Interviews",
+      buttonColor: "bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700",
+      path: "/dashboard/interview-buddy",
+      listItems: ["AI-generated questions", "Tailored to your resume", "Job-specific practice", "Answer feedback"]
     },
     {
       title: "Smart Job Search",
       description: "Find relevant job opportunities and get suggestions based on your skills and preferences.",
-      icon: <Briefcase className="h-6 w-6 text-amber-600" />,
+      icon: <Briefcase className="h-8 w-8 text-amber-600" />,
       bgColor: "bg-amber-100",
-      path: "/dashboard/jobs"
+      buttonText: "Find Jobs",
+      buttonColor: "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700",
+      path: "/dashboard/jobs",
+      listItems: ["Personalized matches", "Daily job alerts", "Skill-based filtering", "Application tracking"]
     },
     {
       title: "Follow-Up Emails",
       description: "Create professional follow-up emails to increase your chances of getting a response.",
-      icon: <MailCheck className="h-6 w-6 text-green-600" />,
+      icon: <MailCheck className="h-8 w-8 text-green-600" />,
       bgColor: "bg-green-100",
-      path: "/dashboard/cover-letters?tab=follow-up"
+      buttonText: "Create Follow-Ups",
+      buttonColor: "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700",
+      path: "/dashboard/cover-letters?tab=follow-up",
+      listItems: ["Multiple templates", "Timing suggestions", "Response tracking", "Professional tone"]
     }
   ];
 
@@ -159,20 +168,26 @@ const FeaturesPage = () => {
           {/* Secondary Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {secondaryFeatures.map((feature, index) => (
-              <Card key={index} className="overflow-hidden border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all p-6">
-                <div className="flex items-start mb-4">
-                  <div className={`${feature.bgColor} rounded-lg p-3 mr-4`}>
+              <Card key={index} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
+                <div className={`h-3 ${index === 0 ? 'bg-indigo-600' : index === 1 ? 'bg-amber-600' : 'bg-green-600'} w-full`}></div>
+                <div className="p-6">
+                  <div className={`${feature.bgColor} rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-opacity-80 transition-colors`}>
                     {feature.icon}
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-1">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm">{feature.description}</p>
-                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">{feature.title}</h3>
+                  <p className="text-gray-600 mb-6">{feature.description}</p>
+                  <ul className="space-y-2 mb-6">
+                    {feature.listItems.map((item, i) => (
+                      <li key={i} className="flex items-center">
+                        <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button onClick={() => handleFeatureClick(feature.path)} className={`w-full text-white ${feature.buttonColor}`}>
+                    {feature.buttonText}
+                  </Button>
                 </div>
-                <Button onClick={() => handleFeatureClick(feature.path)} variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" size="sm">
-                  Learn More
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
               </Card>
             ))}
           </div>
