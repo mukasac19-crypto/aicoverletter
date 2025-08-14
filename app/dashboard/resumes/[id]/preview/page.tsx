@@ -542,111 +542,108 @@ export default function ResumePreviewPage() {
     ? "h-screen sm:h-[600px] md:h-[700px] lg:h-[800px] xl:h-[900px]" 
     : "h-screen";
   
-  return (
-    <div className="container py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center">
-          <Button variant="ghost" asChild className="mr-4">
-            <Link href="/dashboard/resumes">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+   return (
+  <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-8 space-y-6">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex items-center flex-wrap gap-2">
+        <Button variant="ghost" asChild className="mr-4">
+          <Link href="/dashboard/resumes">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold">{resume.title}</h1>
+          <p className="text-muted-foreground">Preview your resume</p>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {user && user.id === resume.userId && (
+          <Button variant="outline" asChild>
+            <Link href={`/dashboard/resumes/${resumeId}`}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Resume
             </Link>
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{resume.title}</h1>
-            <p className="text-muted-foreground">Preview your resume</p>
-          </div>
+        )}
+        <Button 
+          onClick={() => handleExport('pdf')}
+          disabled={isExporting}
+        >
+          {isExporting ? <LoadingSpinner className="h-4 w-4 mr-2" /> : <Download className="h-4 w-4 mr-2" />}
+          {isExporting ? "Exporting..." : "Download PDF"}
+        </Button>
+      </div>
+    </div>
+    
+    <Card className="overflow-x-auto w-full">
+
+        <ResumePreview 
+          resume={resume} 
+          template={template}
+          height="auto"
+          defaultZoom={zoomLevel}
+          removeCard={true}
+        />
+       
+      <CardFooter className="flex flex-col md:flex-row justify-between bg-muted/20 border-t p-4 gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={toggleViewMode}>
+            {viewMode === 'fit' ? 'Full Height' : 'Fit to Screen'}
+          </Button>
+          <Button variant="outline" onClick={handleFullscreen}>
+            <Eye className="h-4 w-4 mr-2" />
+            Fullscreen
+          </Button>
         </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {user && user.id === resume.userId && (
-            <Button variant="outline" asChild>
-              <Link href={`/dashboard/resumes/${resumeId}`}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Resume
-              </Link>
+        <div className="flex gap-2 items-center flex-wrap">
+          {/* Add zoom controls */}
+          <div className="flex space-x-1 mr-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={zoomLevel <= 40}
+              className="h-8 w-8 p-0"
+            >
+              <ZoomOut className="h-4 w-4" />
             </Button>
-          )}
-          
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomReset}
+              className="h-8 px-2"
+            >
+              <span className="text-xs">{zoomLevel}%</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={zoomLevel >= 150}
+              className="h-8 w-8 p-0"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => handleExport('docx')}
+            disabled={isExporting}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            DOCX
+          </Button>
           <Button 
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
           >
-            {isExporting ? <LoadingSpinner className="h-4 w-4 mr-2" /> : <Download className="h-4 w-4 mr-2" />}
-            {isExporting ? "Exporting..." : "Download PDF"}
+            <Download className="h-4 w-4 mr-2" />
+            PDF
           </Button>
         </div>
-      </div>
-      
-      <Card className="overflow-hidden">
-      <ResumePreview 
-                        resume={resume} 
-                        template={template}
-                        height="1500px"
-                        defaultZoom={zoomLevel}
-                        removeCard={true}
-                      />
-        
-        <CardFooter className="flex justify-between bg-muted/20 border-t p-4">
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={toggleViewMode}>
-              {viewMode === 'fit' ? 'Full Height' : 'Fit to Screen'}
-            </Button>
-            <Button variant="outline" onClick={handleFullscreen}>
-              <Eye className="h-4 w-4 mr-2" />
-              Fullscreen
-            </Button>
-          </div>
-          
-          <div className="flex gap-2 items-center">
-            {/* Add zoom controls */}
-            <div className="flex space-x-1 mr-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomOut}
-                disabled={zoomLevel <= 40}
-                className="h-8 w-8 p-0"
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomReset}
-                className="h-8 px-2"
-              >
-                <span className="text-xs">{zoomLevel}%</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomIn}
-                disabled={zoomLevel >= 150}
-                className="h-8 w-8 p-0"
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => handleExport('docx')}
-              disabled={isExporting}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              DOCX
-            </Button>
-            <Button 
-              onClick={() => handleExport('pdf')}
-              disabled={isExporting}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              PDF
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+      </CardFooter>
+    </Card>
+  </div>
+);
 }

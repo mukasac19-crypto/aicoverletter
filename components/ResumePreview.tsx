@@ -686,25 +686,25 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
 
   // Main render - with or without card based on prop
   return (
-    <div className={removeCard ? "" : "space-y-1"}>
-      <div
-        className={!removeCard ? "border rounded-md overflow-hidden" : ""}
+    <div className={removeCard ? "" : "space-y-1 w-full"}>
+         <div
+        className={!removeCard ? "border rounded-md overflow-x-auto w-full" : "overflow-x-auto w-full"}
         style={{ height }}
       >
         <div
           ref={containerRef}
           id="resume-preview-container"
-          className="w-full h-full overflow-auto flex justify-center bg-gray-100"
+          className="w-full h-full overflow-auto flex justify-center px-2"
         >
-          {/* Container for the resume with zoom scaling */}
+          {/* Responsive container for the resume with zoom scaling */}
           <div
-            className="my-3 bg-white shadow-md"
+            className="my-3 bg-white shadow-md w-full max-w-3xl mx-auto"
             style={{
               transform: `scale(${zoomLevel / 100})`,
               transformOrigin: "top center",
-              width: "8.5in", // Standard US Letter width
-              minHeight: "11in", // Standard US Letter height
-              // Remove padding for sidebar templates to match PDF output
+              minWidth: "320px",
+              maxWidth: "100%",
+              minHeight: "11in",
               padding: isSidebarTemplate ? 0 : undefined,
             }}
           >
@@ -718,6 +718,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
                 height: "100%",
                 border: "none",
                 minHeight: "11in",
+                maxWidth: "100%",
               }}
               className="block"
             />
@@ -726,8 +727,8 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
       </div>
 
       {/* Controls */}
-      <div className="flex justify-between items-center mt-2">
-        <div className="flex items-center space-x-3">
+      <div className="flex flex-col md:flex-row justify-between items-center mt-2 gap-2">
+        <div className="flex items-center space-x-3 flex-wrap">
           {/* Zoom controls */}
           <div className="flex space-x-1">
             <Button
