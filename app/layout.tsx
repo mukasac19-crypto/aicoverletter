@@ -184,6 +184,8 @@ function Footer() {
               <Link href="/legal/terms-of-use" className="hover:text-orange-400 transition-colors">Terms of Service</Link>
               <Link href="/legal/cookie-policy" className="hover:text-orange-400 transition-colors">Cookie Policy</Link>
               <Link href="/sitemap" className="hover:text-orange-400 transition-colors">Sitemap</Link>
+              
+
             </div>
           </div>
         </div>
