@@ -1,601 +1,85 @@
 // /app/dashboard/resumes/page.tsx
-"use client";
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { Database } from '@/types/supabase';
+import { mapDatabaseToResumeData } from '@/types/resume';
+import { getAllFeatureUsage } from '@/lib/subscription-enforcement';
+import { ResumeData } from '@/types/resume';
+import ResumeDashboardClient from './ResumeDashboardClient';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { createBrowserClient } from "@/lib/supabase";
-import { ImportGuide } from '@/components/ImportGuide';
-import { useCVResumeIntegration } from '@/lib/hooks/useCVResumeIntegration';
-import { uploadFile } from '@/lib/file-upload';
-import LimitedActionButton from '@/components/LimitedActionButton';
-import { useSubscription } from '@/hooks/useSubscription';
-import {
-  FileText,
-  Plus,
-  MoreVertical,
-  Download,
-  Copy,
-  Edit,
-  Trash2,
-  Clock,
-  Search,
-  Filter,
-  Upload,
-  FileBadge,
-  Eye,
-  CheckCircle2,
-  AlertTriangle,
-  FileSearch,
-  X,
-  FileUp,
-  Target,
-  Sparkles
-} from 'lucide-react';
-import Link from 'next/link';
-import { formatDistance } from 'date-fns';
-// Import necessary mappers and types
-import {
-  mapDatabaseToResumeData,
-  ensureDualFormatFields
-} from '@/types/resume';
-import type { CvFile } from '@/lib/cv-helpers';
-import { Json, type TablesInsert } from '@/types/supabase';
-import { ResumeData, DatabaseResumeData, WorkExperience } from '@/types/resume';
+const RESUMES_PER_PAGE = 8;
 
-export default function ResumeDashboardPage() {
-  const [resumes, setResumes] = useState<ResumeData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [importLoading, setImportLoading] = useState<boolean>(false);
-  const [showImportGuide, setShowImportGuide] = useState<boolean>(false);
-  const [importedResumeId, setImportedResumeId] = useState<string | null>(null);
+export default async function ResumeDashboardPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({ cookies: () => cookieStore });
 
-  const importFileRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
-  const router = useRouter();
-  const { toast } = useToast();
-  const supabase = createBrowserClient();
-  const { getLinkedCV } = useCVResumeIntegration();
-  const [fileToSave, setFileToSave] = useState<File | null>(null);
-  const [importSourceCV, setImportSourceCV] = useState<string | null | undefined>(null);
-  
-  // Add subscription hook
-  const { getUsage, canAccess, tier } = useSubscription();
-  const resumeUsage = getUsage('resumes');
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    redirect('/auth/login');
+  }
 
-  // Load resumes from database
-  useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        setIsLoading(true); setError(null);
-        if (!user) { setResumes([]); return; }
+  const page = typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
+  const searchTerm = typeof searchParams.q === 'string' ? searchParams.q : '';
+  const filter = typeof searchParams.filter === 'string' ? searchParams.filter : 'all';
 
-        const { data, error: fetchError } = await supabase
-          .from('resumes')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false });
+  const from = (page - 1) * RESUMES_PER_PAGE;
+  const to = from + RESUMES_PER_PAGE - 1;
 
-        if (fetchError) throw fetchError;
+  async function getResumes() {
+    let query = supabase
+      .from('resumes')
+      .select('*', { count: 'exact' })
+      .eq('user_id', session!.user.id);
 
-        if (data) {
-          const processedResumes: ResumeData[] = data
-            .map(dbResume => mapDatabaseToResumeData(dbResume as unknown as DatabaseResumeData))
-            .filter((resume): resume is ResumeData => resume !== null);
-          setResumes(processedResumes);
-        } else {
-          setResumes([]);
-        }
-      } catch (err: any) {
-        console.error('Error fetching resumes:', err);
-        setError(err.message || 'Failed to load resumes');
-        toast({ title: "Error", description: "Failed to load resumes.", variant: "destructive" });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (user) { fetchResumes(); } else { setIsLoading(false); }
-  }, [user, supabase, toast]);
-
-  const handleDelete = async (id: string) => {
-    const originalResumes = [...resumes];
-    setResumes(prevResumes => prevResumes.filter(resume => resume.id !== id));
-
-    try {
-      setError(null);
-      console.log(`Attempting to delete resume ${id} via API...`);
-      const response = await fetch(`/api/resumes/${id}`, { method: 'DELETE' });
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || `Failed to delete (Status: ${response.status})`);
-      }
-
-      console.log(`Successfully deleted resume ${id}`);
-      toast({ title: "Resume Deleted", description: "Resume deleted successfully." });
-    } catch (err: any) {
-      console.error('Error deleting resume via API:', err);
-      setResumes(originalResumes);
-      toast({ title: "Error Deleting", description: err.message || "Failed to delete.", variant: "destructive" });
-    }
-  };
-
-  const handleDuplicate = async (id: string) => {
-    try {
-      setError(null);
-      const resumeToDuplicate = resumes.find(r => r.id === id);
-      if (!resumeToDuplicate) throw new Error('Resume not found');
-
-      const newResumeData = {
-        ...resumeToDuplicate,
-        id: crypto.randomUUID(),
-        title: `${resumeToDuplicate.title || 'Untitled'} (Copy)`,
-        templateId: resumeToDuplicate.templateId === null ? undefined : resumeToDuplicate.templateId,
-        created_at: undefined,
-        updated_at: undefined,
-        userId: undefined,
-      };
-
-      console.log("Duplicating resume via API. Data for POST:", newResumeData);
-
-      const response = await fetch('/api/resumes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeData: newResumeData }),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || `Failed to duplicate (Status: ${response.status})`);
-      if (!result?.id) throw new Error('Failed to duplicate (API did not return created record).');
-
-      const newlyCreatedResume = mapDatabaseToResumeData(result as unknown as DatabaseResumeData);
-      if (!newlyCreatedResume) throw new Error("Failed to process duplicated resume data from server.");
-
-      setResumes(prevResumes => [newlyCreatedResume, ...prevResumes]);
-      toast({ title: "Resume Duplicated", description: "A copy has been created." });
-
-    } catch (err: any) {
-      console.error('Error duplicating resume via API:', err);
-      toast({ title: "Error Duplicating", description: err.message || "Failed to duplicate.", variant: "destructive" });
-    }
-  };
-
-  const getDefaultTemplateId = useCallback(async (): Promise<string | null> => {
-    try {
-      const { data } = await supabase
-        .from('resume_templates')
-        .select('id')
-        .eq('is_public', true)
-        .limit(1);
-      return data?.[0]?.id || null;
-    } catch (error) {
-      console.error('Error getting default resume template:', error);
-      return null;
-    }
-  }, [supabase]);
-
-  useEffect(() => {
-    const saveFileToResume = async () => {
-      try {
-        console.log('file', fileToSave, 'cv', importSourceCV)
-        if (!fileToSave || !user) return;
-
-        setImportLoading(true);
-
-        const formData = new FormData();
-        formData.append('file', fileToSave);
-
-        if (importSourceCV) {
-          formData.append('sourceType', 'resume_import');
-          formData.append('cvId', importSourceCV);
-        }
-
-        const response = await fetch('/api/resumes/parser', {
-          method: 'POST',
-          body: formData,
-        });
-
-        console.log('the response', response)
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Import failed');
-        }
-
-        const parsedData = await response.json();
-        console.log("Received parsed data from parser API:", parsedData);
-
-        const defaultTemplateId = await getDefaultTemplateId();
-
-        const newResumePayload: Partial<ResumeData> = {
-          title: parsedData.title || `Imported - ${fileToSave!.name.split('.')[0] || 'Resume'}`,
-          personalInfo: parsedData.personalInfo || parsedData.personal_info || { firstName: '', lastName: '', title: '', summary: '', contact: { email: ''} },
-          workExperience: parsedData.workExperience || parsedData.work_experience || [],
-          education: parsedData.education || [],
-          skills: parsedData.skills || [],
-          projects: parsedData.projects || [],
-          languages: parsedData.languages || [],
-          certifications: parsedData.certifications || [],
-          interests: parsedData.interests || [],
-          internships: parsedData.internships || [],
-          references: parsedData.references || [],
-          referenceText: parsedData.referenceText,
-          customSections: parsedData.customSections || [],
-          templateId: defaultTemplateId === null ? '' : defaultTemplateId,
-          isPublic: false,
-          is_imported: true,
-          sourceCV: importSourceCV || parsedData.sourceCV || undefined,
-        };
-
-        const finalResumeData = ensureDualFormatFields(newResumePayload);
-
-        if (!finalResumeData.template_id || finalResumeData.template_id === '') {
-          finalResumeData.template_id = null;
-        }
-        
-        console.log("Prepared resume data for database insertion:", finalResumeData);
-
-        const resumeForDb: TablesInsert<'resumes'> = {
-          user_id: user.id,
-          title: finalResumeData.title,
-          personal_info: finalResumeData.personal_info || finalResumeData.personalInfo,
-          work_experience: finalResumeData.work_experience || finalResumeData.workExperience,
-          education: finalResumeData.education || [],
-          skills: finalResumeData.skills || [],
-          projects: finalResumeData.projects || null,
-          languages: finalResumeData.languages || null,
-          certifications: finalResumeData.certifications || null,
-          interests: finalResumeData.interests || null,
-          references: finalResumeData.references || null,
-          custom_sections: finalResumeData.custom_sections || finalResumeData.customSections || null,
-          template_id: finalResumeData.template_id || null,
-          is_public: finalResumeData.is_public ?? false,
-          is_imported: finalResumeData.is_imported ?? finalResumeData.isImported ?? null,
-          source_cv: finalResumeData.source_cv || finalResumeData.sourceCV || null,
-          reference_text: finalResumeData.reference_text || finalResumeData.referenceText || null,
-        };
-
-        const { data, error } = await supabase
-          .from('resumes')
-          .insert(resumeForDb as any)
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        if (data && importSourceCV) {
-          try {
-            await supabase
-              .from('user_cvs')
-              .update({ resume_id: data.id })
-              .eq('id', importSourceCV)
-              .eq('user_id', user!.id);
-            console.log(`Linked CV ${importSourceCV} to resume ${data.id}`);
-          } catch (linkError) {
-            console.error('Error linking CV to resume:', linkError);
-          }
-        }
-
-        if (data) {
-            const newDbResume = data as unknown as DatabaseResumeData;
-            const newUIRecord = mapDatabaseToResumeData(newDbResume);
-            if (newUIRecord) {
-                setResumes(prevResumes => [newUIRecord, ...prevResumes]);
-                setImportedResumeId(newUIRecord.id);
-                setShowImportGuide(true);
-            } else {
-                 console.error("Failed to map newly inserted resume to UI format after import.");
-                 toast({ title: "Error", description: "Failed to update resume list after import.", variant: "destructive" });
-            }
-        }
-
-        toast({
-          title: "Resume Imported",
-          description: "Your resume has been imported successfully!",
-        });
-
-        if (importFileRef.current) {
-          importFileRef.current.value = '';
-        }
-
-      } catch (err: any) {
-        console.error('Error importing resume:', err);
-        toast({
-          title: "Error",
-          description: err.message || "Failed to import resume. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setImportLoading(false);
-        setFileToSave(null);
-        setImportSourceCV(null);
-      }
+    if (searchTerm) {
+      query = query.ilike('title', `%${searchTerm}%`);
     }
 
-    if (fileToSave && user) {
-        saveFileToResume();
-    }
-
-  }, [importSourceCV, fileToSave, getDefaultTemplateId, user, supabase, toast, router]);
-
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !user) return;
-
-    const file = files[0];
-    setImportLoading(true);
-
-    try {
-      if (user) {
-        const uploadResult = await uploadFile({
-          file,
-          userId: user.id,
-          onProgress: (progress) => { /* Handle progress if needed */ },
-          metadata: { source: 'resume_import' }
-        });
-
-        if (!uploadResult.success || !uploadResult.filePath || !uploadResult.publicUrl) {
-          throw new Error(uploadResult.error || 'Upload failed');
-        }
-
-        const cvDataToInsert: TablesInsert<'user_cvs'> = {
-          user_id: user.id,
-          filename: file.name,
-          filesize: file.size,
-          filetype: file.type,
-          filepath: uploadResult.filePath,
-          file_url: uploadResult.publicUrl,
-          uploaded_at: new Date().toISOString(),
-          is_selected: false
-        };
-
-        const { data: cvRecord, error: cvError } = await supabase
-          .from('user_cvs')
-          .insert(cvDataToInsert)
-          .select()
-          .single();
-
-        if (cvError) {
-          console.error('Error creating CV record:', cvError);
-          setImportSourceCV(null);
-        } else if (cvRecord) {
-          setImportSourceCV(cvRecord.id);
-        }
-      }
-      setFileToSave(file);
-
-    } catch (err: any) {
-      console.error('Error during file selection/upload stage:', err);
-      toast({
-        title: "Upload Error",
-        description: err.message || "Failed to upload file. Please try again.",
-        variant: "destructive",
-      });
-      setImportLoading(false);
-      if (importFileRef.current) {
-        importFileRef.current.value = '';
-      }
-    }
-  };
-
-  const handleImportGuideClose = () => setShowImportGuide(false);
-
-  const handleViewSourceCV = async (resumeId: string) => {
-    try {
-      const resume = resumes.find(r => r.id === resumeId);
-      if (!resume || !resume.sourceCV) throw new Error('Source CV ID not found for this resume.');
-
-      const cv = await getLinkedCV(resume.sourceCV);
-      if (!cv || !cv.fileUrl) throw new Error('Source CV not found or URL missing');
-      window.open(cv.fileUrl, '_blank');
-    } catch (error: any) {
-      console.error('Error viewing source CV:', error);
-      toast({ title: "Error", description: error.message || "Could not view the source CV.", variant: "destructive" });
-    }
-  };
-
-  const filteredResumes = resumes.filter((resume: ResumeData) => {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    const matchesSearch = searchTerm === '' ||
-      (resume.title?.toLowerCase() || '').includes(lowerSearchTerm) ||
-      (resume.personalInfo?.firstName?.toLowerCase() || '').includes(lowerSearchTerm) ||
-      (resume.personalInfo?.lastName?.toLowerCase() || '').includes(lowerSearchTerm);
-
-    if (activeFilter === 'recent') {
+    if (filter === 'recent') {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      return matchesSearch && resume.updated_at && new Date(resume.updated_at) >= sevenDaysAgo;
+      query = query.gte('updated_at', sevenDaysAgo.toISOString());
     }
-    return matchesSearch;
-  });
 
-  if (isLoading) { return ( <div className="container py-4 px-4 sm:py-8 sm:px-6"><div className="flex justify-center py-12"><LoadingSpinner /></div></div> ); }
-  if (!user) { return ( <div className="container py-4 px-4 sm:py-8 sm:px-6"><Alert><AlertDescription>You need to be logged in.</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild className="bg-orange-600 hover:bg-orange-700"><Link href="/auth/login">Log In</Link></Button></div></div> ); }
+    query = query.order('updated_at', { ascending: false }).range(from, to);
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('Error fetching resumes:', error);
+      return { initialResumes: [], count: 0 };
+    }
+
+    const initialResumes = (data || [])
+      .map(dbResume => mapDatabaseToResumeData(dbResume as any))
+      .filter((r): r is ResumeData => r !== null);
+
+    return { initialResumes, count: count ?? 0 };
+  }
+
+  async function getUsage() {
+    const usage = await getAllFeatureUsage(supabase, session!.user.id);
+    return usage;
+  }
+
+  const { initialResumes, count } = await getResumes();
+  const usage = await getUsage();
+  const pageCount = Math.ceil(count / RESUMES_PER_PAGE);
 
   return (
-    <div className="container py-4 px-4 sm:py-8 sm:px-6 space-y-6 sm:space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="w-full sm:w-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">My Resumes</h1>
-          {resumeUsage && !resumeUsage.unlimited && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {resumeUsage.used} / {resumeUsage.limit} resumes used
-            </p>
-          )}
-        </div>
-        {(resumes.length > 0 || !isLoading) && (
-          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-            <LimitedActionButton
-              feature="resumes"
-              featureName="Resume"
-              onAllowed={() => router.push('/dashboard/resumes/new')}
-              className="flex-1 sm:flex-none text-xs sm:text-sm bg-orange-600 hover:bg-orange-700 text-white"
-              size="sm"
-            >
-              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume
-            </LimitedActionButton>
-            <LimitedActionButton
-              feature="resumes"
-              featureName="Resume"
-              variant="outline"
-              onAllowed={() => importFileRef.current?.click()}
-              disabled={importLoading}
-              className="flex-1 sm:flex-none text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50"
-              size="sm"
-            >
-              {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
-            </LimitedActionButton>
-          </div>
-        )}
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-4">
-        <div className="w-full xs:w-auto overflow-x-auto pb-1">
-          <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-            <TabsList className="w-[40%] xs:w-auto grid grid-cols-2 xs:inline-flex bg-muted/50">
-              <TabsTrigger value="all" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">All Resumes</TabsTrigger>
-              <TabsTrigger value="recent" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">Recent</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="w-full xs:w-auto relative">
-          <Search className="absolute left-2 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search resumes..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-7 sm:pl-8 w-full xs:w-[200px] sm:w-[250px] h-9 text-sm focus-visible:ring-orange-500" />
-        </div>
-      </div>
-
-      {error && ( <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert> )}
-
-      {/* Show usage alert if near limit */}
-      {resumeUsage && !resumeUsage.unlimited && resumeUsage.used >= resumeUsage.limit * 0.8 && (
-        <Alert className="border-amber-200 bg-amber-50">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          <AlertTitle>Approaching Resume Limit</AlertTitle>
-          <AlertDescription>
-            You've used {resumeUsage.used} of your {resumeUsage.limit} resumes. 
-            {tier === 'FREE' && (
-              <Link href="/pricing" className="underline ml-1 text-amber-700">
-                Upgrade to Pro for unlimited resumes.
-              </Link>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {filteredResumes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {filteredResumes.map((resume) => (
-            <Card key={resume.id} className={`overflow-hidden hover:border-orange-300 transition-colors ${resume.id === importedResumeId ? 'border-orange-500 shadow-md ring-1 ring-orange-500' : ''}`}>
-              <CardHeader className="p-4 pb-2">
-                <div className="flex justify-between items-start">
-                  <div className="max-w-[calc(100%-40px)]">
-                    <CardTitle className="flex items-center gap-1 flex-wrap text-base sm:text-lg">
-                      <span className="truncate max-w-full">{resume.title}</span>
-                    </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm truncate mt-1">
-                      {resume.personalInfo?.firstName ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName || ''}` : "No name provided"}
-                    </CardDescription>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-orange-50"> <MoreVertical className="h-4 w-4" /> </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}> <Edit className="h-4 w-4 mr-2 text-orange-600" /> Edit </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}> <Target className="h-4 w-4 mr-2 text-orange-600" /> Tailor for Job </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}> <FileText className="h-4 w-4 mr-2 text-orange-600" /> Preview </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/ats-scanner`)}> <FileSearch className="h-4 w-4 mr-2 text-orange-600" /> ATS Scanner </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(resume.id)}> <Copy className="h-4 w-4 mr-2 text-orange-600" /> Duplicate </DropdownMenuItem>
-                      {resume.sourceCV && (
-                        <DropdownMenuItem onClick={() => handleViewSourceCV(resume.id)}>
-                          <FileText className="h-4 w-4 mr-2 text-orange-600" /> View Original CV
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(resume.id)}> <Trash2 className="h-4 w-4 mr-2" /> Delete </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 pt-0 pb-2">
-                <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-2">
-                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                  <span className="truncate">
-                    Updated {resume.updated_at ? formatDistance(new Date(resume.updated_at), new Date(), { addSuffix: true }) : 'recently'}
-                  </span>
-                </div>
-                <div className="text-xs sm:text-sm">
-                  <p className="line-clamp-2">
-                    {resume.personalInfo?.title || "No job title provided"}
-                  </p>
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-2 flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 border-orange-200 text-orange-700 hover:bg-orange-50" onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}> <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Edit </Button>
-                <Button variant="outline" size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 border-orange-200 text-orange-700 hover:bg-orange-50" onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}> <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Tailor </Button>
-                <Button size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 bg-orange-600 hover:bg-orange-700" onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}> <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Preview </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className='w-full h-full min-h-[60vh] flex justify-center items-center'>
-          <Card className="w-[60%] text-center p-4 sm:p-8">
-            <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-orange-400 mx-auto mb-4" />
-            {searchTerm || activeFilter !== 'all' ? (
-              <>
-                <h3 className="text-base sm:text-lg font-medium mb-2">No matching resumes found</h3>
-                <p className="text-sm text-muted-foreground mb-4 sm:mb-6"> Try adjusting your search or filters. </p>
-                <Button variant="outline" onClick={() => { setSearchTerm(''); setActiveFilter('all'); }} className="border-orange-200 text-orange-700 hover:bg-orange-50"> Clear search & filters </Button>
-              </>
-            ) : (
-              <>
-                <h3 className="text-base sm:text-lg font-medium mb-2">You do not have any resumes yet</h3>
-                <div className="flex flex-col xs:flex-row gap-3 justify-center">
-                  <LimitedActionButton
-                    feature="resumes"
-                    featureName="Resume"
-                    onAllowed={() => router.push('/dashboard/resumes/new')}
-                               className="text-xs sm:text-sm bg-orange-600 hover:bg-orange-700"
-                    size="sm"
-                  >
-                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume
-                  </LimitedActionButton>
-                  <LimitedActionButton
-                    feature="resumes"
-                    featureName="Resume"
-                    variant="outline"
-                    onAllowed={() => importFileRef.current?.click()}
-                    disabled={importLoading}
-                    className="text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50"
-                    size="sm"
-                  >
-                    {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
-                  </LimitedActionButton>
-                </div>
-              </>
-            )}
-          </Card>
-        </div>
-      )}
-
-      <input ref={importFileRef} type="file" accept=".pdf,.docx,.txt,.xlsx,.xls" className="hidden" onChange={handleFileSelect} />
-
-      {importedResumeId && ( <ImportGuide resumeId={importedResumeId} isOpen={showImportGuide} onClose={handleImportGuideClose} /> )}
-    </div>
+    <Suspense fallback={<LoadingSpinner />}>
+      <ResumeDashboardClient
+        initialResumes={initialResumes}
+        initialUsage={usage}
+        pageCount={pageCount}
+      />
+    </Suspense>
   );
 }

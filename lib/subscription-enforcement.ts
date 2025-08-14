@@ -1,5 +1,5 @@
 // lib/subscription-enforcement.ts
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
 import { SubscriptionTier } from '@/types/subscription';
@@ -10,11 +10,10 @@ export type LimitedFeature = 'coverLetters' | 'resumes' | 'atsScans' | 'intervie
 
 // Check if user can access a feature (without incrementing usage)
 export async function canAccessFeature(
+  supabase: SupabaseClient<Database>,
   userId: string,
   feature: LimitedFeature
 ): Promise<{ allowed: boolean; reason?: string; usage?: { used: number; limit: number } }> {
-  const supabase = createServerComponentClient<Database>({ cookies });
-  
   // Get user's subscription tier
   const { data: subscription } = await supabase
     .from('subscriptions')
@@ -68,11 +67,10 @@ export async function canAccessFeature(
 
 // Track feature usage (call AFTER successful operation)
 export async function trackFeatureUsage(
+  supabase: SupabaseClient<Database>,
   userId: string,
   feature: LimitedFeature
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createServerComponentClient<Database>({ cookies });
-  
   // Get user's subscription
   const { data: subscription } = await supabase
     .from('subscriptions')
@@ -138,11 +136,10 @@ export async function trackFeatureUsage(
 
 // Get current usage for a feature
 export async function getFeatureUsage(
+  supabase: SupabaseClient<Database>,
   userId: string,
   feature: LimitedFeature
 ): Promise<{ used: number; limit: number; unlimited: boolean }> {
-  const supabase = createServerComponentClient<Database>({ cookies });
-  
   // Get subscription
   const { data: subscription } = await supabase
     .from('subscriptions')
@@ -177,12 +174,12 @@ export async function getFeatureUsage(
 }
 
 // Get all feature usage for a user
-export async function getAllFeatureUsage(userId: string) {
+export async function getAllFeatureUsage(supabase: SupabaseClient<Database>, userId: string) {
   const features: LimitedFeature[] = ['coverLetters', 'resumes', 'atsScans', 'interviewSessions'];
   const usage: Record<string, { used: number; limit: number; unlimited: boolean }> = {};
 
   for (const feature of features) {
-    usage[feature] = await getFeatureUsage(userId, feature);
+    usage[feature] = await getFeatureUsage(supabase, userId, feature);
   }
 
   return usage;
@@ -190,10 +187,11 @@ export async function getAllFeatureUsage(userId: string) {
 
 // Enforce subscription limit (combines check + response)
 export async function enforceSubscriptionLimit(
+  supabase: SupabaseClient<Database>,
   userId: string,
   feature: LimitedFeature
 ): Promise<{ success: boolean; error?: string; usage?: { used: number; limit: number } }> {
-  const result = await canAccessFeature(userId, feature);
+  const result = await canAccessFeature(supabase, userId, feature);
   
   if (!result.allowed) {
     return { 
@@ -254,11 +252,10 @@ function getMonthEnd(): string {
 
 // Reset usage for a feature (admin use)
 export async function resetFeatureUsage(
+  supabase: SupabaseClient<Database>,
   userId: string,
   feature: LimitedFeature
 ): Promise<void> {
-  const supabase = createServerComponentClient<Database>({ cookies });
-  
   await supabase
     .from('usage_limits')
     .delete()
@@ -268,11 +265,10 @@ export async function resetFeatureUsage(
 
 // Check template access
 export async function canAccessTemplate(
+  supabase: SupabaseClient<Database>,
   userId: string,
   templateCategory?: string | null
 ): Promise<boolean> {
-  const supabase = createServerComponentClient<Database>({ cookies });
-  
   // Get subscription
   const { data: subscription } = await supabase
     .from('subscriptions')

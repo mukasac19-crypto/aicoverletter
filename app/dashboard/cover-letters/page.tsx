@@ -710,7 +710,7 @@ export default function CoverLetterGenerator() {
                         />
                       </div>
                       <div className="truncate">
-                        <p className="text-sm font-medium">Resume/CV</p>
+                        <p className="text-sm font-medium">Resume</p>
                         {hasCV && cvFiles.find((cv) => cv.isSelected)?.name ? (
                           <p className="text-xs text-green-600 truncate">
                             {cvFiles?.find((cv) => cv.isSelected)?.name?.substring(0, 15)}...

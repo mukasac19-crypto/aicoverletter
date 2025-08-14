@@ -95,12 +95,12 @@ export default function LandingPage() {
               </span>
               <br />
               <span className="bg-gradient-to-r from-orange-600 to-orange-600 bg-clip-text text-transparent">
-                AI-Powered Applications
+                Our AI-Powered Tools
               </span>
             </h1>
             
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Create tailored resumes and cover letters in minutes. Join over 100,000 professionals who've successfully landed jobs at top companies.
+              From job hunting,resume,cover letter creation,to preparing for your interview, follow up emails. Join over 100,000 professionals who've successfully landed jobs at top companies.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">

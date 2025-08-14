@@ -130,19 +130,11 @@ const DocumentExamples = () => {
                       alt={template.name}
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <Button className="w-full bg-white text-gray-900 hover:bg-gray-100">
-                          Use This Template
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-3 py-1">
-                      <span className="text-xs font-semibold text-gray-700">{template.category}</span>
-                    </div>
+                    
+                    
                   </div>
                 </Card>
-                <h3 className="text-center font-medium text-gray-800">{template.name}</h3>
+                
               </div>
             ))}
           </div>
@@ -160,22 +152,14 @@ const DocumentExamples = () => {
                       alt={template.name}
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <Button className="w-full bg-white text-gray-900 hover:bg-gray-100">
-                          Use This Template
-                        </Button>
-                      </div>
-                    </div>
+                   
                     <div className="absolute top-3 left-3 bg-green-100/90 backdrop-blur text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
                       {template.matchRate} Match
                     </div>
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-3 py-1">
-                      <span className="text-xs font-semibold text-gray-700">{template.category}</span>
-                    </div>
+                    
                   </div>
                 </Card>
-                <h3 className="text-center font-medium text-gray-800">{template.name}</h3>
+                
               </div>
             ))}
           </div>

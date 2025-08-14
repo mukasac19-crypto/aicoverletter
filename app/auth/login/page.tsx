@@ -1,8 +1,8 @@
 // project/app/auth/login/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const { signIn, signInWithProvider } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,8 +47,8 @@ export default function LoginPage() {
           title: "Success",
           description: "You've been logged in successfully",
         });
-        router.replace("/dashboard");
-        // router.refresh();
+        const returnTo = searchParams.get("returnTo");
+        router.replace(returnTo || "/dashboard");
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred");
@@ -66,7 +67,10 @@ export default function LoginPage() {
     setSocialLoading("google");
 
     try {
-      const { error } = await signInWithProvider("google");
+      const returnTo = searchParams.get("returnTo");
+      const { error } = await signInWithProvider("google", {
+        redirectTo: returnTo ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}` : undefined
+      });
 
       if (error) {
         setErrorMsg(error.message || "Failed to login with Google");
@@ -181,11 +185,19 @@ export default function LoginPage() {
 
         <p className="text-center mt-6 text-sm text-muted-foreground">
           Don't have an account?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
+          <Link href={`/auth/register${searchParams.get("returnTo") ? `?returnTo=${searchParams.get("returnTo")}`: ''}`} className="text-primary hover:underline">
             Register
           </Link>
         </p>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

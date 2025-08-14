@@ -176,7 +176,7 @@ export function EnhancedDataSourceSelector({
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                              <TabsTrigger value="cv" disabled={cvSources.length === 0}>
-                                 <FileText className="h-4 w-4 mr-2" /> Resume/CV {cvSources.length > 0 && `(${cvSources.length})`}
+                                 <FileText className="h-4 w-4 mr-2" /> Resume {cvSources.length > 0 && `(${cvSources.length})`}
                              </TabsTrigger>
                              <TabsTrigger value="linkedin" disabled={linkedinSources.length === 0}>
                                  <Linkedin className="h-4 w-4 mr-2" /> LinkedIn {linkedinSources.length > 0 && `(${linkedinSources.length})`}

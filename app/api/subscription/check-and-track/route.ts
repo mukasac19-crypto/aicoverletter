@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // If action is 'check', only check without tracking
     if (action === 'check') {
-      const result = await canAccessFeature(session.user.id, feature as LimitedFeature);
+      const result = await canAccessFeature(supabase, session.user.id, feature as LimitedFeature);
       
       if (!result.allowed) {
         return NextResponse.json(
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // If action is 'track', track usage
     if (action === 'track') {
-      const trackResult = await trackFeatureUsage(session.user.id, feature as LimitedFeature);
+      const trackResult = await trackFeatureUsage(supabase, session.user.id, feature as LimitedFeature);
       
       if (!trackResult.success) {
         return NextResponse.json(
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Default: check and track in one call (legacy support)
-    const checkResult = await canAccessFeature(session.user.id, feature as LimitedFeature);
+    const checkResult = await canAccessFeature(supabase, session.user.id, feature as LimitedFeature);
     
     if (!checkResult.allowed) {
       return NextResponse.json(
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Track usage
-    const trackResult = await trackFeatureUsage(session.user.id, feature as LimitedFeature);
+    const trackResult = await trackFeatureUsage(supabase, session.user.id, feature as LimitedFeature);
     
     if (!trackResult.success) {
       console.error('Failed to track usage:', trackResult.error);

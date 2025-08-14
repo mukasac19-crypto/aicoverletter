@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -17,8 +18,79 @@ import {
   ArrowRight,
   MailCheck
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { FeatureAuthModal } from "@/components/FeatureAuthModal";
 
 const FeaturesPage = () => {
+  const { user } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [returnTo, setReturnTo] = useState("");
+
+  const handleFeatureClick = (path: string) => {
+    if (!user) {
+      setReturnTo(path);
+      setModalOpen(true);
+    } else {
+      // If user is logged in, you might want to directly navigate them
+      // For now, let's assume direct navigation for logged-in users
+      window.location.href = path;
+    }
+  };
+
+  const features = [
+    {
+      title: "AI Cover Letter Generator",
+      description: "Generate tailored cover letters that match job descriptions. Our AI analyzes job requirements and your experience to create compelling applications.",
+      icon: <FileText className="h-8 w-8 text-orange-600" />,
+      bgColor: "bg-orange-100",
+      buttonText: "Try Cover Letter Generator",
+      path: "/dashboard/cover-letters?tab=create",
+      listItems: ["Perfect keyword matching", "Multiple tone options", "Instant generation", "Perfectly formatted"]
+    },
+    {
+      title: "Smart Resume Builder",
+      description: "Create professional resumes with our intuitive builder. Import existing CVs, customize templates, and export in multiple formats.",
+      icon: <FileSpreadsheet className="h-8 w-8 text-blue-600" />,
+      bgColor: "bg-blue-100",
+      buttonText: "Build Your Resume",
+      path: "/dashboard/resumes/new",
+      listItems: ["ATS-optimized templates", "PDF & DOCX export", "LinkedIn integration", "One-click tailoring"]
+    },
+    {
+      title: "ATS Scanner",
+      description: "Get your resume past applicant tracking systems with our scanner. Analyze compatibility and get suggestions for improvements.",
+      icon: <ScanSearch className="h-8 w-8 text-purple-600" />,
+      bgColor: "bg-purple-100",
+      buttonText: "Scan Your Resume",
+      path: "/dashboard/ats-scanner",
+      listItems: ["Keyword analysis", "Formatting check", "Compatibility score", "Detailed feedback"]
+    }
+  ];
+
+  const secondaryFeatures = [
+    {
+      title: "Interview Buddy",
+      description: "Practice for interviews with AI-generated questions based on your resume and job description.",
+      icon: <MessagesSquare className="h-6 w-6 text-indigo-600" />,
+      bgColor: "bg-indigo-100",
+      path: "/dashboard/interview-buddy"
+    },
+    {
+      title: "Smart Job Search",
+      description: "Find relevant job opportunities and get suggestions based on your skills and preferences.",
+      icon: <Briefcase className="h-6 w-6 text-amber-600" />,
+      bgColor: "bg-amber-100",
+      path: "/dashboard/jobs"
+    },
+    {
+      title: "Follow-Up Emails",
+      description: "Create professional follow-up emails to increase your chances of getting a response.",
+      icon: <MailCheck className="h-6 w-6 text-green-600" />,
+      bgColor: "bg-green-100",
+      path: "/dashboard/cover-letters?tab=follow-up"
+    }
+  ];
+
   return (
     <>
       {/* Hero Section */}
@@ -59,140 +131,50 @@ const FeaturesPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {/* Cover Letter Generator */}
-            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-3 bg-orange-600 w-full"></div>
-              <div className="p-6">
-                <div className="bg-orange-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-orange-200 transition-colors">
-                  <FileText className="h-8 w-8 text-orange-600" />
+            {features.map((feature, index) => (
+              <Card key={index} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
+                <div className={`h-3 ${index === 0 ? 'bg-orange-600' : index === 1 ? 'bg-blue-600' : 'bg-purple-600'} w-full`}></div>
+                <div className="p-6">
+                  <div className={`${feature.bgColor} rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-opacity-80 transition-colors`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">{feature.title}</h3>
+                  <p className="text-gray-600 mb-6">{feature.description}</p>
+                  <ul className="space-y-2 mb-6">
+                    {feature.listItems.map((item, i) => (
+                      <li key={i} className="flex items-center">
+                        <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button onClick={() => handleFeatureClick(feature.path)} className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
+                    {feature.buttonText}
+                  </Button>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-800">AI Cover Letter Generator</h3>
-                <p className="text-gray-600 mb-6">
-                  Generate tailored cover letters that match job descriptions. Our AI analyzes job requirements and your experience to create compelling applications.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  {["Perfect keyword matching", "Multiple tone options", "Instant generation", "Perfectly formatted"].map((item, i) => (
-                    <li key={i} className="flex items-center">
-                      <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
-                  Try Cover Letter Generator
-                </Button>
-              </div>
-            </Card>
-
-            {/* Resume Builder */}
-            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-3 bg-blue-600 w-full"></div>
-              <div className="p-6">
-                <div className="bg-blue-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors">
-                  <FileSpreadsheet className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-800">Smart Resume Builder</h3>
-                <p className="text-gray-600 mb-6">
-                  Create professional resumes with our intuitive builder. Import existing CVs, customize templates, and export in multiple formats.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  {["ATS-optimized templates", "PDF & DOCX export", "LinkedIn integration", "One-click tailoring"].map((item, i) => (
-                    <li key={i} className="flex items-center">
-                      <CheckCircle2 className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
-                  Build Your Resume
-                </Button>
-              </div>
-            </Card>
-
-            {/* ATS Scanner */}
-            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-3 bg-purple-600 w-full"></div>
-              <div className="p-6">
-                <div className="bg-purple-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-purple-200 transition-colors">
-                  <ScanSearch className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-800">ATS Scanner</h3>
-                <p className="text-gray-600 mb-6">
-                  Get your resume past applicant tracking systems with our scanner. Analyze compatibility and get suggestions for improvements.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  {["Keyword analysis", "Formatting check", "Compatibility score", "Detailed feedback"].map((item, i) => (
-                    <li key={i} className="flex items-center">
-                      <CheckCircle2 className="h-5 w-5 text-purple-500 mr-2 flex-shrink-0" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white">
-                  Scan Your Resume
-                </Button>
-              </div>
-            </Card>
+              </Card>
+            ))}
           </div>
 
           {/* Secondary Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Interview Buddy */}
-            <Card className="overflow-hidden border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all p-6">
-              <div className="flex items-start mb-4">
-                <div className="bg-indigo-100 rounded-lg p-3 mr-4">
-                  <MessagesSquare className="h-6 w-6 text-indigo-600" />
+            {secondaryFeatures.map((feature, index) => (
+              <Card key={index} className="overflow-hidden border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all p-6">
+                <div className="flex items-start mb-4">
+                  <div className={`${feature.bgColor} rounded-lg p-3 mr-4`}>
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">{feature.title}</h3>
+                    <p className="text-gray-600 text-sm">{feature.description}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">Interview Buddy</h3>
-                  <p className="text-gray-600 text-sm">
-                    Practice for interviews with AI-generated questions based on your resume and job description.
-                  </p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" size="sm">
-                Learn More
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Card>
-
-            {/* Job Search */}
-            <Card className="overflow-hidden border border-gray-200 hover:border-amber-200 hover:shadow-md transition-all p-6">
-              <div className="flex items-start mb-4">
-                <div className="bg-amber-100 rounded-lg p-3 mr-4">
-                  <Briefcase className="h-6 w-6 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">Smart Job Search</h3>
-                  <p className="text-gray-600 text-sm">
-                    Find relevant job opportunities and get suggestions based on your skills and preferences.
-                  </p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full border-amber-200 text-amber-700 hover:bg-amber-50" size="sm">
-                Learn More
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Card>
-
-            {/* Follow-Up Emails */}
-            <Card className="overflow-hidden border border-gray-200 hover:border-green-200 hover:shadow-md transition-all p-6">
-              <div className="flex items-start mb-4">
-                <div className="bg-green-100 rounded-lg p-3 mr-4">
-                  <MailCheck className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">Follow-Up Emails</h3>
-                  <p className="text-gray-600 text-sm">
-                    Create professional follow-up emails to increase your chances of getting a response.
-                  </p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50" size="sm">
-                Learn More
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Card>
+                <Button onClick={() => handleFeatureClick(feature.path)} variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" size="sm">
+                  Learn More
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -349,6 +331,7 @@ const FeaturesPage = () => {
           </div>
         </div>
       </section>
+      <FeatureAuthModal open={modalOpen} onOpenChange={setModalOpen} returnTo={returnTo} />
     </>
   );
 };

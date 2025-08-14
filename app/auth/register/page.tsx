@@ -1,8 +1,8 @@
 // project/app/auth/register/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,6 +23,7 @@ export default function RegisterPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const { signUp, signInWithProvider } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +46,15 @@ export default function RegisterPage() {
     }
 
     try {
-      const { data, error } = await signUp(email, password);
+      const returnTo = searchParams.get("returnTo");
+      
+      const redirectURL = new URL(`${window.location.origin}/auth/login`);
+      redirectURL.searchParams.set('message', 'Check your email to confirm your account.');
+      if (returnTo) {
+        redirectURL.searchParams.set('returnTo', returnTo);
+      }
+
+      const { data, error } = await signUp(email, password, { redirectTo: redirectURL.toString() });
 
       if (error) {
         setErrorMsg(error.message || "Registration failed");
@@ -56,7 +65,7 @@ export default function RegisterPage() {
         });
       } else {
         // The success toast is now handled in the AuthContext
-        router.push("/auth/login");
+        router.push(redirectURL.toString());
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred");
@@ -75,7 +84,10 @@ export default function RegisterPage() {
     setSocialLoading("google");
 
     try {
-      const { error } = await signInWithProvider("google");
+      const returnTo = searchParams.get("returnTo");
+      const { error } = await signInWithProvider("google", {
+        redirectTo: returnTo ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}` : undefined
+      });
 
       if (error) {
         setErrorMsg(error.message || "Failed to sign up with Google");
@@ -193,11 +205,19 @@ export default function RegisterPage() {
 
         <p className="text-center mt-6 text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline">
+          <Link href={`/auth/login${searchParams.get("returnTo") ? `?returnTo=${searchParams.get("returnTo")}`: ''}`} className="text-primary hover:underline">
             Login
           </Link>
         </p>
       </Card>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

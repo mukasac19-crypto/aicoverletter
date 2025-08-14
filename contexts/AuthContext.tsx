@@ -12,8 +12,8 @@ interface AuthContextType {
   exitImpersonation: () => Promise<void>;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
-  signUp: (email: string, password: string) => Promise<AuthResponse>;
-  signInWithProvider: (provider: Provider) => Promise<OAuthResponse>;
+  signUp: (email: string, password: string, options?: { redirectTo?: string }) => Promise<AuthResponse>;
+  signInWithProvider: (provider: Provider, options?: { redirectTo?: string }) => Promise<OAuthResponse>;
   resetPassword: (email: string) => Promise<{ data: {}; error: null; } | { data: null; error: AuthError; }>;
   updatePassword: (password: string) => Promise<UserResponse>;
   signOut: () => Promise<{ error: AuthError | null }>;
@@ -36,21 +36,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return supabase.auth.signInWithPassword({ email, password });
   };
 
-  const signUp = (email: string, password: string) => {
+  const signUp = (email: string, password: string, options?: { redirectTo?: string }) => {
     return supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/login?message=Check your email to confirm your account.`,
+        emailRedirectTo: options?.redirectTo || `${window.location.origin}/auth/login?message=Check your email to confirm your account.`,
       },
     });
   };
 
-  const signInWithProvider = (provider: Provider) => {
+  const signInWithProvider = (provider: Provider, options?: { redirectTo?: string }) => {
     return supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: options?.redirectTo || `${window.location.origin}/api/auth/callback`,
       },
     });
   };
