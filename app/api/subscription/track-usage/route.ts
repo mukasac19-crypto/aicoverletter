@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid feature specified' }, { status: 400 });
     }
 
-    const result = await trackFeatureUsage(session.user.id, feature as LimitedFeature);
+    const result = await trackFeatureUsage(supabase, session.user.id, feature as LimitedFeature);
     
     if (!result.success) {
       return NextResponse.json(

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
     
     // ENFORCE SUBSCRIPTION LIMIT
-    const { success, error } = await enforceSubscriptionLimit(session.user.id, 'interviewSessions');
+    const { success, error } = await enforceSubscriptionLimit(supabase, session.user.id, 'interviewSessions');
     if (!success) {
       return NextResponse.json(
         { 

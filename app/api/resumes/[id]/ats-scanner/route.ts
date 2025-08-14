@@ -26,6 +26,7 @@ export async function POST(
     
     // ENFORCE SUBSCRIPTION LIMIT
     const { success, error: limitError, usage } = await enforceSubscriptionLimit(
+      supabase,
       session.user.id, 
       'atsScans'
     );
@@ -129,7 +130,7 @@ export async function POST(
       // Continue - saving is non-critical
     } else {
       // Track usage only after successful analysis
-      await trackFeatureUsage(session.user.id, 'atsScans');
+      await trackFeatureUsage(supabase, session.user.id, 'atsScans');
     }
     
     return NextResponse.json({

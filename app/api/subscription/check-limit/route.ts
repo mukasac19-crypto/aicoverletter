@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid feature specified' }, { status: 400 });
     }
 
-    const result = await canAccessFeature(session.user.id, feature as LimitedFeature);
+    const result = await canAccessFeature(supabase, session.user.id, feature as LimitedFeature);
     
     return NextResponse.json({ 
       allowed: result.allowed,

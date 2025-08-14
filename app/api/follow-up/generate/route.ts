@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     if (session) {
       // Follow-up emails count as cover letters for limit purposes
       const { success, error: limitError, usage } = await enforceSubscriptionLimit(
+        supabase,
         session.user.id, 
         'coverLetters'
       );
@@ -78,7 +79,7 @@ export async function POST(request: Request) {
           // Continue even if saving fails - consider it a non-critical error
         } else {
           // Track usage only after successful save
-          await trackFeatureUsage(session.user.id, 'coverLetters');
+          await trackFeatureUsage(supabase, session.user.id, 'coverLetters');
         }
       } catch (dbError) {
         console.error('Database error when saving follow-up email:', dbError);

@@ -70,6 +70,7 @@ export async function POST(request: Request) {
     
     // ENFORCE SUBSCRIPTION LIMIT - Check BEFORE creating
     const { success, error: limitError, usage } = await enforceSubscriptionLimit(
+      supabase,
       session.user.id, 
       'resumes'
     );
@@ -146,7 +147,7 @@ export async function POST(request: Request) {
     }
     
     // TRACK USAGE - Only track after successful creation
-    await trackFeatureUsage(session.user.id, 'resumes');
+    await trackFeatureUsage(supabase, session.user.id, 'resumes');
     
     return NextResponse.json(data);
   } catch (error: any) {

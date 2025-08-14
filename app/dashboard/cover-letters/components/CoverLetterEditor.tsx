@@ -43,7 +43,10 @@ interface Props {
   coverLetter: CoverLetter;
   onBack?: () => void;
   onTabChange?: (tab: string) => void;
-  onRegenerateLetter?: (letter: CoverLetter) => Promise<void>;
+  onRegenerateLetter?: (
+    letter: CoverLetter,
+    prompt?: string
+  ) => Promise<void>;
 }
 
 const CoverLetterEditor = ({
@@ -57,6 +60,7 @@ const CoverLetterEditor = ({
 
   const [editedLetter, setEditedLetter] = useState<CoverLetter>(coverLetter);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+  const [regenerationPrompt, setRegenerationPrompt] = useState<string>("");
 
   useEffect(() => {
     setEditedLetter(coverLetter);
@@ -111,7 +115,7 @@ const CoverLetterEditor = ({
     
     setIsRegenerating(true);
     try {
-      await onRegenerateLetter(editedLetter);
+      await onRegenerateLetter(editedLetter, regenerationPrompt);
     } catch (error: any) {
       toast({
         title: "Regeneration Failed",
@@ -392,13 +396,27 @@ const CoverLetterEditor = ({
                   </div>
                 </div>
               </div>
-              <Textarea
-                value={editedLetter.content || ""}
-                onChange={(e) =>
-                  handleJobDetailChange("content", e.target.value)
-                }
-                className="min-h-[300px] font-serif lg:flex-grow lg:min-h-[600px]"
-              />
+              <div className="space-y-4">
+                <Textarea
+                  value={editedLetter.content || ""}
+                  onChange={(e) =>
+                    handleJobDetailChange("content", e.target.value)
+                  }
+                  className="min-h-[300px] font-serif lg:flex-grow lg:min-h-[600px]"
+                />
+                <div>
+                  <Label htmlFor="regeneration-prompt">
+                    Regeneration Instructions (Optional)
+                  </Label>
+                  <Textarea
+                    id="regeneration-prompt"
+                    value={regenerationPrompt}
+                    onChange={(e) => setRegenerationPrompt(e.target.value)}
+                    placeholder="e.g., Make it more formal, focus on my project management skills."
+                    className="mt-1"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="lg:w-1/2">

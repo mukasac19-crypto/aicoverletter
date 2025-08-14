@@ -96,17 +96,23 @@ async function generateCoverLetterJob(data: any) {
       const {
         jobDescription,
         userProfile,
-        tone = 'professional',
+        tone = "professional",
         userId,
         coverLetterId,
         metadata = {},
+        regenerate,
+        regenerationPrompt,
       } = data;
   
       // The AI's first task is to extract structured data.
-      const systemPrompt = `You are an expert job application assistant. Your tasks are:
-  1.  Analyze the provided job description to accurately extract the specific 'jobTitle' and the 'companyName'.
-  2.  Using the extracted details and the user's profile, write a compelling, professional cover letter.
-  3.  You MUST return the result as a single, valid JSON object with three keys: "jobTitle" (string), "companyName" (string), and "content" (string).`;
+      let systemPrompt = `You are an expert job application assistant. Your tasks are:
+1.  Analyze the provided job description to accurately extract the specific 'jobTitle' and the 'companyName'.
+2.  Using the extracted details and the user's profile, write a compelling, professional cover letter.
+3.  You MUST return the result as a single, valid JSON object with three keys: "jobTitle" (string), "companyName" (string), and "content" (string).`;
+  
+      if (regenerate && regenerationPrompt) {
+        systemPrompt += `\n4. The user wants to regenerate this letter with specific instructions. Incorporate the following changes: "${regenerationPrompt}"`;
+      }
   
       // The user prompt now focuses on providing the necessary data.
       const userPrompt = `

@@ -36,6 +36,7 @@ export interface CoverLetterGenerationParams {
   resumeData: DbResume | CvFile | LinkedInCoverLetterData | null;
   dataSource: 'cv' | 'linkedin' | 'both' | 'none';
   regenerate?: boolean;
+  regenerationPrompt?: string;
 }
 
 interface UserProfilePayload {
@@ -151,6 +152,7 @@ export async function generateCoverLetter(
         userProfile: userProfilePayload,
         dataSource: params.dataSource,
         regenerate: params.regenerate,
+        regenerationPrompt: params.regenerationPrompt,
       }),
     });
 

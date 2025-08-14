@@ -359,71 +359,75 @@ export default function CoverLetterGenerator() {
     [user, jobDescription, selectedTone, toast, selectedTemplate, checkAndTrack]
   );
 
-  const handleRegenerateCoverLetter = useCallback(async () => {
-    if (!activeCoverLetter) return;
+  const handleRegenerateCoverLetter = useCallback(
+    async (letter: CoverLetter, prompt?: string) => {
+      if (!activeCoverLetter) return;
 
-    // Check subscription limit before regeneration
-    const { allowed, reason } = await checkAndTrack('coverLetters');
-    if (!allowed) {
-      toast({
-        title: "Limit Reached",
-        description: reason || "You've reached your cover letter limit.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setGeneratingLetter(true);
-    setIsRegenerating(true);
-    setGenerationProgress(0);
-
-    try {
-      const generatedResult = await generateCoverLetter({
-        jobDescription,
-        jobTitle: activeCoverLetter.jobTitle ?? undefined,
-        companyName: activeCoverLetter.companyName ?? undefined,
-        tone: selectedTone,
-        resumeData,
-        dataSource,
-        regenerate: true,
-        sender: activeCoverLetter.sender,
-        recipient: activeCoverLetter.recipient,
-      });
-
-      if (generatedResult && generatedResult.coverLetter) {
-        setActiveCoverLetter(prev => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            content: generatedResult.coverLetter,
-            jobTitle: generatedResult.jobTitle,
-            companyName: generatedResult.companyName,
-          };
+      // Check subscription limit before regeneration
+      const { allowed, reason } = await checkAndTrack('coverLetters');
+      if (!allowed) {
+        toast({
+          title: "Limit Reached",
+          description: reason || "You've reached your cover letter limit.",
+          variant: "destructive"
         });
-      } else {
-        throw new Error("Regeneration failed to return valid content.");
+        return;
       }
 
-    } catch (error: any) {
-      console.error("Error regenerating cover letter:", error);
-      toast({
-        title: "Regeneration Failed",
-        description: error.message || "Error regenerating cover letter.",
-        variant: "destructive",
-      });
-    } finally {
-      setGeneratingLetter(false);
-      setIsRegenerating(false);
-    }
-  }, [
-    activeCoverLetter,
-    jobDescription,
-    selectedTone,
-    dataSource,
-    resumeData,
-    toast,
-    checkAndTrack,
-  ]);
+      setGeneratingLetter(true);
+      setIsRegenerating(true);
+      setGenerationProgress(0);
+
+      try {
+        const generatedResult = await generateCoverLetter({
+          jobDescription,
+          jobTitle: activeCoverLetter.jobTitle ?? undefined,
+          companyName: activeCoverLetter.companyName ?? undefined,
+          tone: selectedTone,
+          resumeData,
+          dataSource,
+          regenerate: true,
+          regenerationPrompt: prompt,
+          sender: activeCoverLetter.sender,
+          recipient: activeCoverLetter.recipient,
+        });
+
+        if (generatedResult && generatedResult.coverLetter) {
+          setActiveCoverLetter(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              content: generatedResult.coverLetter,
+              jobTitle: generatedResult.jobTitle,
+              companyName: generatedResult.companyName,
+            };
+          });
+        } else {
+          throw new Error("Regeneration failed to return valid content.");
+        }
+
+      } catch (error: any) {
+        console.error("Error regenerating cover letter:", error);
+        toast({
+          title: "Regeneration Failed",
+          description: error.message || "Error regenerating cover letter.",
+          variant: "destructive",
+        });
+      } finally {
+        setGeneratingLetter(false);
+        setIsRegenerating(false);
+      }
+    },
+    [
+      activeCoverLetter,
+      jobDescription,
+      selectedTone,
+      dataSource,
+      resumeData,
+      toast,
+      checkAndTrack,
+    ]
+  );
 
   const handleDataSourceSelected = useCallback((sourceType: "cv" | "linkedin" | "both" | "none", data: SelectedResumeDataType | CvFile | null) => {
     console.log("Data source selected in parent:", sourceType, data);

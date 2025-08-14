@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
     
     // ENFORCE SUBSCRIPTION LIMIT
-    const { success, error } = await enforceSubscriptionLimit(session.user.id, 'coverLetters');
+    const { success, error } = await enforceSubscriptionLimit(supabase, session.user.id, 'coverLetters');
     if (!success) {
       return NextResponse.json(
         { 
@@ -35,7 +35,13 @@ export async function POST(request: Request) {
     
     // Get request body
     const body = await request.json();
-    const { jobDescription, tone, resumeData, dataSource } = body;
+    const {
+      jobDescription,
+      tone,
+      resumeData,
+      dataSource,
+      regenerationPrompt,
+    } = body;
     
     // Validate required fields
     if (!jobDescription) {
@@ -48,9 +54,10 @@ export async function POST(request: Request) {
     // Generate cover letter using your existing logic
     const result = await generateCoverLetter({
       jobDescription,
-      tone: tone || 'professional',
+      tone: tone || "professional",
       resumeData,
-      dataSource: dataSource || 'none'
+      dataSource: dataSource || "none",
+      regenerationPrompt,
     });
     
     return NextResponse.json(result);

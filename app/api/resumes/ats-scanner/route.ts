@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     
     // ENFORCE SUBSCRIPTION LIMIT if user is authenticated
     if (userId) {
-      const { success, error } = await enforceSubscriptionLimit(userId, 'atsScans');
+      const { success, error } = await enforceSubscriptionLimit(supabase, userId, 'atsScans');
       if (!success) {
         return NextResponse.json(
           { 
