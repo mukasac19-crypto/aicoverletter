@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     FileText, Linkedin, FileSpreadsheet, ArrowRightCircle,
-    AlertCircle, Loader2, BadgeCheck, Calendar, Eye // Added Eye
+    AlertCircle, Loader2, BadgeCheck, Calendar, Eye, FilePlus // Added Eye and FilePlus
 } from "lucide-react";
 // FIXED: Import Alert and AlertTitle
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -30,6 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 // FIXED: Import useRouter
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input"; // Import Input
 
 
 // Define types based on Supabase schema
@@ -39,7 +40,7 @@ type DbResume = Database['public']['Tables']['resumes']['Row'];
 // Internal type for managing selection state in the UI
 interface DataSource {
     id: string;
-    type: 'cv' | 'linkedin';
+    type: 'cv' | 'linkedin' | 'import-linkedin'; // Added 'import-linkedin'
     name: string;
     description?: string;
     selected?: boolean;
@@ -55,7 +56,7 @@ export interface ResumeSourceSelectorProps { // Renamed interface for clarity
     // Prop callback for when a final data source is selected
     // For Prop Serialization Warning (ts 71007): Ensure the function passed here
     // from the parent component is wrapped in useCallback.
-    onDataSourceSelected: (sourceType: 'cv' | 'linkedin' | 'none', data: CvFile | SelectedLinkedInResumeType | null) => void;
+    onDataSourceSelected: (sourceType: 'cv' | 'linkedin' | 'none' | 'import-linkedin', data: CvFile | SelectedLinkedInResumeType | null | string) => void; // Added 'import-linkedin' and string for URL
 }
 
 export function ResumeSourceSelector({ // Renamed component export
@@ -73,6 +74,8 @@ export function ResumeSourceSelector({ // Renamed component export
     const [selectedResumeData, setSelectedResumeData] = useState<SelectedLinkedInResumeType | null>(null);
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
+    const [linkedInUrl, setLinkedInUrl] = useState<string>(""); // State for the LinkedIn URL input
+    const [isImporting, setIsImporting] = useState<boolean>(false); // State for import loading
 
     const { toast } = useToast();
     const supabase = createBrowserClient();
@@ -154,6 +157,48 @@ export function ResumeSourceSelector({ // Renamed component export
         });
     }, [onDataSourceSelected]);
 
+    const handleImportFromLinkedIn = useCallback(async () => {
+        if (!linkedInUrl) {
+            toast({
+                title: "URL Required",
+                description: "Please enter a LinkedIn profile URL.",
+                variant: "destructive",
+            });
+            return;
+        }
+        setIsImporting(true);
+        setError(null);
+        try {
+            const response = await fetch('/api/resumes/import-linkedin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ targetLinkedInUrl: linkedInUrl }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to import from LinkedIn.');
+            }
+
+            const result = await response.json();
+            toast({
+                title: "Import Successful",
+                description: "LinkedIn profile imported and new resume created.",
+            });
+            onDataSourceSelected('import-linkedin', result.resumeId);
+
+        } catch (err: any) {
+            setError(err.message);
+            toast({
+                title: "Import Failed",
+                description: err.message,
+                variant: "destructive",
+            });
+        } finally {
+            setIsImporting(false);
+        }
+    }, [linkedInUrl, onDataSourceSelected, toast]);
+
     // Handle LinkedIn resume selection FROM the LinkedInResumeSelector component
     const handleLinkedInResumeSelected = useCallback((resumeId: string, resumeData: SelectedLinkedInResumeType) => {
         setShowLinkedInSelector(false);
@@ -222,7 +267,7 @@ export function ResumeSourceSelector({ // Renamed component export
                              <TabsTrigger value="linkedin" disabled={linkedinSources.length === 0}>
                                  <Linkedin className="h-4 w-4 mr-2" /> LinkedIn {linkedinSources.length > 0 && `(${linkedinSources.length})`}
                              </TabsTrigger>
-                         </TabsList>
+                        </TabsList>
 
                          <TabsContent value="cv" className="mt-6">
                              {cvSources.length > 0 ? (
@@ -240,7 +285,27 @@ export function ResumeSourceSelector({ // Renamed component export
                                          ))}
                                      </div>
                                  </RadioGroup>
-                             ) : ( <div className="text-center py-6 text-muted-foreground">No CVs found or selected.</div> )}
+                             ) : (
+                                <div className="text-center py-6 text-muted-foreground">
+                                    <h4 className="font-semibold mb-2">Import from LinkedIn URL</h4>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Input
+                                            type="url"
+                                            placeholder="https://www.linkedin.com/in/your-profile"
+                                            value={linkedInUrl}
+                                            onChange={(e) => setLinkedInUrl(e.target.value)}
+                                            disabled={isImporting}
+                                        />
+                                        <Button onClick={handleImportFromLinkedIn} disabled={isImporting || !linkedInUrl}>
+                                            {isImporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FilePlus className="mr-2 h-4 w-4" />}
+                                            Import
+                                        </Button>
+                                    </div>
+                                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                                    <Separator className="my-4" />
+                                    <p>Or upload a CV to get started.</p>
+                                </div>
+                            )}
                          </TabsContent>
 
                          <TabsContent value="linkedin" className="mt-6">

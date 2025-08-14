@@ -39,7 +39,9 @@ import {
   X,
   FileUp,
   Target,
-  Sparkles
+  Sparkles,
+  Linkedin, // Added Linkedin
+  Loader2 // Added Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistance } from 'date-fns';
@@ -51,6 +53,8 @@ import {
 import type { CvFile } from '@/lib/cv-helpers';
 import { Json, type TablesInsert } from '@/types/supabase';
 import { ResumeData, DatabaseResumeData, WorkExperience } from '@/types/resume';
+import { useLinkedInIntegration } from '@/lib/hooks/useLinkedInIntegration'; // Import the hook
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Import Dialog components
 
 export default function ResumeDashboardClient({
   initialResumes = [],
@@ -82,40 +86,34 @@ export default function ResumeDashboardClient({
   // Add subscription hook
   const { getUsage, canAccess, tier } = useSubscription();
   const resumeUsage = getUsage('resumes');
+  const { isConnected, importProfileViaUrl, isImporting } = useLinkedInIntegration(); // Use the hook
+  const [isLinkedInImportOpen, setIsLinkedInImportOpen] = useState(false);
+  const [linkedInUrl, setLinkedInUrl] = useState('');
 
   // Load resumes from database
   useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        setIsLoading(true); setError(null);
-        if (!user) { setResumes([]); return; }
+    // The initial resumes are passed as a prop, so we don't need to fetch them again.
+    // We can still update the resumes state if the initialResumes prop changes.
+    setResumes(initialResumes);
+  }, [initialResumes]);
 
-        const { data, error: fetchError } = await supabase
-          .from('resumes')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false });
+  const handleLinkedInImport = async () => {
+    if (!linkedInUrl) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a LinkedIn profile URL.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-        if (fetchError) throw fetchError;
-
-        if (data) {
-          const processedResumes: ResumeData[] = data
-            .map(dbResume => mapDatabaseToResumeData(dbResume as unknown as DatabaseResumeData))
-            .filter((resume): resume is ResumeData => resume !== null);
-          setResumes(processedResumes);
-        } else {
-          setResumes([]);
-        }
-      } catch (err: any) {
-        console.error('Error fetching resumes:', err);
-        setError(err.message || 'Failed to load resumes');
-        toast({ title: "Error", description: "Failed to load resumes.", variant: "destructive" });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (user) { fetchResumes(); } else { setIsLoading(false); }
-  }, [user, supabase, toast]);
+    const resumeId = await importProfileViaUrl(linkedInUrl);
+    if (resumeId) {
+      setIsLinkedInImportOpen(false);
+      setLinkedInUrl('');
+      // The hook will toast on success, and the resume list will be updated via the hook's fetch
+    }
+  };
 
   const handleDelete = async (id: string) => {
     const originalResumes = [...resumes];
@@ -465,6 +463,39 @@ export default function ResumeDashboardClient({
             >
               {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
             </LimitedActionButton>
+            <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:flex-none text-xs sm:text-sm border-blue-200 text-blue-700 hover:bg-blue-50"
+                  size="sm"
+                >
+                  <Linkedin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import from LinkedIn
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Import from LinkedIn</DialogTitle>
+                  <DialogDescription>
+                    Paste the URL of the LinkedIn profile you want to import.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Input
+                    id="linkedin-url"
+                    placeholder="https://www.linkedin.com/in/your-profile"
+                    value={linkedInUrl}
+                    onChange={(e) => setLinkedInUrl(e.target.value)}
+                  />
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleLinkedInImport} disabled={isImporting || !linkedInUrl}>
+                    {isImporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Import
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>
@@ -594,6 +625,39 @@ export default function ResumeDashboardClient({
                   >
                     {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
                   </LimitedActionButton>
+                  <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="text-xs sm:text-sm border-blue-200 text-blue-700 hover:bg-blue-50"
+                        size="sm"
+                      >
+                        <Linkedin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import from LinkedIn
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Import from LinkedIn</DialogTitle>
+                        <DialogDescription>
+                          Paste the URL of the LinkedIn profile you want to import.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <Input
+                          id="linkedin-url-modal"
+                          placeholder="https://www.linkedin.com/in/your-profile"
+                          value={linkedInUrl}
+                          onChange={(e) => setLinkedInUrl(e.target.value)}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={handleLinkedInImport} disabled={isImporting || !linkedInUrl}>
+                          {isImporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                          Import
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </>
             )}

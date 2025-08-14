@@ -25,7 +25,7 @@ interface UseLinkedInIntegrationReturn {
     isGenerating: boolean; // Specifically for manual resume generation
     error: string | null;
     connectLinkedIn: () => Promise<void>;
-    importProfileViaUrl: (profileUrl: string) => Promise<void>;
+    importProfileViaUrl: (profileUrl: string) => Promise<string | null>; // Return resumeId
     refreshLinkedInData: () => Promise<void>;
     disconnectLinkedIn: () => Promise<void>;
     generateResume: () => Promise<string | null>;
@@ -127,23 +127,36 @@ export function useLinkedInIntegration(): UseLinkedInIntegrationReturn {
     }, [toast]);
 
     // Import via Proxycurl URL
-    const importProfileViaUrl = useCallback(async (profileUrl: string) => {
+    const importProfileViaUrl = useCallback(async (profileUrl: string): Promise<string | null> => {
         if (!profileUrl || !profileUrl.includes('linkedin.com/in/')) {
             setError('Please enter a valid LinkedIn profile URL.');
             // FIXED: Changed variant to "default"
             toast({ title: 'Invalid URL', description: 'Please provide a valid LinkedIn profile URL.', variant: 'default' });
-            return;
+            return null;
         }
         setIsImporting(true); setError(null);
         try {
             // Use service function that calls the backend API
-            await importProfileViaProxycurlAPI(profileUrl);
-            toast({ title: "Import Successful", description: 'Profile data imported.' });
+            const response = await fetch('/api/resumes/import-linkedin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ targetLinkedInUrl: profileUrl }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to import from LinkedIn.');
+            }
+
+            const result = await response.json();
+            toast({ title: "Import Successful", description: 'Profile data imported and resume created.' });
             await fetchLinkedInProfile(); // Refresh state from DB
+            return result.resumeId;
         } catch (err: any) {
             console.error("Hook: Proxycurl Import error:", err);
             setError(err.message || "An error occurred during URL import.");
             toast({ title: "Import Failed", description: err.message, variant: "destructive" });
+            return null;
         } finally { setIsImporting(false); }
     }, [toast, fetchLinkedInProfile]); // Depends on fetchLinkedInProfile
 

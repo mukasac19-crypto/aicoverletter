@@ -94,10 +94,17 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     setStep(2);
   };
   
-  const handleDataSourceSelected = useCallback((sourceType: 'cv' | 'linkedin' | 'both' | 'none', data: any) => {
-    setDataSource(sourceType);
-    setResumeData(data);
-  }, []);
+  const handleDataSourceSelected = useCallback((sourceType: "cv" | "linkedin" | "both" | "none" | "import-linkedin", data: any) => {
+    if (sourceType === 'import-linkedin') {
+      // After import, we get a resumeId. We can then trigger a re-fetch or directly use this ID.
+      // For now, we will just log it and the user would have to re-select the source.
+      console.log('LinkedIn Import finished, new resume available.');
+      loadLinkedInProfile(); // Re-load profile to see the new data
+    } else {
+      setDataSource(sourceType as 'cv' | 'linkedin' | 'both' | 'none');
+      setResumeData(data);
+    }
+  }, [loadLinkedInProfile]);
   
   const handleGenerateCoverLetter = useCallback(async (selectedData: any, selectedDataSource: 'cv' | 'linkedin' | 'both') => {
     if (!user) {

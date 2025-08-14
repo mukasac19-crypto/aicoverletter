@@ -122,7 +122,7 @@ async function getDefaultTemplateId(supabase: SupabaseClient<Database>): Promise
             .eq('is_public', true)
             .order('created_at', { ascending: false })
             .limit(1)
-            .maybeSingle();
+            .single();
 
         if (error) {
             console.error("Error fetching default template:", error);
@@ -219,71 +219,60 @@ export async function createResumeFromLinkedInData(
 ): Promise<{ success: boolean; resumeId?: string; error?: string }> {
 
     if (!linkedInProfile) {
-         console.error("createResumeFromLinkedInData called with null linkedInProfile");
-         return { success: false, error: 'LinkedIn profile data is missing.' };
+        console.error("createResumeFromLinkedInData called with null linkedInProfile");
+        return { success: false, error: 'LinkedIn profile data is missing.' };
     }
-     if (!userId) {
-         console.error("createResumeFromLinkedInData called without userId");
-         return { success: false, error: 'User ID is missing.' };
-     }
+    if (!userId) {
+        console.error("createResumeFromLinkedInData called without userId");
+        return { success: false, error: 'User ID is missing.' };
+    }
 
     try {
         console.log(`Starting resume creation for user: ${userId} from LinkedIn profile ID: ${linkedInProfile.id}`);
 
-        // Enhance profile data using AI (optional based on API key)
         const enhancedProfile = await enhanceProfileWithAI(linkedInProfile);
 
-        // Extract name parts safely
-        const name = enhancedProfile.name || enhancedProfile.email?.split('@')[0] || 'User';
+        const name = enhancedProfile.name || 'User';
         const nameParts = name.split(' ');
         const firstName = nameParts[0];
         const lastName = nameParts.slice(1).join(' ');
 
-        // --- Process Sections ---
-        // Ensure experience_json is an array, then process achievements
         const experienceJson = Array.isArray(enhancedProfile.experience_json) ? enhancedProfile.experience_json : [];
         const processedExperience = await Promise.all(experienceJson.map(async (exp: any) => ({
-            ...exp, // Spread original experience first
-            achievements: await generateAchievements(exp) // Generate/ensure achievements
+            ...exp,
+            achievements: await generateAchievements(exp)
         })));
 
-        // Ensure skills_json is an array, then process
         const skillsJson = Array.isArray(enhancedProfile.skills_json) ? enhancedProfile.skills_json : [];
         const processedSkills = skillsJson.map((skill: any, index: number) => ({
-            id: skill.id || `skill-${index}-${uuidv4()}`, // Ensure unique ID
+            id: skill.id || `skill-${index}-${uuidv4()}`,
             name: skill.name || '',
-            level: skill.level || skill.proficiency || 'Intermediate', // Accept 'level' or 'proficiency'
-            category: skill.category || 'Professional' // Default category
+            level: skill.level || 'Intermediate',
+            category: skill.category || 'Professional'
         }));
 
-        // Safely handle potentially missing JSON fields (assuming types are now updated)
         const educationJson = Array.isArray(enhancedProfile.education_json) ? enhancedProfile.education_json : [];
         const projectsJson = Array.isArray(enhancedProfile.projects_json) ? enhancedProfile.projects_json : [];
         const languagesJson = Array.isArray(enhancedProfile.languages_json) ? enhancedProfile.languages_json : [];
         const certificationsJson = Array.isArray(enhancedProfile.certifications_json) ? enhancedProfile.certifications_json : [];
-        // --- End Process Sections ---
 
-
-        // Get default template ID
         const defaultTemplateId = await getDefaultTemplateId(supabase);
         console.log(`Using default template ID: ${defaultTemplateId || 'None'}`);
 
-        // Construct the resume data for insertion
         const resumeData: ResumeInsert = {
-            // id: uuidv4(), // DB should generate default UUID if column default is set, otherwise uncomment
             user_id: userId,
             title: `${firstName} ${lastName} Resume`.trim(),
             personal_info: {
                 firstName: firstName,
                 lastName: lastName,
-                title: enhancedProfile.headline || enhancedProfile.position || '',
+                title: enhancedProfile.headline || '',
                 summary: enhancedProfile.summary || '',
                 contact: {
                     email: enhancedProfile.email || '',
-                    phone: '', // Placeholder
+                    phone: '',
                     location: enhancedProfile.location || '',
                     linkedIn: enhancedProfile.profile_url || '',
-                    website: '' // Placeholder
+                    website: ''
                 }
             },
             work_experience: processedExperience,
@@ -292,53 +281,43 @@ export async function createResumeFromLinkedInData(
             projects: projectsJson,
             languages: languagesJson,
             certifications: certificationsJson,
-            // Ensure other potentially required fields have defaults
             interests: [],
             internships: [],
             references: [],
-            reference_text: "References available upon request",
             template_id: defaultTemplateId,
-            // created_at: handled by db default? If not: new Date().toISOString(),
-            // updated_at: handled by db default? If not: new Date().toISOString(),
             is_imported: true,
             is_public: false,
-            // Ensure any other non-nullable fields are included
         };
 
-        // Log key parts of the data being inserted (avoid logging everything)
         console.log(`Attempting to insert resume titled: "${resumeData.title}"`);
         console.log(`Experience count: ${processedExperience.length}, Skills count: ${processedSkills.length}`);
 
-
-        // Insert the resume
         const { data: resume, error: resumeError } = await supabase
             .from('resumes')
             .insert(resumeData)
-            .select('id') // Select only the ID after insert
+            .select('id')
             .single();
 
         if (resumeError) {
             console.error('Error inserting resume:', JSON.stringify(resumeError, null, 2));
-            // Attempt to provide more specific feedback if possible
             let userErrorMessage = 'Failed to save resume data.';
             if (resumeError.message.includes("violates non-null constraint")) {
-                 userErrorMessage = `Database error: A required field was missing. Details: ${resumeError.details || resumeError.message}`;
+                userErrorMessage = `Database error: A required field was missing. Details: ${resumeError.details || resumeError.message}`;
             } else if (resumeError.message.includes("violates unique constraint")) {
-                 userErrorMessage = `Database error: A unique value conflict occurred. Details: ${resumeError.details || resumeError.message}`;
+                userErrorMessage = `Database error: A unique value conflict occurred. Details: ${resumeError.details || resumeError.message}`;
             } else {
-                 userErrorMessage = `Database error: ${resumeError.message}`;
+                userErrorMessage = `Database error: ${resumeError.message}`;
             }
             return { success: false, error: userErrorMessage };
         }
 
         if (!resume || !resume.id) {
-             console.error('Resume insert seemed successful, but no ID was returned.');
-             return { success: false, error: 'Failed to get resume ID after creation.' };
+            console.error('Resume insert seemed successful, but no ID was returned.');
+            return { success: false, error: 'Failed to get resume ID after creation.' };
         }
 
         console.log("Resume inserted successfully with ID:", resume.id);
 
-        // Log activity (fire-and-forget)
         supabase.from('activity_logs').insert({
             user_id: userId,
             event_type: 'resume_created',
@@ -349,7 +328,6 @@ export async function createResumeFromLinkedInData(
             if (logError) console.error("Error logging activity:", logError);
             else console.log("Activity logged successfully for resume creation");
         });
-
 
         return { success: true, resumeId: resume.id };
 

@@ -429,10 +429,17 @@ export default function CoverLetterGenerator() {
     ]
   );
 
-  const handleDataSourceSelected = useCallback((sourceType: "cv" | "linkedin" | "both" | "none", data: SelectedResumeDataType | CvFile | null) => {
+  const handleDataSourceSelected = useCallback((sourceType: "cv" | "linkedin" | "both" | "none" | "import-linkedin", data: SelectedResumeDataType | CvFile | null | string) => {
     console.log("Data source selected in parent:", sourceType, data);
-    setDataSource(sourceType);
-    setResumeData(data);
+    if (sourceType === 'import-linkedin') {
+      // When the import is done, we will have a resumeId (string)
+      // We need to then fetch the full resume data and set it.
+      // For now, we can just log it.
+      console.log('LinkedIn import finished, resumeId:', data);
+    } else {
+      setDataSource(sourceType as "cv" | "linkedin" | "both" | "none");
+      setResumeData(data as SelectedResumeDataType | CvFile | null);
+    }
   }, []);
 
   const applyTemplate = (templateId: string) => {
