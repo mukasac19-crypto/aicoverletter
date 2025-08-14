@@ -624,7 +624,7 @@ export default function CoverLetterGenerator() {
   );
 
   return (
-    <div className="w-full h-full bg-white p-4 sm:p-6 md:p-10">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-10">
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -680,9 +680,9 @@ export default function CoverLetterGenerator() {
         <TabsContent value="create">
           {step === 1 && (
             <div>
-              <Card className="mb-6 bg-muted/10 border-gray-100 shadow-none">
+              <Card className="mb-6 bg-muted/10 border-gray-100 shadow-none w-full">
                 <CardHeader className="pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 w-full">
                     <div>
                       <CardTitle>Your Data Sources</CardTitle>
                     </div>
@@ -700,7 +700,7 @@ export default function CoverLetterGenerator() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-4 mb-4">
+                  <div className="flex flex-wrap gap-4 mb-4 w-full">
                     <div
                       className={`flex items-center rounded-md border p-3 flex-grow ${
                         hasCV
@@ -784,9 +784,9 @@ export default function CoverLetterGenerator() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-muted/10 border-gray-100">
+              <Card className="bg-muted/10 border-gray-100 w-full">
                 <CardHeader className="pb-3">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 w-full">
                     <div>
                       <CardTitle className="text-xl sm:text-2xl flex items-center">
                         <Sparkles className="h-5 w-5 mr-2 text-primary" />
@@ -806,7 +806,7 @@ export default function CoverLetterGenerator() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="p-1">
+                  <div className="p-1 w-full">
                     <JobDescriptionInput
                       onSubmit={handleJobDescriptionSubmit}
                       cvUploaded={hasCV}
@@ -887,11 +887,13 @@ export default function CoverLetterGenerator() {
         </TabsContent>
 
         <TabsContent value="recent">
-          <RecentCoverLettersTab user={user} onTabChange={handleTabChange} />
+          <div className="w-full">
+            <RecentCoverLettersTab user={user} onTabChange={handleTabChange} />
+          </div>
         </TabsContent>
 
         <TabsContent value="follow-up">
-          <Card>
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Follow-Up Emails</CardTitle>
               <CardDescription>

@@ -504,9 +504,17 @@ export default function ResumeDashboardClient({
       <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-4">
         <div className="w-full xs:w-auto overflow-x-auto pb-1">
           <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-            <TabsList className="w-[40%] xs:w-auto grid grid-cols-2 xs:inline-flex bg-muted/50">
-              <TabsTrigger value="all" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">All Resumes</TabsTrigger>
-              <TabsTrigger value="recent" className="text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50">Recent</TabsTrigger>
+            <TabsList 
+             className="mb-6 w-full flex flex-nowrap bg-muted/50 rounded-lg p-1 gap-2">
+              <TabsTrigger 
+              value="all" 
+              className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                All Resumes
+                </TabsTrigger>
+              <TabsTrigger value="recent" 
+              className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+              >Recent</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
