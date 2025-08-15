@@ -687,117 +687,119 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
   // Main render - with or without card based on prop
   return (
     <div className={removeCard ? "" : "space-y-1 w-full"}>
-         <div
-        className={!removeCard ? "border rounded-md overflow-x-auto w-full" : "overflow-x-auto w-full"}
-        style={{ height }}
-      >
+      <div className="container mx-auto px-2 sm:px-4 md:px-6 py-6 max-w-4xl flex flex-col gap-6">
         <div
-          ref={containerRef}
-          id="resume-preview-container"
-          className="w-full h-full overflow-auto flex justify-center px-2"
+          className={!removeCard ? "border rounded-md overflow-x-auto w-full" : "overflow-x-auto w-full"}
+          style={{ height }}
         >
-          {/* Responsive container for the resume with zoom scaling */}
           <div
-            className="my-3 bg-white shadow-md w-full max-w-3xl mx-auto"
-            style={{
-              transform: `scale(${zoomLevel / 100})`,
-              transformOrigin: "top center",
-              minWidth: "320px",
-              maxWidth: "100%",
-              minHeight: "11in",
-              padding: isSidebarTemplate ? 0 : undefined,
-            }}
+            ref={containerRef}
+            id="resume-preview-container"
+            className="w-full h-full overflow-auto flex justify-center px-2"
           >
-            {/* Use iframe for isolated CSS rendering */}
-            <iframe
-              ref={iframeRef}
-              srcDoc={renderedHtml}
-              title="Resume Preview"
+            {/* Responsive container for the resume with zoom scaling */}
+            <div
+              className="my-3 bg-white shadow-md w-full max-w-3xl mx-auto"
               style={{
-                width: "100%",
-                height: "100%",
-                border: "none",
-                minHeight: "11in",
+                transform: `scale(${zoomLevel / 100})`,
+                transformOrigin: "top center",
+                minWidth: "320px",
                 maxWidth: "100%",
+                minHeight: "11in",
+                padding: isSidebarTemplate ? 0 : undefined,
               }}
-              className="block"
-            />
+            >
+              {/* Use iframe for isolated CSS rendering */}
+              <iframe
+                ref={iframeRef}
+                srcDoc={renderedHtml}
+                title="Resume Preview"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  minHeight: "11in",
+                  maxWidth: "100%",
+                }}
+                className="block"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center mt-2 gap-2">
-        <div className="flex items-center space-x-3 flex-wrap">
-          {/* Zoom controls */}
-          <div className="flex space-x-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomOut}
-              disabled={zoomLevel <= 40}
-              className="h-8 w-8 p-0"
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomReset}
-              className="h-8 px-2"
-            >
-              <span className="text-xs">{zoomLevel}%</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomIn}
-              disabled={zoomLevel >= 150}
-              className="h-8 w-8 p-0"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Page navigation controls - only show if multiple pages */}
-          {totalPages > 1 && (
-            <div className="flex items-center space-x-1 ml-3 border-l pl-3">
+        {/* Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-center mt-2 gap-2">
+          <div className="flex items-center space-x-3 flex-wrap">
+            {/* Zoom controls */}
+            <div className="flex space-x-1">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePrevPage}
-                disabled={currentPage <= 1}
+                onClick={handleZoomOut}
+                disabled={zoomLevel <= 40}
                 className="h-8 w-8 p-0"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ZoomOut className="h-4 w-4" />
               </Button>
-              <span className="text-xs font-medium px-1">
-                Page {currentPage} of {totalPages}
-              </span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleNextPage}
-                disabled={currentPage >= totalPages}
+                onClick={handleZoomReset}
+                className="h-8 px-2"
+              >
+                <span className="text-xs">{zoomLevel}%</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleZoomIn}
+                disabled={zoomLevel >= 150}
                 className="h-8 w-8 p-0"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ZoomIn className="h-4 w-4" />
               </Button>
             </div>
+
+            {/* Page navigation controls - only show if multiple pages */}
+            {totalPages > 1 && (
+              <div className="flex items-center space-x-1 ml-3 border-l pl-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrevPage}
+                  disabled={currentPage <= 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs font-medium px-1">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage >= totalPages}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {!removeCard && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFullscreenPreview}
+              className="h-7"
+            >
+              <Maximize2 className="h-3 w-3 mr-1" />
+              <span className="text-xs">Expand</span>
+            </Button>
           )}
         </div>
-
-        {!removeCard && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleFullscreenPreview}
-            className="h-7"
-          >
-            <Maximize2 className="h-3 w-3 mr-1" />
-            <span className="text-xs">Expand</span>
-          </Button>
-        )}
       </div>
     </div>
   );

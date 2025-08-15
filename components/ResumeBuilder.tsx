@@ -488,9 +488,9 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         isPreviewMode={!saveInitiated}
       />
       <div className="bg-white border-b sticky top-0 z-40 w-full">
-        <div className="container mx-auto py-3 px-4">
+        <div className="container mx-auto py-3 px-2 sm:px-4 md:px-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button variant="ghost" size="sm" asChild className="-ml-2 h-8 text-gray-600 hover:bg-gray-100">
                 <Link href="/dashboard/resumes">
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
@@ -525,7 +525,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   <Palette className="h-4 w-4 mr-2" /> {selectedTemplate ? selectedTemplate.name : "Choose Template"}
                 </Button>
                 <div ref={dropdownRef} className="relative">
-                  <div className="flex">
+                  <div className="flex flex-wrap">
                     <Button onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="rounded-r-none border-r-0 bg-orange-600 hover:bg-orange-700 text-white h-9 px-4">
                       {isSaving ? <LoadingSpinner className="mr-2" /> : <Save className="h-4 w-4 mr-2" />} {recentlySaved ? "Saved!" : (isSaving ? "Saving..." : "Save")}
                     </Button>
@@ -550,7 +550,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       </div>
 
       {showImportAlert && importedSections.length > 0 && (
-        <div className="container mx-auto px-4 mt-4">
+        <div className="container mx-auto px-2 sm:px-4 md:px-6 mt-4">
           <Alert className="bg-orange-50 border-orange-200 text-orange-800">
             <CheckCircle2 className="h-5 w-5 text-orange-500" />
             <AlertTitle className="text-orange-800 font-medium">Resume Imported Successfully!</AlertTitle>
@@ -567,7 +567,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       )}
 
       {showExportProgress && (
-        <div className="container mx-auto px-4 mt-4 sticky top-[70px] z-30">
+        <div className="container mx-auto px-2 sm:px-4 md:px-6 mt-4 sticky top-[70px] z-30">
           <ExportProgressIndicator
             progress={exportProgress}
             status={exportStatus}
@@ -583,95 +583,99 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         </div>
       )}
 
-      <div className={`container mx-auto px-4 py-6 grid grid-cols-1 ${!isMobileView ? (expandedPreview ? 'lg:grid-cols-5' : 'lg:grid-cols-12') : ''} gap-6`}>
-        <div className={` ${!isMobileView ? (expandedPreview ? 'lg:col-span-2 lg:order-2' : 'lg:col-span-5 lg:order-1') : 'col-span-1'} ${isMobileView && expandedPreview ? 'hidden' : ''}`}>
-          <Card className="border shadow-sm">
+      <div className={`container mx-auto px-2 sm:px-4 md:px-6 py-6 grid grid-cols-1 ${!isMobileView ? (expandedPreview ? 'lg:grid-cols-5' : 'lg:grid-cols-12') : ''} gap-6`}> 
+        <div className={`w-full ${!isMobileView ? (expandedPreview ? 'lg:col-span-2 lg:order-2' : 'lg:col-span-5 lg:order-1') : 'col-span-1'} ${isMobileView && expandedPreview ? 'hidden' : ''}`}> 
+          <Card className="border shadow-sm w-full max-w-full sm:max-w-none overflow-x-auto">
             <CardHeader className="bg-gray-50 border-b p-4">
               <CardTitle className="text-base font-semibold text-gray-700">Resume Content</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Accordion type="single" collapsible value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <AccordionItem value="personal-info" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Personal Info</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <PersonalInfoSection data={resumeData.personalInfo} onChange={(data) => updateSection('personalInfo', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="work-experience" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Work Experience</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <WorkExperienceSection data={resumeData.workExperience || []} onChange={(data) => updateSection('workExperience', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="education" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Education</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <EducationSection data={resumeData.education || []} onChange={(data) => updateSection('education', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="skills" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Skills</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <SkillsSection data={resumeData.skills || []} onChange={(data) => updateSection('skills', data)} displayStyle='stars' />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="projects" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Projects</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <ProjectsSection data={resumeData.projects || []} onChange={(data) => updateSection('projects', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="certifications" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Certifications</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <CertificationsSection data={resumeData.certifications || []} onChange={(data) => updateSection('certifications', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="languages" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Languages</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <LanguagesSection data={resumeData.languages || []} onChange={(data) => updateSection('languages', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="hobbies" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Interests / Hobbies</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <HobbiesSection data={resumeData.interests || []} onChange={(data) => updateSection('interests', data)} useStructured={false} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="internships" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Internships</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <InternshipsSection data={(resumeData.internships || []).map(i => ({ ...i, isOngoing: i.isOngoing ?? false }))} onChange={(data) => updateSection('internships', data)} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="references" className="border-b">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">References</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <ReferencesSection
-                      data={resumeData.references || []}
-                      onChange={(data) => updateSection('references', data)}
-                      generalStatement={resumeData.referenceText || "References available upon request"}
-                      onStatementChange={(statement) => updateSection('referenceText', statement)}
-                      enableStatement={true}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="custom" className="border-b-0">
-                  <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Custom Sections</AccordionTrigger>
-                  <AccordionContent className="px-4 pt-2 pb-4 bg-white">
-                    <CustomSection data={resumeData.customSections || []} onChange={(data) => updateSection('customSections', data)} />
-                  </AccordionContent>
-                </AccordionItem>
+                {/* Accordion Items */}
+                <div className="overflow-x-auto">
+                  {/* Accordion Items */}
+                  <AccordionItem value="personal-info" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Personal Info</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <PersonalInfoSection data={resumeData.personalInfo} onChange={(data) => updateSection('personalInfo', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="work-experience" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Work Experience</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <WorkExperienceSection data={resumeData.workExperience || []} onChange={(data) => updateSection('workExperience', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="education" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Education</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <EducationSection data={resumeData.education || []} onChange={(data) => updateSection('education', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="skills" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Skills</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <SkillsSection data={resumeData.skills || []} onChange={(data) => updateSection('skills', data)} displayStyle='stars' />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="projects" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Projects</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <ProjectsSection data={resumeData.projects || []} onChange={(data) => updateSection('projects', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="certifications" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Certifications</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <CertificationsSection data={resumeData.certifications || []} onChange={(data) => updateSection('certifications', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="languages" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Languages</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <LanguagesSection data={resumeData.languages || []} onChange={(data) => updateSection('languages', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="hobbies" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Interests / Hobbies</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <HobbiesSection data={resumeData.interests || []} onChange={(data) => updateSection('interests', data)} useStructured={false} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="internships" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Internships</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <InternshipsSection data={(resumeData.internships || []).map(i => ({ ...i, isOngoing: i.isOngoing ?? false }))} onChange={(data) => updateSection('internships', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="references" className="border-b">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">References</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <ReferencesSection
+                        data={resumeData.references || []}
+                        onChange={(data) => updateSection('references', data)}
+                        generalStatement={resumeData.referenceText || "References available upon request"}
+                        onStatementChange={(statement) => updateSection('referenceText', statement)}
+                        enableStatement={true}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="custom" className="border-b-0">
+                    <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Custom Sections</AccordionTrigger>
+                    <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
+                      <CustomSection data={resumeData.customSections || []} onChange={(data) => updateSection('customSections', data)} />
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
               </Accordion>
             </CardContent>
           </Card>
         </div>
 
         {!isMobileView && (
-          <div className={`${expandedPreview ? 'lg:col-span-3 lg:order-1' : 'lg:col-span-7 lg:order-2'}`}>
-            <div className="h-full">
-              <div className="bg-gray-100 border border-gray-200 rounded-t-md flex flex-row justify-between items-center py-2 px-4">
+          <div className={`w-full ${expandedPreview ? 'lg:col-span-3 lg:order-1' : 'lg:col-span-7 lg:order-2'} flex flex-col min-w-0`}> 
+            <div className="h-full min-w-0">
+              <div className="bg-gray-100 border border-gray-200 rounded-t-md flex flex-row justify-between items-center py-2 px-2 sm:px-4">
                 <div className="text-gray-800 text-base font-medium">Resume Preview</div>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" onClick={handleZoomOut} disabled={zoomLevel <= 40} className="bg-white text-gray-700 border-gray-300 h-8 w-8 p-0"> <ZoomOut className="h-3 w-3" /> </Button>
@@ -680,7 +684,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   <Button variant="outline" size="sm" onClick={() => { if (resumeData && selectedTemplate) { window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank'); } }} className="bg-white text-gray-700 border-gray-300 h-8 w-8 p-0"> <Eye className="h-3 w-3" /> </Button>
                 </div>
               </div>
-              <div className="bg-gray-100 flex justify-center overflow-auto border-l border-r border-gray-200" style={{ height: expandedPreview ? 'calc(100vh - 160px)' : '540px' }}>
+              <div className="bg-gray-100 flex justify-center overflow-x-auto border-l border-r border-gray-200" style={{ height: expandedPreview ? 'calc(100vh - 160px)' : '540px' }}>
                 {!selectedTemplate ? (
                   <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 rounded-md w-full m-4 bg-white">
                     <div className="text-center space-y-2 p-4">
@@ -690,8 +694,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full py-3 flex justify-center">
-                    <div className="transition-all relative">
+                  <div className="w-full py-3 flex justify-center min-w-0">
+                    <div className="transition-all relative min-w-0">
                       <ResumePreview
                         resume={resumeData}
                         template={selectedTemplate}
@@ -709,11 +713,11 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 )}
               </div>
               {selectedTemplate && (
-                <div className="border-t border-l border-r border-b border-gray-200 rounded-b-md py-2 px-4 bg-gray-50 flex justify-between">
+                <div className="border-t border-l border-r border-b border-gray-200 rounded-b-md py-2 px-2 sm:px-4 bg-gray-50 flex flex-col sm:flex-row justify-between gap-2">
                   <Button variant="outline" size="sm" className="text-orange-700 border-orange-200 hover:bg-orange-50 h-8" onClick={toggleExpandedPreview} >
                     {expandedPreview ? (<><LayoutList className="h-3 w-3 mr-1" /> <span className="text-xs">Edit Mode</span></>) : (<><Eye className="h-3 w-3 mr-1" /> <span className="text-xs">Focus on Preview</span></>)}
                   </Button>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button size="sm" onClick={() => window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank')} variant="outline" className="text-orange-700 border-orange-200 hover:bg-orange-50 h-8" >
                       <Maximize className="h-3 w-3 mr-1" /> <span className="text-xs">Open Full View</span>
                     </Button>

@@ -172,7 +172,7 @@ const CoverLetterEditor = ({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-6">
+    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-6 max-w-4xl flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row items-start gap-4 mb-6 w-full">
         {onBack && (
           <Button variant="outline" onClick={onBack}>
@@ -201,8 +201,8 @@ const CoverLetterEditor = ({
         </div>
       </div>
 
-      <Card className="w-full max-w-full overflow-hidden">
-        <CardHeader>
+      <Card className="w-full border shadow-sm overflow-x-auto">
+        <CardHeader className="bg-gray-50 border-b p-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
             <div>
               <CardTitle>Your Cover Letter</CardTitle>
@@ -241,191 +241,195 @@ const CoverLetterEditor = ({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col lg:flex-row gap-6 w-full">
-            <div className="lg:w-1/2 w-full flex flex-col h-full">
-              <div className="space-y-6 mb-6">
-                <div>
-                  <Label className="text-base font-semibold">Job Details</Label>
-                  <div className="mt-3">
-                    <Label htmlFor="jobTitle">Job Title</Label>
-                    <Input
-                      id="jobTitle"
-                      value={editedLetter.jobTitle || ""}
+        <CardContent className="p-4 flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            <div className="w-full max-w-full overflow-x-auto">
+              <div className="flex flex-col lg:flex-row gap-6 w-full">
+                <div className="lg:w-1/2 w-full flex flex-col h-full">
+                  <div className="space-y-6 mb-6">
+                    <div>
+                      <Label className="text-base font-semibold">Job Details</Label>
+                      <div className="mt-3">
+                        <Label htmlFor="jobTitle">Job Title</Label>
+                        <Input
+                          id="jobTitle"
+                          value={editedLetter.jobTitle || ""}
+                          onChange={(e) =>
+                            handleJobDetailChange("jobTitle", e.target.value)
+                          }
+                          placeholder="e.g., Software Engineer"
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label className="text-base font-semibold">
+                          Your Information
+                        </Label>
+                        <div className="grid gap-3 mt-3">
+                          <div>
+                            <Label htmlFor="senderName">Your Full Name</Label>
+                            <Input
+                              id="senderName"
+                              value={editedLetter.sender?.name || ""}
+                              onChange={(e) =>
+                                handleInputChange("sender", "name", e.target.value)
+                              }
+                              placeholder="John Doe"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="senderAddress">Your Address</Label>
+                            <Input
+                              id="senderAddress"
+                              value={editedLetter.sender?.address || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "sender",
+                                  "address",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="123 Street Name, City, Country"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="senderEmail">Your Email</Label>
+                            <Input
+                              id="senderEmail"
+                              type="email"
+                              value={editedLetter.sender?.email || ""}
+                              onChange={(e) =>
+                                handleInputChange("sender", "email", e.target.value)
+                              }
+                              placeholder="you@example.com"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="senderPhone">Your Phone</Label>
+                            <Input
+                              id="senderPhone"
+                              type="tel"
+                              value={editedLetter.sender?.phone || ""}
+                              onChange={(e) =>
+                                handleInputChange("sender", "phone", e.target.value)
+                              }
+                              placeholder="+1234567890"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-base font-semibold">
+                          Recipient Information
+                        </Label>
+                        <div className="grid gap-3 mt-3">
+                          <div>
+                            <Label htmlFor="recipientName">Recipient&apos;s Name</Label>
+                            <Input
+                              id="recipientName"
+                              value={editedLetter.recipient?.name || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "recipient",
+                                  "name",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Jane Smith"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="recipientTitle">Recipient&apos;s Title</Label>
+                            <Input
+                              id="recipientTitle"
+                              value={editedLetter.recipient?.title || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "recipient",
+                                  "title",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Hiring Manager"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="recipientCompany">Company Name</Label>
+                            <Input
+                              id="recipientCompany"
+                              value={editedLetter.recipient?.company || ""}
+                              onChange={(e) => {
+                                handleInputChange(
+                                  "recipient",
+                                  "company",
+                                  e.target.value
+                                );
+                                handleJobDetailChange(
+                                  "companyName",
+                                  e.target.value
+                                );
+                              }}
+                              placeholder="Company Name"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="recipientAddress">
+                              Company Address
+                            </Label>
+                            <Input
+                              id="recipientAddress"
+                              value={editedLetter.recipient?.address || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "recipient",
+                                  "address",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="456 Company Street, Country"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <Textarea
+                      value={editedLetter.content || ""}
                       onChange={(e) =>
-                        handleJobDetailChange("jobTitle", e.target.value)
+                        handleJobDetailChange("content", e.target.value)
                       }
-                      placeholder="e.g., Software Engineer"
-                      className="mt-1"
+                      className="min-h-[300px] font-serif lg:flex-grow lg:min-h-[600px]"
+                    />
+                    <div>
+                      <Label htmlFor="regeneration-prompt">
+                        Regeneration Instructions (Optional)
+                      </Label>
+                      <Textarea
+                        id="regeneration-prompt"
+                        value={regenerationPrompt}
+                        onChange={(e) => setRegenerationPrompt(e.target.value)}
+                        placeholder="e.g., Make it more formal, focus on my project management skills."
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lg:w-1/2 w-full">
+                  <div className="sticky top-6">
+                    <h2 className="text-xl font-semibold mb-4">Preview</h2>
+                    <CoverLetterPreview
+                      coverLetter={editedLetter}
+                      templateId={editedLetter.templateId}
+                      defaultZoom={100}
                     />
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label className="text-base font-semibold">
-                      Your Information
-                    </Label>
-                    <div className="grid gap-3 mt-3">
-                      <div>
-                        <Label htmlFor="senderName">Your Full Name</Label>
-                        <Input
-                          id="senderName"
-                          value={editedLetter.sender?.name || ""}
-                          onChange={(e) =>
-                            handleInputChange("sender", "name", e.target.value)
-                          }
-                          placeholder="John Doe"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="senderAddress">Your Address</Label>
-                        <Input
-                          id="senderAddress"
-                          value={editedLetter.sender?.address || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "sender",
-                              "address",
-                              e.target.value
-                            )
-                          }
-                          placeholder="123 Street Name, City, Country"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="senderEmail">Your Email</Label>
-                        <Input
-                          id="senderEmail"
-                          type="email"
-                          value={editedLetter.sender?.email || ""}
-                          onChange={(e) =>
-                            handleInputChange("sender", "email", e.target.value)
-                          }
-                          placeholder="you@example.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="senderPhone">Your Phone</Label>
-                        <Input
-                          id="senderPhone"
-                          type="tel"
-                          value={editedLetter.sender?.phone || ""}
-                          onChange={(e) =>
-                            handleInputChange("sender", "phone", e.target.value)
-                          }
-                          placeholder="+1234567890"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-base font-semibold">
-                      Recipient Information
-                    </Label>
-                    <div className="grid gap-3 mt-3">
-                      <div>
-                        <Label htmlFor="recipientName">Recipient&apos;s Name</Label>
-                        <Input
-                          id="recipientName"
-                          value={editedLetter.recipient?.name || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "recipient",
-                              "name",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Jane Smith"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="recipientTitle">Recipient&apos;s Title</Label>
-                        <Input
-                          id="recipientTitle"
-                          value={editedLetter.recipient?.title || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "recipient",
-                              "title",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Hiring Manager"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="recipientCompany">Company Name</Label>
-                        <Input
-                          id="recipientCompany"
-                          value={editedLetter.recipient?.company || ""}
-                          onChange={(e) => {
-                            handleInputChange(
-                              "recipient",
-                              "company",
-                              e.target.value
-                            );
-                            handleJobDetailChange(
-                              "companyName",
-                              e.target.value
-                            );
-                          }}
-                          placeholder="Company Name"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="recipientAddress">
-                          Company Address
-                        </Label>
-                        <Input
-                          id="recipientAddress"
-                          value={editedLetter.recipient?.address || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "recipient",
-                              "address",
-                              e.target.value
-                            )
-                          }
-                          placeholder="456 Company Street, Country"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <Textarea
-                  value={editedLetter.content || ""}
-                  onChange={(e) =>
-                    handleJobDetailChange("content", e.target.value)
-                  }
-                  className="min-h-[300px] font-serif lg:flex-grow lg:min-h-[600px]"
-                />
-                <div>
-                  <Label htmlFor="regeneration-prompt">
-                    Regeneration Instructions (Optional)
-                  </Label>
-                  <Textarea
-                    id="regeneration-prompt"
-                    value={regenerationPrompt}
-                    onChange={(e) => setRegenerationPrompt(e.target.value)}
-                    placeholder="e.g., Make it more formal, focus on my project management skills."
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:w-1/2 w-full">
-              <div className="sticky top-6">
-                <h2 className="text-xl font-semibold mb-4">Preview</h2>
-                <CoverLetterPreview
-                  coverLetter={editedLetter}
-                  templateId={editedLetter.templateId}
-                  defaultZoom={100}
-                />
               </div>
             </div>
           </div>

@@ -278,7 +278,7 @@ export default function EnhancedProfilePage() {
 
   // Show UI immediately after auth loads
   return (
-    <div className="px-2 sm:px-4 md:px-6 lg:px-8 py-10 w-full max-w-4xl mx-auto">
+    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-6 max-w-4xl flex flex-col gap-6">
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

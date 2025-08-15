@@ -232,10 +232,10 @@ export default function ResumeTailoringModal({
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2 sm:mt-4">
-          <TabsList className="grid grid-cols-3 bg-orange-100">
+          <TabsList className="mb-6 w-full flex justify-between bg-muted/50 rounded-lg p-1 gap-2 flex-nowrap">
             <TabsTrigger 
               value="job-description" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+              className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
             >
               <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden xs:inline">Job Description</span>
@@ -243,7 +243,7 @@ export default function ResumeTailoringModal({
             </TabsTrigger>
             <TabsTrigger 
               value="preview" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white" 
+              className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
               disabled={!tailoredResume}
             >
               <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -252,7 +252,7 @@ export default function ResumeTailoringModal({
             </TabsTrigger>
             <TabsTrigger 
               value="template-preview" 
-              className="flex items-center gap-1 text-xs sm:text-sm data-[state=active]:bg-orange-600 data-[state=active]:text-white" 
+              className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
               disabled={!tailoredResume}
             >
               <Eye className="h-3 w-3 sm:h-4 sm:w-4" />

@@ -138,12 +138,12 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="space-y-6 w-full m-0 p-0">
+    <div className="space-y-6 w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6 m-0 p-0">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10 w-full">
         <div className="w-full py-4 px-0">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4">
+            <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4 w-full">
               <Button variant="ghost" asChild className="mb-2 sm:mb-0 -ml-2 h-8">
                 <Link href="/dashboard/resumes">
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -178,16 +178,16 @@ export default function EditResumePage() {
       </div>
 
       {/* Content Section - Full Width */}
-      <div className="w-full px-0">
+       <div className="w-full px-0">
         <Card className="border-2 border-orange-100 mb-6 w-full">
           <CardHeader className="border-b bg-orange-50/50 py-2">
             <CardTitle className="text-lg text-orange-800">Resume Actions</CardTitle>
           </CardHeader>
           <CardContent className="p-2">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-x-auto w-full">
               <Button
                 variant={activeTab === 'edit' ? 'default' : 'outline'}
-                className="h-12 flex items-center justify-start px-4 bg-orange-600 hover:bg-orange-700"
+                className="h-12 flex items-center justify-start px-4 bg-orange-600 hover:bg-orange-700 w-full"
                 onClick={() => setActiveTab('edit')}
               >
                 <Edit className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -197,7 +197,7 @@ export default function EditResumePage() {
               <Button
                 variant="outline"
                 onClick={() => router.push(`/dashboard/resumes/${resumeId}/tailor`)}
-                className="h-12 flex items-center justify-start px-4 border-2 hover:bg-orange-50"
+                className="h-12 flex items-center justify-start px-4 border-2 hover:bg-orange-50 w-full"
               >
                 <Sparkles className="h-4 w-4 mr-3 flex-shrink-0 text-orange-600" />
                 <div className="font-semibold text-sm">Tailor to Job</div>
@@ -207,9 +207,11 @@ export default function EditResumePage() {
         </Card>
 
         {activeTab === 'edit' && resume && (
-          <div className="bg-white w-full m-0 p-0">
+          <div className="bg-white w-full m-0 p-0 rounded-lg shadow-sm overflow-x-auto">
             {/* The ResumeBuilder is now only rendered when 'resume' data is available */}
-            <ResumeBuilder initialData={resume} resumeId={resumeId} />
+            <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6">
+              <ResumeBuilder initialData={resume} resumeId={resumeId} />
+            </div>
           </div>
         )}
       </div>

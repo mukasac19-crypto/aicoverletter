@@ -260,7 +260,9 @@ export default function TailorResumePage() {
     return (
       <div className="container px-4 py-4 sm:py-8">
         <Alert className="bg-orange-50 border-orange-200">
-          <AlertDescription className="text-orange-800">Resume data could not be loaded. Please try again.</AlertDescription>
+           <AlertDescription className="text-orange-800">
+              Resume data could not be loaded. Please try again.
+            </AlertDescription>
         </Alert>
         <div className="flex justify-center mt-4 sm:mt-6">
           <Button asChild className="bg-orange-600 hover:bg-orange-700">
@@ -277,7 +279,7 @@ export default function TailorResumePage() {
         <Button variant="ghost" asChild className="mb-2 sm:mb-0 mr-0 sm:mr-4 hover:bg-orange-50 hover:text-orange-700 self-start">
           <Link href={`/dashboard/resumes/${resumeId}`}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Resume
+             Back to Resume
           </Link>
         </Button>
         <div>
