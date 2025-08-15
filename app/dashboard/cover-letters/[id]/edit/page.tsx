@@ -26,17 +26,6 @@ export default function EditCoverLetterPage({
   const [coverLetterData, setCoverLetterData] = useState<CoverLetter | null>(
     null
   );
-    
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   watch,
-  //   setValue,
-  //   formState: { errors },
-  // } = useForm<CoverLetterFormInputs>({
-  //   resolver: zodResolver(coverLetterSchema),
-  // });
 
   // Fetch existing cover letter data
   useEffect(() => {
@@ -82,8 +71,6 @@ export default function EditCoverLetterPage({
 
     fetchCoverLetter();
   }, [resolvedParams.id]);
-
-
 
   // Show loading state
   if (isLoading) {
@@ -150,7 +137,7 @@ export default function EditCoverLetterPage({
   // Show the actual cover letter when data loaded
 
   return coverLetterData ? (
-    <div className="container mx-auto px-4 py-6">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-6 py-6">
       <h1 className="text-2xl font-bold mb-6">Edit Cover Letter</h1>
 
       {error && (
@@ -162,12 +149,9 @@ export default function EditCoverLetterPage({
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:w-full">
+      <div className="flex flex-col lg:flex-row gap-6 w-full">
+        <div className="w-full">
           <h2 className="text-xl font-semibold mb-4">Editor</h2>
-          {/* FIX: Transform the data to match the editor's prop type.
-              We create a new object that includes the expected 'dataSource' property.
-              The 'as any' cast is used to bridge the two slightly different CoverLetter types. */}
           <CoverLetterEditor
             coverLetter={{
               ...coverLetterData,
@@ -175,8 +159,8 @@ export default function EditCoverLetterPage({
             } as any}
           />
         </div>
-
-        {/* <div className="lg:w-1/2">
+        {/* Uncomment and use preview if needed, with responsive width */}
+        {/* <div className="lg:w-1/2 w-full">
             <div className="sticky top-6">
               <h2 className="text-xl font-semibold mb-4">Preview</h2>
               <CoverLetterPreview

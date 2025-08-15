@@ -1,4 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\cover-letters\components\CoverLetterEditor.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -173,15 +172,15 @@ const CoverLetterEditor = ({
   };
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-6">
+      <div className="flex flex-col sm:flex-row items-start gap-4 mb-6 w-full">
         {onBack && (
           <Button variant="outline" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
         )}
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <Alert className="bg-green-500/10 border-green-500/30">
             <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
             <AlertDescription className="text-green-500 text-sm">
@@ -204,7 +203,7 @@ const CoverLetterEditor = ({
 
       <Card className="w-full max-w-full overflow-hidden">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
             <div>
               <CardTitle>Your Cover Letter</CardTitle>
               <CardDescription>
@@ -216,7 +215,7 @@ const CoverLetterEditor = ({
                   : ""}
               </CardDescription>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <TemplateSelection
                 selectedTemplate={editedLetter.templateId || ""}
                 onApplyTemplate={onApplyTemplate}
@@ -243,8 +242,8 @@ const CoverLetterEditor = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="lg:w-1/2 flex flex-col h-full">
+          <div className="flex flex-col lg:flex-row gap-6 w-full">
+            <div className="lg:w-1/2 w-full flex flex-col h-full">
               <div className="space-y-6 mb-6">
                 <div>
                   <Label className="text-base font-semibold">Job Details</Label>
@@ -419,7 +418,7 @@ const CoverLetterEditor = ({
               </div>
             </div>
 
-            <div className="lg:w-1/2">
+            <div className="lg:w-1/2 w-full">
               <div className="sticky top-6">
                 <h2 className="text-xl font-semibold mb-4">Preview</h2>
                 <CoverLetterPreview
@@ -431,7 +430,7 @@ const CoverLetterEditor = ({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-end space-x-2">
+        <CardFooter className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 w-full">
           <Button
             variant="outline"
             size="sm"
