@@ -239,8 +239,8 @@ async function storeSubscription(subscription, userId, tier, interval) {
   
   // Additional validation - if somehow a price ID got passed as tier
   const priceIdToPlan = {
-    'price_1RtDXSBh2Msdef2rXoitZKF1': 'pro', // Monthly Pro
-    'price_1RtDYPBh2Msdef2rAIfipwXI': 'pro', // Annual Pro
+    'price_1RtXicBh2Msdef2rHNoQe5X1': 'pro', // Monthly Pro
+    'price_1RtWyHBh2Msdef2rWGr9VmwJ': 'pro', // Annual Pro
     // Add other price IDs here as needed
   };
   
@@ -327,8 +327,8 @@ async function updateSubscription(subscription, userId) {
     
     // Map price ID to plan_id
     const priceIdToPlan = {
-      'price_1RtDXSBh2Msdef2rXoitZKF1': 'pro', // Monthly Pro
-      'price_1RtDYPBh2Msdef2rAIfipwXI': 'pro', // Annual Pro
+      'price_1RtXicBh2Msdef2rHNoQe5X1': 'pro', // Monthly Pro
+      'price_1RtWyHBh2Msdef2rWGr9VmwJ': 'pro', // Annual Pro
       // Add other price IDs here as needed
     };
     
