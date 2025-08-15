@@ -543,7 +543,7 @@ export default function ResumeDashboardClient({
       )}
 
       {filteredResumes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
           {filteredResumes.map((resume) => (
             <Card key={resume.id} className={`overflow-hidden hover:border-orange-300 transition-colors ${resume.id === importedResumeId ? 'border-orange-500 shadow-md ring-1 ring-orange-500' : ''}`}>
               <CardHeader className="p-4 pb-2">
