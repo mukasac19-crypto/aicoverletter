@@ -28,9 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [impersonated, setImpersonated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
-    console.log(window.location.origin,"====================ccc===========>>>")
-  },[])
+
 
   const signIn = (email: string, password: string) => {
     return supabase.auth.signInWithPassword({ email, password });
@@ -70,6 +68,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   
   useEffect(() => {
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session);
+    setUser(session?.user ?? null);
+    setLoading(false);
+   });
+
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
