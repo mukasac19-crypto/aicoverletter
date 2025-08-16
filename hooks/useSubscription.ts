@@ -7,20 +7,23 @@ import { SubscriptionStatus, SubscriptionTier } from '@/types/subscription';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { LimitedFeature } from '@/lib/subscription-enforcement';
+import { createBrowserClient } from '@/lib/supabase';
 
-interface FeatureUsage {
+export interface FeatureUsage {
   used: number;
   limit: number;
   unlimited: boolean;
 }
 
 export function useSubscription() {
+
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [usageStats, setUsageStats] = useState<Record<LimitedFeature, FeatureUsage> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
   const { user, loading } = useAuth();
+
   const { toast } = useToast();
   const router = useRouter();
   
@@ -35,22 +38,40 @@ export function useSubscription() {
     
     try {
       setIsLoading(true);
+
+        const supabase = createBrowserClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        const accessToken = session?.access_token;
       
-      // Fetch subscription status
-      const subResponse = await fetch('/api/user/subscription');
-      if (!subResponse.ok) {
-        throw new Error('Failed to fetch subscription data');
-      }
-      const subData = await subResponse.json();
-      setSubscription(subData);
-      
-      // Fetch usage data
-      const usageResponse = await fetch('/api/user/usage');
-      if (usageResponse.ok) {
-        const usageData = await usageResponse.json();
-        setUsageStats(usageData);
-      }
+        if (!accessToken) {
+        throw new Error('User is not authenticated');
+      } 
+   
+    const [subResponse, usageResponse] = await Promise.all([
+      fetch('/api/user/subscription', { 
+        headers: { 
+          'x-access-token': accessToken as string,
+         'x-user-id': user.id 
+      } }),
+      fetch('/api/user/usage', { 
+        headers: { 
+          'x-access-token': accessToken as string,
+        'x-user-id': user.id 
+        } }),
+    ]);
+
+    if (!subResponse.ok) throw new Error('Failed to fetch subscription data');
+    if (!usageResponse.ok) throw new Error('Failed to fetch usage data');
+
+
+    const subData = await subResponse.json();
+    const usageData = await usageResponse.json();
+
+    setSubscription(subData);
+    setUsageStats(usageData);
+
     } catch (error: any) {
+
       console.error('Error fetching subscription data:', error);
       setError(error.message || 'Failed to load subscription information');
       
@@ -59,6 +80,7 @@ export function useSubscription() {
         description: 'Failed to load subscription information. Please try again.',
         variant: 'destructive',
       });
+
     } finally {
       setIsLoading(false);
     }
