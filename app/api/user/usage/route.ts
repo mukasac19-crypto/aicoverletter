@@ -2,14 +2,21 @@ import { NextResponse } from 'next/server';
 import { getUserSubscriptionTier } from '@/lib/subscription';
 import { SUBSCRIPTION_PLANS } from '@/lib/subscription-client';
 import { createClient } from '@/utils/create-client';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 
 
 export async function GET(request: Request) {
   try {
+
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     // Get userId from request header (sent by client)
     const userId = request.headers.get('x-user-id');
-    if (!userId) {
+   const accessToken = request.headers.get('x-access-token');
+
+    if (!userId || !accessToken) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized: Missing user ID' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
@@ -23,7 +30,7 @@ export async function GET(request: Request) {
     const limit = SUBSCRIPTION_PLANS[tier]?.limits.coverLetters ?? 0;
 
     // 3. Get the user's current usage count from the correct database table.
-    const supabase = await createClient(); // Use service role for admin access
+    // const supabase = await createClient(accessToken); // Use service role for admin access
     const { count: usage, error: usageError } = await supabase
       .from('cover_letters')
       .select('*', { count: 'exact', head: true })

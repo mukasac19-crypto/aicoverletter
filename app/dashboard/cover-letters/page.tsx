@@ -700,7 +700,7 @@ export default function CoverLetterGenerator() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-4 mb-4 w-full">
+                  <div className="flex flex-wrap gap-4 mb-4 w-full md:w-[40%]">
                     <div
                       className={`flex items-center rounded-md border p-3 flex-grow ${
                         hasCV
@@ -734,7 +734,7 @@ export default function CoverLetterGenerator() {
                       </div>
                     </div>
 
-                    <div
+                    {/* <div
                       className={`flex items-center rounded-md border p-3 flex-grow ${hasLinkedIn
                           ? "border-green-500/50 bg-green-500/10"
                           : "border-orange-100 bg-muted/50"
@@ -755,7 +755,7 @@ export default function CoverLetterGenerator() {
                         />
                       </div>
                       <div className="truncate">
-                        <p className="text-sm font-medium">LinkedIn</p>
+                        <p className="text-sm font-medium">LinkedIncc</p>
                         {hasLinkedIn && linkedInProfile?.name ? (
                           <p className="text-xs text-green-600 truncate">
                             {linkedInProfile.name.length > 15
@@ -768,15 +768,15 @@ export default function CoverLetterGenerator() {
                           </p>
                         )}
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <Collapsible open={isDataSourcesOpen}>
                     <CollapsibleContent>
                       <div className="pt-4 border-t">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1">
                           <CVManager />
-                          <LinkedInManager />
+                          {/* <LinkedInManager /> */}
                         </div>
                       </div>
                     </CollapsibleContent>
@@ -798,10 +798,10 @@ export default function CoverLetterGenerator() {
                         <FileText className="h-3 w-3 mr-1" />
                         <span>CV {hasCV ? "✓" : ""}</span>
                       </div>
-                      <div className={`flex items-center rounded-full px-2 py-1 ${ hasLinkedIn ? "bg-green-500/10 text-green-600" : "bg-orange-50" }`} >
+                      {/* <div className={`flex items-center rounded-full px-2 py-1 ${ hasLinkedIn ? "bg-green-500/10 text-green-600" : "bg-orange-50" }`} >
                         <Linkedin className="h-3 w-3 mr-1" />
                         <span>LinkedIn {hasLinkedIn ? "✓" : ""}</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </CardHeader>

@@ -4,6 +4,8 @@ import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import { SubscriptionTier, SubscriptionStatus } from '@/types/subscription';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/utils/create-client';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 
 
@@ -14,6 +16,9 @@ import { createClient } from '@/utils/create-client';
 export async function GET(request: NextRequest) {
   try {
    
+   const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
 
    const userId = request.headers.get('x-user-id');
    const accessToken = request.headers.get('x-access-token');
@@ -25,8 +30,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log(userId, '***********User ID from session*************');
-
 
     if (!userId) {
       return NextResponse.json(
@@ -36,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
 
-    const supabase = await createClient(accessToken); // Use service role for admin access
+    // const supabase = await createClient(accessToken); // Use service role for admin access
     
     // Get user's subscription from database
     const { data: subscription, error } = await supabase

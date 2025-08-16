@@ -287,7 +287,7 @@ export function ResumeSourceSelector({ // Renamed component export
                                  </RadioGroup>
                              ) : (
                                 <div className="text-center py-6 text-muted-foreground">
-                                    <h4 className="font-semibold mb-2">Import from LinkedIn URL</h4>
+                                    {/* <h4 className="font-semibold mb-2">Import from LinkedIn URL</h4>
                                     <div className="flex items-center gap-2 mb-4">
                                         <Input
                                             type="url"
@@ -303,7 +303,7 @@ export function ResumeSourceSelector({ // Renamed component export
                                     </div>
                                     {error && <p className="text-red-500 text-sm">{error}</p>}
                                     <Separator className="my-4" />
-                                    <p>Or upload a CV to get started.</p>
+                                    <p>Or upload a CV to get started.</p> */}
                                 </div>
                             )}
                          </TabsContent>
