@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -61,6 +61,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Navigation items - Removed Billing item
+
+  console.log("=================USER STATE",user)
+  console.log("=================LOADING STATE",loading)
   const navItems = [
     {
       title: "Home",
@@ -112,6 +115,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

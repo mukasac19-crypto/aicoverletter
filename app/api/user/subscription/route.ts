@@ -1,27 +1,45 @@
 // app/api/user/subscription/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import { SubscriptionTier, SubscriptionStatus } from '@/types/subscription';
 import { stripe } from '@/lib/stripe';
+import { createClient } from '@/utils/create-client';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+
+
+
+
+
+
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
+   
+   const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-    
-    // Get the current user session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+
+
+   const userId = request.headers.get('x-user-id');
+   const accessToken = request.headers.get('x-access-token');
+
+    if (!userId || !accessToken) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized: Missing user ID' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' }, 
         { status: 401 }
       );
     }
-    
-    const userId = session.user.id;
+
+
+    // const supabase = await createClient(accessToken); // Use service role for admin access
     
     // Get user's subscription from database
     const { data: subscription, error } = await supabase

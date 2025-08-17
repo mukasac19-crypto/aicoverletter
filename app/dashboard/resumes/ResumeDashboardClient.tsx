@@ -463,7 +463,7 @@ export default function ResumeDashboardClient({
             >
               {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
             </LimitedActionButton>
-            <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
+            {/* <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -495,7 +495,7 @@ export default function ResumeDashboardClient({
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
           </div>
         )}
       </div>
@@ -633,7 +633,7 @@ export default function ResumeDashboardClient({
                   >
                     {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
                   </LimitedActionButton>
-                  <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
+                  {/* <Dialog open={isLinkedInImportOpen} onOpenChange={setIsLinkedInImportOpen}>
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -665,7 +665,7 @@ export default function ResumeDashboardClient({
                         </Button>
                       </DialogFooter>
                     </DialogContent>
-                  </Dialog>
+                  </Dialog> */}
                 </div>
               </>
             )}
