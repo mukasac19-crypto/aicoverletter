@@ -7,10 +7,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/utils/client-side-client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import InterviewQuestionList from "@/components/InterviewQuestionList";
@@ -40,11 +38,12 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InterviewSession, InterviewSessionResponse, mapDbToInterviewSession } from "@/types/interview";
+import { useAuthStore } from "@/stores/authstore";
 
 export default function InterviewSessionPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
   const supabase = createClient();
   
