@@ -129,7 +129,7 @@ export default function ATSHistoryPage() {
         if (fetchError) throw fetchError;
         
         // Transform the data to match our interface
-        const transformedData: ATSAnalysis[] = (data || []).map(item => ({
+        const transformedData:any[] = (data || []).map(item => ({
           id: item.id,
           created_at: item.created_at || new Date().toISOString(), // Handle null created_at
           resume_id: item.resume_id,
