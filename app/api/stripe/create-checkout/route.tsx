@@ -2,9 +2,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { SubscriptionTier } from '@/types/subscription'; // Ensure this type path is correct
 import { stripe } from '@/lib/stripe'; // Ensure this path to your Stripe initialization is correct
+import { createClient } from '@/utils/server-side-client';
 
 // Define expected environment variables for clarity
 const STRIPE_PRO_MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID;
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     // --- Authentication ---
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
+import { createClient } from '@/utils/client-side-client';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 
@@ -12,7 +12,7 @@ export function useOsloAuth() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
 
   useEffect(() => {
     // Check if there's an active session on mount

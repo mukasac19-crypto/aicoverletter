@@ -1,6 +1,7 @@
 // lib/resume-tailoring-logger.ts
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+
+import { createClient } from "@/utils/server-side-client";
+
 
 /**
  * Logs resume tailoring events to track usage and improve the feature
@@ -14,8 +15,8 @@ export async function logResumeTailoring(
   success: boolean
 ) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
+    const supabase = await createClient()
     
     // Insert the log entry
     await supabase

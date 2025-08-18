@@ -1,4 +1,6 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\SubscriptionCheck.tsx
+"use client"
+
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,11 +8,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { SubscriptionTier } from '@/types/subscription';
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
-import { useAuth } from '@/lib/hooks/useAuth';
+
 import { Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { useAuthStore } from '@/stores/authstore';
 
 interface SubscriptionCheckProps {
   requiredTier: SubscriptionTier;
@@ -28,7 +31,7 @@ export default function SubscriptionCheck({
   showUpgradeCard = true,
   featureInfo
 }: SubscriptionCheckProps) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthStore();
   const [userTier, setUserTier] = useState<SubscriptionTier | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -62,7 +65,7 @@ export default function SubscriptionCheck({
     if (!loading) {
       fetchSubscriptionTier();
     }
-  }, [user, loading]);
+  }, []);
   
   // While loading, show a spinner
   if (loading || isLoading) {

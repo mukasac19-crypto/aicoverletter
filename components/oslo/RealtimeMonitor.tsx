@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { 
   FileText, 
   UserPlus, 
@@ -42,7 +42,7 @@ interface CoverLetter {
 export function RealtimeMonitor() {
   const [activities, setActivities] = useState<ActivityEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Custom hook for real-time updates
   const { newEvents } = useOsloRealtime();

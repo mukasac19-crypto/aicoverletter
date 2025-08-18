@@ -18,11 +18,12 @@ import {
   ArrowRight,
   MailCheck
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
 import { FeatureAuthModal } from "@/components/FeatureAuthModal";
+import { useAuthStore } from "@/stores/authstore";
 
 const FeaturesPage = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [returnTo, setReturnTo] = useState("");
 

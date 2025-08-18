@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import type { CvFile } from '@/components/CVManager'; // Assuming type exported from CVManager or defined globally
 import { LinkedInResumeSelector } from "./LinkedInResumeSelector"; // Keep this import
 import { useToast } from "@/hooks/use-toast";
-import { createBrowserClient } from "@/lib/supabase";
 import { useLinkedInIntegration } from "@/lib/hooks/useLinkedInIntegration";
 import { Database } from "@/types/supabase"; // Import Supabase types
 

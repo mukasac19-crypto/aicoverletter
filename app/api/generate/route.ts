@@ -1,15 +1,15 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\generate\route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { QueueEvents, Job } from 'bullmq';
 import { openaiQueue } from '@/lib/queues/openaiQueue';
 import { Database } from '@/types/supabase';
 import redisConnection from '@/lib/redis';
+import { createClient } from '@/utils/server-side-client';
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies(); // Await cookies() here
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();

@@ -1,10 +1,11 @@
 "use client";
 
-import { useAuth } from '@/lib/hooks/useAuth';
 import { Button } from './ui/button';
+import { useAuthStore } from '@/stores/authstore';
 
 export function ImpersonationBanner() {
-  const { user, impersonated, exitImpersonation } = useAuth();
+ 
+  const {user,impersonated,exitImpersonation} = useAuthStore()
 
   if (!impersonated) {
     return null;

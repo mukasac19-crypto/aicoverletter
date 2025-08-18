@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/utils/server-side-client';
+
 
 export default async function CoverLetterPage({
   params,
@@ -9,7 +10,7 @@ export default async function CoverLetterPage({
 }) {
   // In server components, we need to use Supabase directly instead of useAuth hook
   const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = await createClient()
   
   const { data: { session } } = await supabase.auth.getSession();
   

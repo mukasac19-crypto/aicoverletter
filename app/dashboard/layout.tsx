@@ -22,7 +22,7 @@ import {
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAuth } from "@/contexts/AuthContext";
+
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -30,19 +30,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@radix-ui/react-popover";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { useAuthStore } from "@/stores/authstore";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -53,7 +43,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -62,8 +52,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Navigation items - Removed Billing item
 
-  console.log("=================USER STATE",user)
-  console.log("=================LOADING STATE",loading)
   const navItems = [
     {
       title: "Home",
@@ -91,18 +79,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: "/dashboard/interview-buddy",
       icon: MessagesSquare,
     },
-
     {
       title: "ATS Scanner",
       href: "/dashboard/ats-scanner",
       icon: ScanSearch,
     },
 
-    //{
-    //title: "Templates",
-    //href: "/dashboard/templates",
-    //icon: LayoutTemplate,
-    //},
+    // {
+    // title: "Templates",
+    // href: "/dashboard/templates",
+    // icon: LayoutTemplate,
+    // },
 
     {
       title: "Profile",
@@ -117,6 +104,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
 
+   useEffect(() => {
+    if (!loading && !user) {
+      router.replace(`/auth/login?returnTo=/dashboard`);
+    }
+  }, [user, loading, router]);
 
 
   useEffect(() => {

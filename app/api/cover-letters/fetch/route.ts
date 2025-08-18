@@ -2,9 +2,9 @@
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import { CoverLetter } from '@/types/cover-letter';
+import { createClient } from '@/utils/server-side-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +33,7 @@ function mapDatabaseToCoverLetter(dbCoverLetter: any): CoverLetter {
 export async function GET(request: Request) {
     try {
         const cookieStore = cookies();
-        const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+         const supabase = await createClient();
 
         // Authenticate user
         const { data: { session } } = await supabase.auth.getSession();
@@ -123,7 +123,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const cookieStore = cookies();
-        const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+         const supabase = await createClient();
 
         // Authenticate user
         const { data: { session } } = await supabase.auth.getSession();

@@ -1,7 +1,10 @@
-import { createBrowserClient } from "@/lib/supabase";
-import type { CoverLetter } from "@/types/cover-letter";
+"use client"
 
-const supabase = createBrowserClient();
+import type { CoverLetter } from "@/types/cover-letter";
+import { createClient } from "@/utils/client-side-client";
+
+
+
 
 // Create a function that processes the template and returns the result
 export async function getCoverLetterPreviewData(
@@ -11,6 +14,9 @@ export async function getCoverLetterPreviewData(
 ) {
   // This is a simplified version of the template processing logic from CoverLetterPreview
   async function getTemplate() {
+
+    const supabase = await createClient();
+
     if (!coverLetter) return getFallbackTemplate();
 
     try {

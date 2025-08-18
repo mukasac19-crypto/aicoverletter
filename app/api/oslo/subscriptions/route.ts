@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { cookies } from 'next/headers';
 import { stripe } from '@/lib/stripe';
+import { createClient } from '@/utils/server-side-client';
 
 // Combined route handler that handles both list and individual subscription requests
 export async function GET(request: NextRequest) {
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
-  
+  const supabase = await createClient();
+
   // Verify admin privileges
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -199,7 +200,7 @@ export async function PATCH(request: NextRequest) {
   }
   
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
+   const supabase = await createClient();
   
   // Verify admin privileges
   const { data: { session } } = await supabase.auth.getSession();

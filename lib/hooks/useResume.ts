@@ -1,5 +1,6 @@
+"use client";
+
 import { useState } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
 import { 
   ResumeData, 
   DatabaseResumeData,
@@ -8,6 +9,7 @@ import {
 } from '@/types/resume';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { createClient } from '@/utils/client-side-client';
 
 interface UseResumeOptions {
   onSuccess?: (data: ResumeData) => void;
@@ -18,7 +20,7 @@ export function useResume(options: UseResumeOptions = {}) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [resume, setResume] = useState<ResumeData | null>(null);
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { toast } = useToast();
 
   /**

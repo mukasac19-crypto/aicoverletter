@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
+import { createClient } from '@/utils/client-side-client';
 import { RealtimeChannel, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
 // Define activity event types
@@ -70,7 +70,7 @@ interface FollowUpEmailPayload {
 export function useOsloRealtime() {
   const [newEvents, setNewEvents] = useState<ActivityEvent | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   useEffect(() => {
     // Set up real-time subscriptions to various tables

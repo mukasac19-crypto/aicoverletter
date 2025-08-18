@@ -2,9 +2,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { Database } from '@/types/supabase';
 import Stripe from 'stripe';
+import { createClient } from '@/utils/server-side-client';
 
 // Initialize Stripe with the secret key from environment variables
 // Ensure you have STRIPE_SECRET_KEY in your .env.local file
@@ -16,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();

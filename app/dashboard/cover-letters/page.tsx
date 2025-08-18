@@ -15,8 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { createBrowserClient } from "@/lib/supabase";
+
+import { createClient } from "@/utils/client-side-client";
 import { useTemplates } from "@/lib/hooks/useTemplates";
 import {
   FileText,
@@ -52,9 +52,10 @@ import { Database } from "@/types/supabase";
 import RecentCoverLettersTab from "./components/RecentCoverLettersTab";
 import CoverLetterEditor from './components/CoverLetterEditor';
 import type { CoverLetter, SenderInfo, RecipientInfo } from '@/types/cover-letter';
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import FeatureUsageIndicator from "@/components/FeatureUsageIndicator";
 import LimitedActionButton from "@/components/LimitedActionButton";
+import { useAuthStore } from "@/stores/authstore";
 
 export interface CvFile {
   id: string;
@@ -87,9 +88,9 @@ type ExtendedCoverLetter = CoverLetter & { dataSource: "cv" | "linkedin" | "both
 export default function CoverLetterGenerator() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { fetchTemplates, templates } = useTemplates();
   const { getUsage, checkAndTrack, tier } = useSubscription();
 

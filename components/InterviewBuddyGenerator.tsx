@@ -1,4 +1,5 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\InterviewBuddyGenerator.tsx
+"use client"
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -12,8 +13,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { createBrowserClient } from "@/lib/supabase";
+
+import { createClient } from '@/utils/client-side-client';
 import { Progress } from "@/components/ui/progress";
 import InterviewQuestionList from "@/components/InterviewQuestionList";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { Json } from "@/types/supabase";
+import { useAuthStore } from "@/stores/authstore";
 
 interface InterviewSession {
   id?: string;
@@ -67,9 +69,9 @@ interface InterviewBuddyGeneratorProps {
 
 export default function InterviewBuddyGenerator({ resumes, initialResumeId = '', initialJobTitle = '', initialJobId = '' }: InterviewBuddyGeneratorProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   const [resumeId, setResumeId] = useState<string>(initialResumeId);
   const [jobTitle, setJobTitle] = useState<string>(initialJobTitle);

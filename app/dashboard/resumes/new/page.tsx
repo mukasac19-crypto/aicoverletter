@@ -6,19 +6,19 @@ import { useRouter } from "next/navigation";
 import ResumeBuilder from "@/components/ResumeBuilder";
 import FeatureGate from "@/components/FeatureGate";
 import { ResumeData } from "@/types/resume";
-import { useAuth } from "@/contexts/AuthContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useAuthStore } from "@/stores/authstore";
 
 // This helper function might be needed if you don't have one
 const generateUUID = () => crypto.randomUUID();
 
 export default function NewResumePage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAuthStore();
     const { checkAndTrack, loading: subLoading } = useSubscription();
     const router = useRouter();
 

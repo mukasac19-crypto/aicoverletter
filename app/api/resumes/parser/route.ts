@@ -1,7 +1,6 @@
 // app/api/resumes/parser/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import openai from '@/lib/openai';
 import * as XLSX from 'xlsx';
 import * as mammoth from 'mammoth';
@@ -15,6 +14,7 @@ import pdfParse from 'pdf-parse';
 import { openaiQueue } from '@/lib/queues/openaiQueue';
 import { resumeService } from '@/services/resume.service';
 import { Queue, QueueEvents, Job } from 'bullmq'; 
+import { createClient } from '@/utils/server-side-client';
 
 // Define interfaces for our resume data structure
 interface ContactInfo {
@@ -452,7 +452,7 @@ export async function POST(request: Request) {
 
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

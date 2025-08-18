@@ -2,8 +2,8 @@
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import openai from '@/lib/openai';
+import { createClient } from '@/utils/server-side-client';
 
 /**
  * Get user profile data for analysis
@@ -200,7 +200,7 @@ export async function POST(request: Request) {
     
     // Get user auth status
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {

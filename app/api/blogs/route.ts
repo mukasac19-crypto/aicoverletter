@@ -1,8 +1,11 @@
-import { getServerClient } from '@/lib/supabase-server';
+
+import { createClient } from '@/utils/server-side-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-    const supabase = getServerClient();
+
+    const supabase = await createClient();
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
@@ -30,7 +33,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const supabase = getServerClient();
+
+    const supabase = await createClient();
     const { title, content, published_at, header_image_url } = await request.json();
 
     const { data: blogs } = await supabase.from('blogs').select('id, title, content');

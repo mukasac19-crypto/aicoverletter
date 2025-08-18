@@ -1,7 +1,6 @@
-// NO "use client" at the top. This is now a Server Component.
+"use client"
+
 import { Suspense } from 'react';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,12 +8,14 @@ import { CreditCard, Check } from "lucide-react";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import PricingClient from './PricingClient'; // Import the new dynamic component
+import { useAuthStore } from '@/stores/authstore';
 
 // The page is now an async function to allow fetching data on the server.
-export default async function PricingPage() {
+export default function PricingPage() {
   // Fetch user data on the server to correctly render the CTA
-  const supabase = createServerComponentClient({ cookies });
-  const { data: { user } } = await supabase.auth.getUser();
+  // const supabase = createServerComponentClient({ cookies });
+  // const { data: { user } } = await supabase.auth.getUser();
+  const {user} = useAuthStore()
 
   return (
     <>

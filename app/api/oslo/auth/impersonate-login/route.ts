@@ -1,13 +1,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
+import { createClient } from '@/utils/server-side-client';
 
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
     const { token } = await request.json();
 
     if (!token) {
@@ -45,10 +46,7 @@ export async function POST(request: NextRequest) {
 
     // This is a critical step and requires a trusted setup.
     // We are creating a new client with the service role to generate a session for another user.
-    const supabaseAdmin = createRouteHandlerClient<Database>({ cookies: () => cookieStore }, {
-        supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
-    });
+    const supabaseAdmin  = await createClient();
 
     const { data, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
         type: 'magiclink',

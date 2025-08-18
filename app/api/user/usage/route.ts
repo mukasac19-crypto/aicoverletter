@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getUserSubscriptionTier } from '@/lib/subscription';
 import { SUBSCRIPTION_PLANS } from '@/lib/subscription-client';
-import { createClient } from '@/utils/create-client';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/utils/server-side-client';
 import { cookies } from 'next/headers';
 
 
@@ -11,10 +10,24 @@ export async function GET(request: Request) {
   try {
 
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    // const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await createClient();
+    
+    const {data:{user}} = await supabase.auth.getUser()
+    const {data:{session}} = await supabase.auth.getSession()
+
+
+    const userId = user?.id
+    const accessToken = session?.access_token
     // Get userId from request header (sent by client)
-    const userId = request.headers.get('x-user-id');
-   const accessToken = request.headers.get('x-access-token');
+    // const userId = request.headers.get('x-user-id');
+    // const accessToken = request.headers.get('x-access-token');
+
+  
+
+    console.log("============SERVER USER ID============", userId);
+    console.log("============SERVER ACCESS TOKEN============", accessToken);
+  
 
     if (!userId || !accessToken) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized: Missing user ID' }), {

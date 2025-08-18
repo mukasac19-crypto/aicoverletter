@@ -9,7 +9,7 @@ import Link from "next/link";
 import { FollowUpEmailGenerator } from "@/components/FollowUpEmailGenerator";
 import { Database } from "@/types/supabase";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { User } from "@supabase/auth-helpers-nextjs";
+import { User } from "@supabase/supabase-js";
 
 // Type definitions
 type CoverLetter = Database["public"]["Tables"]["cover_letters"]["Row"];

@@ -1,7 +1,6 @@
 // app/api/linkedin/import-proxycurl/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase'; // Your Supabase types
 // Import your formatting functions (ensure path is correct)
@@ -14,6 +13,7 @@ import {
     formatProjects,
     getProfilePictureUrl
 } from '@/lib/formattingUtils'; // Utility file created previously
+import { createClient } from '@/utils/server-side-client';
 
 // Define types based on your Supabase schema
 type Json = Database['public']['Tables']['linkedin_profiles']['Row']['education_json'];
@@ -29,7 +29,7 @@ const PROXYCURL_PERSON_ENDPOINT = 'https://nubela.co/proxycurl/api/v2/linkedin';
 export async function POST(request: NextRequest) {
     const start = Date.now();
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // !! WARNING: Using this route relies on Proxycurl scraping, which violates LinkedIn ToS and carries risks. !!
 

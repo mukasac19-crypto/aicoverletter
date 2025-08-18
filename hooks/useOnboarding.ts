@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { createBrowserClient } from '@/lib/supabase';
+
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuthStore } from '@/stores/authstore';
 
 export function useOnboarding() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthStore();
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { toast } = useToast();
 
   // Check if user has completed onboarding

@@ -1,9 +1,9 @@
 // api/follow-up/generate/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import followUpEmailService, { FollowUpEmailParams } from '@/lib/follow-up-email-service';
 import { enforceSubscriptionLimit, trackFeatureUsage } from '@/lib/subscription-enforcement';
+import { createClient } from '@/utils/server-side-client';
 
 // Extend the FollowUpEmailParams type to include optional coverLetterId
 interface ExtendedFollowUpEmailParams extends FollowUpEmailParams {
@@ -13,7 +13,7 @@ interface ExtendedFollowUpEmailParams extends FollowUpEmailParams {
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import ResumeTailoringModal from '@/components/ResumeTailoringModal';
 import { ResumeData } from '@/types/resume';
+import { useAuthStore } from '@/stores/authstore';
 
 export default function TailorResumePage() {
   const [resume, setResume] = useState<ResumeData | null>(null);
@@ -24,9 +24,9 @@ export default function TailorResumePage() {
   
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Get the resume ID from URL params
   const resumeId = params.id as string;

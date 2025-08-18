@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { ExportFormat } from '@/types/templates';
 import { DEFAULT_TEMPLATES } from '@/lib/default-templates';
 import { renderTemplate, renderTemplateContent, parseLetterContent } from '@/lib/template-renderer';
@@ -8,6 +8,7 @@ import { generatePDF } from '@/lib/pdf-generator';
 import * as docx from 'docx';
 import * as cheerio from 'cheerio';
 import type { CoverLetter } from '@/types/cover-letter'; // Ensure this type is imported
+import { createClient } from '@/utils/server-side-client';
 
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle, SectionType } = docx;
 
@@ -47,8 +48,7 @@ export async function POST(request: Request) {
     // --- MODIFICATION END ---
 
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-
+     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
     console.log("User session:", userId ? "Authenticated" : "Not authenticated");

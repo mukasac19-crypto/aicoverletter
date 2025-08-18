@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from "@/utils/client-side-client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { 
   FileText, 
@@ -17,15 +16,16 @@ import {
 import Link from "next/link";
 import InterviewBuddyGenerator from "@/components/InterviewBuddyGenerator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import FeatureUsageIndicator from "@/components/FeatureUsageIndicator";
+import { useAuthStore } from "@/stores/authstore";
 
 export default function InterviewBuddyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   const [resumes, setResumes] = useState<any[]>([]);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);

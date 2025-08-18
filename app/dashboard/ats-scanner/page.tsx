@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import {
@@ -28,8 +27,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { useSubscription } from '@/hooks/useSubscription';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import FeatureUsageIndicator from '@/components/FeatureUsageIndicator';
+import { useAuthStore } from '@/stores/authstore';
 
 export default function ATSScannerPage() {
   const [resumes, setResumes] = useState<any[]>([]);
@@ -37,9 +37,9 @@ export default function ATSScannerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { usageStats, loading: usageLoading } = useSubscription();
 
   const atsUsage = usageStats?.atsScans;

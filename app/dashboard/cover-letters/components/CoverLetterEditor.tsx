@@ -32,7 +32,7 @@ import { saveCoverLetter } from "@/lib/coverLetterGenerator";
 import CoverLetterPreview from "./CoverLetterPreview";
 import TemplateSelection from "./TemplateSelection";
 import DownloadCoverLetter from "./DownloadCoverletter";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import LimitedActionButton from "@/components/LimitedActionButton";
 
 // Extend the base CoverLetter type to include `dataSource` which is required by the save function.

@@ -1,6 +1,6 @@
 // app/api/linkedin/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+
 import { cookies } from "next/headers";
 import { Database } from "@/types/supabase";
 // Import shared utilities for interacting with Official LinkedIn API
@@ -15,6 +15,7 @@ import {
     formatProjects,
     getProfilePictureUrl
 } from "@/lib/formattingUtils";
+import { createClient } from "@/utils/server-side-client";
 
 type Json = Database['public']['Tables']['linkedin_profiles']['Row']['education_json'];
 type LinkedInProfileUpdate = Database['public']['Tables']['linkedin_profiles']['Update'];
@@ -24,7 +25,7 @@ type LinkedInProfile = Database['public']['Tables']['linkedin_profiles']['Row'];
 export async function POST(request: NextRequest) {
     const start = Date.now();
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     try {
         // 1. Check user session

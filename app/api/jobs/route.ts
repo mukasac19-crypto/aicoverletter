@@ -1,10 +1,11 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\jobs\route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { getJobById } from '@/lib/multi-company-greenhouse-api';
 import openai from '@/lib/openai';
 import { Job } from '@/types/jobs';
+import { createClient } from '@/utils/server-side-client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     // Get user auth status
     const cookieStore = cookies(); // ✅ FIX: Removed 'await'
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 

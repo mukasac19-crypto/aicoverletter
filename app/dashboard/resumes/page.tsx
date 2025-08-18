@@ -1,5 +1,4 @@
 // /app/dashboard/resumes/page.tsx
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
@@ -9,6 +8,7 @@ import { getAllFeatureUsage } from '@/lib/subscription-enforcement';
 import { ResumeData } from '@/types/resume';
 import ResumeDashboardClient from './ResumeDashboardClient';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { createClient } from '@/utils/server-side-client';
 
 const RESUMES_PER_PAGE = 8;
 
@@ -18,11 +18,11 @@ export default async function ResumeDashboardPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const cookieStore = cookies();
-  const supabase = createServerComponentClient<Database>({ cookies: () => cookieStore });
+  const supabase = await createClient()
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    redirect('/auth/login');
+    redirect('/');
   }
 
   const page = typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;

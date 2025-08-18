@@ -1,9 +1,10 @@
 // File: app/api/resumes/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { mapResumeToDatabase, mapDatabaseToResumeData } from '@/lib/resume-mappers'; // Import mappers
 import { Database } from '@/types/supabase'; // Import Database type
+import { createClient } from '@/utils/server-side-client';
 
 export const dynamic = 'force-dynamic'; // Add if needed
 
@@ -15,7 +16,7 @@ export async function GET(
   try {
     const { id: resumeId } = await params;
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     const { data: { session } } = await supabase.auth.getSession();
 
@@ -75,7 +76,7 @@ export async function PUT(
   try {
     const { id: resumeId } = await params;
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -163,7 +164,7 @@ export async function DELETE(
   try {
     const { id: resumeId } = await params;
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {

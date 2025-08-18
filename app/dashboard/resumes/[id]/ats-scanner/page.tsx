@@ -4,8 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -36,6 +35,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useAuthStore } from '@/stores/authstore';
 
 // Helper component to display analysis results
 const AnalysisResultDisplay = ({ result }: { result: any }) => {
@@ -142,9 +142,9 @@ export default function ATSScannerPage() {
 	const params = useParams();
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const { user } = useAuth();
+	const { user } = useAuthStore();
 	const { toast } = useToast();
-	const supabase = createBrowserClient();
+	const supabase = createClient();
 
 	const resumeId = params.id as string;
 	const scanToLoad = searchParams.get('load');

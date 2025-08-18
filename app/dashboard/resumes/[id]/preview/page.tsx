@@ -4,8 +4,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import Link from 'next/link';
 import { DEFAULT_RESUME_TEMPLATES } from '@/lib/default-resume-templates';
 import { mapDatabaseToResumeData } from '@/lib/resume-mappers';
 import ResumePreview from '@/components/ResumePreview';
+import { useAuthStore } from '@/stores/authstore';
 
 // Validation function for resume data
 const validateResumeData = (resumeData: any) => {
@@ -213,9 +213,9 @@ export default function ResumePreviewPage() {
   
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Get the resume ID from URL params

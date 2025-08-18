@@ -4,13 +4,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 import PricingPlans from "@/components/PricingPlans";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { SubscriptionTier, SubscriptionInterval } from '@/types/subscription'; // Make sure SubscriptionInterval is imported
+import { useAuthStore } from '@/stores/authstore';
+
 
 export default function PricingClient() {
-  const { user, loading } = useAuth();
+
+
+
+  const {user,loading} = useAuthStore()
   const [currentPlan, setCurrentPlan] = useState<SubscriptionTier>('FREE');
   const [isLoadingPlan, setIsLoadingPlan] = useState(true);
   const router = useRouter();
@@ -57,13 +61,13 @@ export default function PricingClient() {
       return;
     }
     
-    // If user is already on this tier, redirect to billing
+  //   // If user is already on this tier, redirect to billing
     if (tier === currentPlan) {
       router.push('/dashboard/billing');
       return;
     }
     
-    // Create checkout session
+  //   // Create checkout session
     router.push(`/api/stripe/create-checkout?tier=${tier}&interval=${interval}`);
   };
   
@@ -83,5 +87,6 @@ export default function PricingClient() {
       // CHANGE 2: Pass the correct 'defaultInterval' prop
       defaultInterval={defaultInterval}
     />
+   
   );
 }

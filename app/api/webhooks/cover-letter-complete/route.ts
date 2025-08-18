@@ -1,12 +1,10 @@
 // app/api/webhooks/cover-letter-complete/route.ts
+import { createClient } from '@/utils/server-side-client';
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+
 
 // Supabase admin client for webhook access (using service role key)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+ const supabase = await createClient();
 
 // Webhooks need to be public endpoints without authentication
 export async function POST(request: Request) {

@@ -1,7 +1,10 @@
 // lib/hooks/useLinkedInIntegration.ts
+
+"use client"
+
 import { useState, useEffect, useCallback } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from './useAuth'; // Assuming useAuth provides { user }
+
+
 import { useToast } from '@/hooks/use-toast'; // Assuming you have this hook
 import {
     initiateLinkedInAuth,
@@ -11,6 +14,8 @@ import {
     generateResumeFromStoredProfile
 } from '@/services/LinkedinProfileService'; // Use the simplified service functions
 import { Database } from '@/types/supabase'; // Assuming your generated types
+import { useAuthStore } from '@/stores/authstore';
+import { createClient } from '@/utils/client-side-client';
 
 // Define the specific type for profile rows using Supabase types
 type LinkedInProfile = Database['public']['Tables']['linkedin_profiles']['Row'];
@@ -56,9 +61,9 @@ export function useLinkedInIntegration(): UseLinkedInIntegrationReturn {
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { user } = useAuth();
+    const { user } = useAuthStore();
     const { toast } = useToast();
-    const supabase = createBrowserClient();
+    const supabase = createClient();
 
     // --- Core Logic ---
 

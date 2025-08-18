@@ -1,8 +1,11 @@
 // hooks/useFeatureLimits.ts
+"use client";
+
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
+
 import { useToast } from '@/hooks/use-toast';
 import { LimitedFeature } from '@/lib/subscription-enforcement';
+import { useAuthStore } from '@/stores/authstore';
 
 interface FeatureUsage {
   used: number;
@@ -32,7 +35,7 @@ export function useFeatureLimits(): UseFeatureLimitsReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
   
   // Fetch usage data
@@ -61,9 +64,9 @@ export function useFeatureLimits(): UseFeatureLimitsReturn {
   }, [user]);
   
   // Initial fetch
-  useEffect(() => {
-    fetchUsage();
-  }, [fetchUsage]);
+  // useEffect(() => {
+  //   fetchUsage();
+  // }, [fetchUsage]);
   
   // Check if user can use a feature (pre-check)
   const checkLimit = useCallback(async (feature: LimitedFeature): Promise<boolean> => {

@@ -3,8 +3,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,15 +11,16 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
+import { useAuthStore } from '@/stores/authstore';
 
 export default function ResumeTemplatesPage() {
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   useEffect(() => {
     const fetchTemplates = async () => {

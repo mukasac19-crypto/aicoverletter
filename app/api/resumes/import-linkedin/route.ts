@@ -1,7 +1,6 @@
 // app/api/resumes/import-linkedin/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import { createResumeFromLinkedInData } from '@/lib/resumeUtils';
 import {
@@ -13,6 +12,7 @@ import {
   formatProjects,
   getProfilePictureUrl,
 } from '@/lib/formattingUtils';
+import { createClient } from '@/utils/server-side-client';
 
 const PROXYCURL_API_KEY = process.env.PROXYCURL_API_KEY;
 const PROXYCURL_PERSON_ENDPOINT = 'https://nubela.co/proxycurl/api/v2/linkedin';
@@ -72,7 +72,7 @@ async function fetchAndFormatLinkedInData(targetLinkedInUrl: string): Promise<Om
 
 export async function POST(request: NextRequest) {
   const cookieStore = cookies();
-  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+   const supabase = await createClient();
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {

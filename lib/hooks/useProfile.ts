@@ -1,17 +1,18 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from './useAuth';
+import { createClient } from '@/utils/client-side-client';
+
 import { Database } from '@/types/supabase';
+import { useAuthStore } from '@/stores/authstore';
 
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-  const supabase = createBrowserClient();
+  const { user } = useAuthStore();
+  const supabase = createClient();
 
   useEffect(() => {
     if (user) {

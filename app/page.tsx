@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { FileText, Upload, ArrowRight, CheckCircle, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Users, TrendingUp, Award, Clock, Target, Briefcase, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
-import { useAuth } from "@/lib/hooks/useAuth"
+
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
 
@@ -55,16 +55,18 @@ const faqData = [
 ]
 
 export default function LandingPage() {
-  const { user } = useAuth()
+
+  console.log("LandingPage rendered")
+
   const [scrollPosition, setScrollPosition] = useState(0)
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setScrollPosition((prev) => (prev + 1) % (companyLogos.length * 200))
-    }, 30)
-    return () => clearInterval(interval)
-  }, [])
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setScrollPosition((prev) => (prev + 1) % (companyLogos.length * 200))
+  //   }, 30)
+  //   return () => clearInterval(interval)
+  // }, [])
 
   const toggleFAQ = (index: number) => {
     setOpenFAQIndex(openFAQIndex === index ? null : index)
@@ -139,7 +141,7 @@ export default function LandingPage() {
           <div className="relative overflow-hidden">
             <div className="flex items-center gap-4 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {/* Duplicate logos for seamless scrolling */}
-              {[...companyLogos, ...companyLogos].map((company, index) => (
+              {/* {[...companyLogos, ...companyLogos].map((company, index) => (
                 <div key={index} className="h-[80px] min-w-[80px] flex items-center justify-center px-1 py-1 rounded-lg">
                   <Image
                     src={`${company.logo}`}
@@ -153,7 +155,7 @@ export default function LandingPage() {
                     }}
                   />
                 </div>
-              ))}
+              ))} */}
             </div>
             {/* Gradient overlays for fade effect */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>

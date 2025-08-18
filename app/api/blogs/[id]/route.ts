@@ -1,8 +1,11 @@
-import { getServerClient } from '@/lib/supabase-server';
+
+import { createClient } from '@/utils/server-side-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-    const supabase = getServerClient();
+   
+     const supabase = await createClient();
+
     const { id } = params;
 
     const { data, error } = await supabase
@@ -34,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-    const supabase = getServerClient();
+     const supabase = await createClient();
     const { id } = params;
     const { title, content, header_image_url } = await request.json();
 
@@ -63,7 +66,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-    const supabase = getServerClient();
+     const supabase = await createClient();
     const { id } = params;
 
     const { error } = await supabase.from('blogs').delete().eq('id', id);

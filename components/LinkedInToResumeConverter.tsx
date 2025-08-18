@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 // FIXED: Removed incorrect type import from component
 // import { LinkedInProfile } from "@/components/LinkedInManager";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { Linkedin, FileText, ArrowRight, RefreshCw, AlertCircle, ExternalLink } from "lucide-react"; // Added ExternalLink
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Database } from "@/types/supabase"; // Import Supabase types
@@ -29,7 +29,7 @@ export function LinkedInToResumeConverter() {
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
     const router = useRouter();
-    const supabase = createBrowserClient();
+    const supabase = createClient();
 
     // Fetch LinkedIn profile from the database (wrapped in useCallback)
     const fetchLinkedInProfile = useCallback(async () => {

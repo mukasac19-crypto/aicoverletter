@@ -2,9 +2,10 @@
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { Database } from '@/types/supabase';
 import type { SenderInfo, RecipientInfo } from '@/types/cover-letter'
+import { createClient } from '@/utils/server-side-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +27,7 @@ interface SaveCoverLetterPayload {
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Authenticate user
     const { data: { session } } = await supabase.auth.getSession();

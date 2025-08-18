@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
+
 import { useToast } from '@/hooks/use-toast';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import ResumeBuilder from '@/components/ResumeBuilder';
 import LimitedActionButton from '@/components/LimitedActionButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -40,6 +40,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthStore } from '@/stores/authstore';
 
 export default function EditResumePage() {
   const [resume, setResume] = useState<any | null>(null);
@@ -49,9 +50,9 @@ export default function EditResumePage() {
 
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { canAccess, getUsage } = useSubscription();
 
   const resumeId = params.id as string;

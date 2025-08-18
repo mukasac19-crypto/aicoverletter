@@ -1,6 +1,7 @@
+"use client";
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createBrowserClient } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
   InterviewSession, 
@@ -9,6 +10,7 @@ import {
   mapInterviewSessionToDb,
   InterviewSessionResponse 
 } from '@/types/interview';
+import { createClient } from '@/utils/client-side-client';
 
 export function useInterviewBuddy() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,7 +22,7 @@ export function useInterviewBuddy() {
   
   const router = useRouter();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   /**
    * Generate an interview session with questions and answers

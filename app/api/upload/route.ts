@@ -1,11 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+
+import { createClient } from '@/utils/server-side-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_KEY!
-    );
+    const supabase = await createClient();
 
     const formData = await request.formData();
     const file = formData.get('file') as File;

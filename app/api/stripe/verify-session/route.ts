@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { Database } from '@/types/supabase';
 import { stripe } from '@/lib/stripe';
 // We only need the main Stripe import.
 import Stripe from 'stripe';
+import { createClient } from '@/utils/server-side-client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
     
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     const { data: { session } } = await supabase.auth.getSession();
     

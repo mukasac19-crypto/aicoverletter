@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -45,10 +47,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { createBrowserClient } from '@/lib/supabase';
+
+import { createClient } from '@/utils/client-side-client';
 import Link from 'next/link';
 import { hookstate, State } from '@hookstate/core';
+import { useAuthStore } from '@/stores/authstore';
 
 // Define the form schemas
 const personalInfoSchema = z.object({
@@ -70,8 +73,8 @@ const careerGoalsSchema = z.object({
 export default function Onboarding() {
     const router = useRouter();
     const { toast } = useToast();
-    const { user } = useAuth();
-    const supabase = createBrowserClient();
+    const { user } = useAuthStore();
+    const supabase = createClient();
   
   // Create onboardingState inside the component
   const onboardingState = hookstate({

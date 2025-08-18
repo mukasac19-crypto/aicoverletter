@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { Database, Tables } from '@/types/supabase';
 import puppeteer from 'puppeteer';
 // FIX: Corrected the typo in the import statement from '*s' to '* as'
 import * as docx from 'docx';
+import { createClient } from '@/utils/server-side-client';
 const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
 
 type ExportFormat = 'pdf' | 'docx' | 'txt';
@@ -14,7 +14,7 @@ type CoverLetter = Tables<'cover_letters'>;
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+ const supabase = await createClient();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {

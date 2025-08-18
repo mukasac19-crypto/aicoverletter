@@ -4,17 +4,17 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { DEFAULT_TEMPLATES } from '@/lib/default-templates';
 import { Database } from '@/types/supabase'; // Import Database type for Supabase client
+import { createClient } from '@/utils/server-side-client';
 
 // GET /api/templates - Get all templates (now correctly querying 'templates' table)
 export async function GET(request: Request) {
   try {
     const cookieStore = await cookies(); // FIX: Added await here
     // Use Database type for stricter client typing
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
-
+     const supabase = await createClient();
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies(); // FIX: Added await here
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();

@@ -1,8 +1,9 @@
 // app/api/resumes/templates/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { DEFAULT_RESUME_TEMPLATES } from '@/lib/default-resume-templates';
+import { createClient } from '@/utils/server-side-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -60,7 +61,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();

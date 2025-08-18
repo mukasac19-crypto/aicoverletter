@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { BadgeCheck, Linkedin, ArrowRightCircle, Eye, FileText, AlertCircle } from "lucide-react";
 import { useLinkedInIntegration } from "@/lib/hooks/useLinkedInIntegration";
@@ -40,7 +40,7 @@ export function LinkedInResumeSelector({ onSelect, onCancel }: LinkedInResumePro
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { toast } = useToast();
-    const supabase = createBrowserClient();
+    const supabase = createClient();
     const { isConnected, connectLinkedIn, generateResume, isLoading: isHookLoading, isGenerating: isHookGenerating } = useLinkedInIntegration();
 
     // Fetch LinkedIn-sourced resumes

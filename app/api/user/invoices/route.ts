@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { stripe } from '@/lib/stripe';
 import type { Database } from '@/types/supabase'; // Import Database type
+import { createClient } from '@/utils/server-side-client';
 
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+      const supabase = await createClient();
     
     const { data: { session } } = await supabase.auth.getSession();
     

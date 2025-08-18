@@ -8,7 +8,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import CoverLetterPreview from "../../components/CoverLetterPreview";
 import CoverLetterEditor from "../../components/CoverLetterEditor";
 import type { CoverLetter } from "@/types/cover-letter";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from "@/utils/client-side-client";
 import { Loader2 } from "lucide-react";
 
 export default function EditCoverLetterPage({
@@ -16,7 +16,7 @@ export default function EditCoverLetterPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const resolvedParams = use(params);
   const router = useRouter();
 

@@ -1,9 +1,10 @@
 // app/api/linkedin/callback/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+
 import { cookies } from "next/headers";
 import { Database } from "@/types/supabase";
 import { createResumeFromLinkedInData } from "@/lib/resumeUtils";
+import { createClient } from "@/utils/server-side-client";
 
 const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
 const LINKEDIN_CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET;
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const profileData = await fetchLinkedInProfileData(tokenData.access_token);
     
     // ✅ FIX: Pass the 'cookies' function directly to the client. This is the cleanest way.
-    const supabase = createRouteHandlerClient<Database>({ cookies });
+     const supabase = await createClient();
 
     if (!userId) {
       const { data: { session } } = await supabase.auth.getSession();

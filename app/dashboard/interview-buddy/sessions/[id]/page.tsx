@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from "@/utils/client-side-client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import InterviewQuestionList from "@/components/InterviewQuestionList";
 import { cn } from "@/lib/utils"; // Import cn utility for conditional classes
@@ -46,7 +46,7 @@ export default function InterviewSessionPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   const [session, setSession] = useState<InterviewSession | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, TrendingUp, Clock, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 

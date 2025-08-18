@@ -11,13 +11,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { ImportGuide } from '@/components/ImportGuide';
 import ResumeTailoringModal from './ResumeTailoringModal';
 import TemplateSelectionModal from './TemplateSelectionModal';
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import LimitedActionButton from '@/components/LimitedActionButton';
 import {
   FileText, Plus, Trash2, Clock, Search, Filter, Upload, Save, Download, Copy, Eye, CheckCircle2,
@@ -47,6 +46,7 @@ import ExportProgressIndicator from "./ExportProgressIndicator";
 import { ResumeData, ResumeTemplate, DatabaseResumeTemplate, DatabaseResumeData, mapResumeToDatabase, mapDatabaseToResumeData } from "@/types/resume";
 import { cn } from "@/lib/utils";
 import { Json } from '@/types/supabase';
+import { useAuthStore } from '@/stores/authstore';
 
 interface ResumeBuilderProps {
   initialData?: ResumeData;
@@ -97,13 +97,13 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   const [showExportProgress, setShowExportProgress] = useState(false);
   const [exportResult, setExportResult] = useState<ExportResult | null>(null);
 
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuthStore();
   const { canAccess, getUsage } = useSubscription();
 
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const importFileRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

@@ -1,14 +1,12 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\stripe\webhooks.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { createClient } from '@supabase/supabase-js';
+
 import Stripe from 'stripe';
+import { createClient } from '@/utils/server-side-client';
 
 // Initialize Supabase client with service role for admin access
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = await createClient()
 
 // This is your Stripe webhook secret for testing your endpoint locally.
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;

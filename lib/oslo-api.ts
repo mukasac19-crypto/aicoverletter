@@ -1,6 +1,6 @@
 "use client";
 
-import { createBrowserClient } from './supabase';
+
 import { 
   AdminUser, ManagedUser, UserResponse, UsersResponse, 
   SubscriptionResponse, SubscriptionsResponse, DashboardStats,

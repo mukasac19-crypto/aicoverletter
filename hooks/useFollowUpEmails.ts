@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
+import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FollowUpEmail, 
@@ -23,7 +23,7 @@ export function useFollowUpEmails(options: UseFollowUpEmailsOptions = {}) {
   const [emails, setEmails] = useState<FollowUpEmail[]>([]);
   const [currentEmail, setCurrentEmail] = useState<FollowUpEmail | null>(null);
   
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { toast } = useToast();
 
   /**

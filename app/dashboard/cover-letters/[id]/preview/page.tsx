@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { createBrowserClient } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from "@/utils/client-side-client";
+
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import CoverLetterPreview from "../../components/CoverLetterPreview";
 import DownloadCoverletter from "../../components/DownloadCoverletter";
 import { handleCoverLetterExport } from "@/services/coverletter.service";
 import { User } from "@supabase/supabase-js";
+import { useAuthStore } from "@/stores/authstore";
 
 // --- Type Definitions for Clarity ---
 
@@ -202,9 +203,9 @@ export default function CoverLetterPreviewPage() {
 
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const containerRef = useRef<FullscreenElement | null>(null);
 
   const coverLetterId = params.id as string;

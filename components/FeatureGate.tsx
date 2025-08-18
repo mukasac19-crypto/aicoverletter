@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Lock, Sparkles, AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { LimitedFeature } from "@/lib/subscription-enforcement";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 

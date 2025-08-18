@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useSubscription } from "@/hooks/useSubscription";
 import UsageLimits from "@/components/UsageLimits";
 import LimitedActionButton from "@/components/LimitedActionButton";
 import { 
@@ -29,10 +28,10 @@ import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { createBrowserClient } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from "@/utils/client-side-client";
+
 import { formatDistance } from 'date-fns';
-import { useOnboarding } from '@/hooks/useOnboarding';
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import OnboardingModal from '@/components/OnboardingModal';
 import { useRouter } from 'next/navigation';
 import {
@@ -41,6 +40,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { useAuthStore } from "@/stores/authstore";
 
 // Define types for our data structures
 interface CoverLetter {
@@ -75,9 +76,13 @@ interface Stats {
 export default function DashboardPage() {
   const { profile, loading } = useProfile();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
+
+  console.log("Dashboard user:", user);
   const router = useRouter();
-  const { tier, getUsage, loading: subLoading } = useSubscription();
+
+  const { getUsage, loading: subLoading,usageStats,tier } = useSubscription();
+  
   const [hasCVUploaded, setHasCVUploaded] = useState(false);
   const [hasLinkedInConnected, setHasLinkedInConnected] = useState(false);
   const [inProgress, setInProgress] = useState(false);
@@ -100,9 +105,9 @@ export default function DashboardPage() {
   });
 
   // Get usage data
-  const resumeUsage = getUsage('resumes');
-  const coverLetterUsage = getUsage('coverLetters');
-  const atsUsage = getUsage('atsScans');
+  const resumeUsage = useMemo(() => getUsage('resumes'), [getUsage, usageStats]);
+  const coverLetterUsage = useMemo(() => getUsage('coverLetters'), [getUsage, usageStats]);
+  const atsUsage = useMemo(() => getUsage('atsScans'), [getUsage, usageStats]);
 
   // Check onboarding status on initial load
   useEffect(() => {
@@ -127,7 +132,7 @@ export default function DashboardPage() {
       
       try {
         setLoadingResumes(true);
-        const supabase = createBrowserClient();
+        const supabase = createClient();
         
         const currentDate = new Date();
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -180,7 +185,7 @@ export default function DashboardPage() {
       
       try {
         setLoadingLetters(true);
-        const supabase = createBrowserClient();
+        const supabase = createClient();
         
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -276,7 +281,7 @@ export default function DashboardPage() {
       if (!user) return;
       try {
         setLoadingFollowUps(true);
-        const supabase = createBrowserClient();
+        const supabase = createClient();
         
         const presentDate = new Date();
         const startOfMonth = new Date(presentDate.getFullYear(), presentDate.getMonth(), 1);

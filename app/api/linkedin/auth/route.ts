@@ -1,8 +1,8 @@
 // app/api/linkedin/auth/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import crypto from 'crypto';
+import { createClient } from "@/utils/server-side-client";
 
 // LinkedIn OAuth 2.0 credentials
 const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     
     // This is for READING incoming cookies to initialize Supabase
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get the user's session
     const { data: { session } } = await supabase.auth.getSession();

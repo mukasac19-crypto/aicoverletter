@@ -1,6 +1,6 @@
 // app/api/subscription/check-and-track/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
 import { 
@@ -8,12 +8,13 @@ import {
   trackFeatureUsage, 
   LimitedFeature 
 } from '@/lib/subscription-enforcement';
+import { createClient } from '@/utils/server-side-client';
 
 // POST /api/subscription/check-and-track - Combined check and track
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

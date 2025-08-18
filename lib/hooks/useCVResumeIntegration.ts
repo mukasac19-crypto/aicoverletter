@@ -1,7 +1,10 @@
+"use client"
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { createBrowserClient } from '@/lib/supabase';
 import { CvFile } from '@/components/CVManager';
+import { createClient } from '@/utils/client-side-client';
+
 
 /**
  * Hook to manage integration between CVs and resumes
@@ -9,7 +12,7 @@ import { CvFile } from '@/components/CVManager';
 export function useCVResumeIntegration() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
 
   /**
    * Get the CV linked to a specific resume

@@ -1,16 +1,17 @@
 // lib/subscription.ts
 import { stripe } from './stripe';
-import { getServerClient } from './supabase-server';
+
 import { SubscriptionPlan, SubscriptionTier } from '@/types/subscription';
 import Stripe from 'stripe';
 import { SUBSCRIPTION_PLANS } from './subscription-client';
+import { createClient } from '@/utils/server-side-client';
 
 /**
  * Get user's active subscription details from Supabase based on user ID.
  * Returns the active subscription record or null if not found or error occurs.
  */
 export async function getUserSubscription(userId: string) {
-  const supabase = await getServerClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('subscriptions')
@@ -145,7 +146,7 @@ export async function createCheckoutSession({
  * Retrieves or creates a Stripe Customer ID for a user.
  */
 async function getOrCreateStripeCustomer(userId: string): Promise<{ stripeCustomerId: string }> {
-  const supabase = await getServerClient();
+  const supabase = await createClient();
 
   const { data: profile, error: fetchError } = await supabase
     .from('profiles')

@@ -1,7 +1,7 @@
 // app/api/resumes/enhance/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import OpenAI from 'openai';
 import resumeAIService from '@/lib/resume-ai-service';
 import { 
@@ -13,6 +13,7 @@ import {
   mapDatabaseToResumeData,
   DatabaseResumeData
 } from '@/types/resume';
+import { createClient } from '@/utils/server-side-client';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -22,7 +23,7 @@ const openai = new OpenAI({
 export async function POST(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

@@ -16,9 +16,9 @@ import { Label } from "@/components/ui/label";
 import type { CvFile } from '@/components/CVManager';
 import { LinkedInResumeSelector } from "./LinkedInResumeSelector";
 import { useToast } from "@/hooks/use-toast";
-import { createBrowserClient } from "@/lib/supabase";
-// FIXED: Import useAuth
-import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from '@/utils/client-side-client';
+
+
 import { useLinkedInIntegration } from "@/lib/hooks/useLinkedInIntegration";
 import { Database } from "@/types/supabase";
 import { formatDistance } from "date-fns"; // Import if used, like in previous version
@@ -31,6 +31,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 // FIXED: Import useRouter
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input"; // Import Input
+import { useAuthStore } from "@/stores/authstore";
 
 
 // Define types based on Supabase schema
@@ -78,8 +79,8 @@ export function ResumeSourceSelector({ // Renamed component export
     const [isImporting, setIsImporting] = useState<boolean>(false); // State for import loading
 
     const { toast } = useToast();
-    const supabase = createBrowserClient();
-    const { user } = useAuth(); // FIXED: Initialize useAuth
+    const supabase = createClient();
+    const { user } = useAuthStore(); 
     const router = useRouter(); // FIXED: Initialize useRouter
     // FIXED: Destructure isConnecting
     const { isConnected, connectLinkedIn, generateResume, isLoading: isHookLoading, isGenerating: isHookGenerating, isConnecting } = useLinkedInIntegration();

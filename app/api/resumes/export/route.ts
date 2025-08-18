@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { generatePDF } from '@/lib/pdf-generator';
 import * as docx from 'docx';
 import { renderResumeTemplate } from '@/lib/resume-template-renderer';
@@ -13,6 +13,7 @@ import {
     mapDatabaseToResumeTemplate
 } from '@/types/resume';
 import { type Database } from '@/types/supabase';
+import { createClient } from '@/utils/server-side-client';
 
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, SectionType } = docx;
 
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
     }
    
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
    
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;

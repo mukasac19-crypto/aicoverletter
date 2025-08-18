@@ -1,17 +1,17 @@
 // app/api/resumes/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { mapResumeToDatabase, mapDatabaseToResumeData } from '@/lib/resume-mappers';
 import { ResumeData } from '@/types/resume';
 import { v4 as uuidv4 } from 'uuid';
 import { enforceSubscriptionLimit, trackFeatureUsage } from '@/lib/subscription-enforcement';
+import { createClient } from '@/utils/server-side-client';
 
 // GET all resumes for the authenticated user
 export async function GET(request: Request) {
   try {
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
   try {
     console.log('Creating new resume');
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

@@ -1,12 +1,14 @@
 // components/PricingPlans.tsx
+"use client"
 
 import React, { useState, useEffect } from 'react'; // Added useEffect
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import { SubscriptionInterval, SubscriptionTier } from "@/types/subscription";
-import { useAuth } from "@/contexts/AuthContext";
+
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authstore';
 
 interface PricingPlansProps {
   currentPlan?: SubscriptionTier;
@@ -37,7 +39,7 @@ const PLAN_FEATURES = {
 
 export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterval }: PricingPlansProps) {
   const [selectedInterval, setSelectedInterval] = useState<SubscriptionInterval>('monthly');
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   
   // <-- CHANGE 2: Use the new prop to set the state when the component loads
   useEffect(() => {

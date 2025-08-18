@@ -4,9 +4,10 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { DEFAULT_TEMPLATES } from '@/lib/default-templates';
 import { Database } from '@/types/supabase'; // Import Database type if needed
+import { createClient } from '@/utils/server-side-client';
 
 // GET /api/templates/[id] - Get a specific template
 export async function GET(
@@ -25,7 +26,7 @@ export async function GET(
     }
 
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -97,7 +98,7 @@ export async function PUT(
     }
 
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -185,7 +186,7 @@ export async function DELETE(
     }
 
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+     const supabase = await createClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();

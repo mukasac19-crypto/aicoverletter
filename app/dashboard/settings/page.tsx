@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,9 +49,10 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/stores/authstore";
 
 export default function EnhancedProfilePage() {
-  const { user, updatePassword, signOut } = useAuth();
+  const { user, updatePassword, signOut } = useAuthStore();
   const router = useRouter();
   const { toast } = useToast();
 

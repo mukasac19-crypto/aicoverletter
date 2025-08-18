@@ -22,8 +22,8 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuth } from "@/contexts/AuthContext";
-import { createBrowserClient } from "@/lib/supabase";
+
+import { createClient } from '@/utils/client-side-client';
 import { 
   Dialog,
   DialogContent,
@@ -34,14 +34,15 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { mapDbCvToAppCv, formatFileSize, findResumeForCv } from "@/lib/cv-helpers";
+import { useAuthStore } from "@/stores/authstore";
 
 // Export the interface for use by other components
 export type { CvFile } from '@/lib/cv-helpers';
 
 export function CVManager() {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);

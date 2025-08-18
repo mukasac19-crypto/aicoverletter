@@ -3,8 +3,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@/lib/supabase';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { createClient } from '@/utils/client-side-client';
+
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { 
@@ -54,6 +54,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from '@/stores/authstore';
 
 interface ATSAnalysis {
   id: string;
@@ -96,9 +97,9 @@ export default function ATSHistoryPage() {
   const [selectedAnalysis, setSelectedAnalysis] = useState<ATSAnalysis | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Fetch all ATS analyses
   useEffect(() => {

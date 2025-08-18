@@ -18,7 +18,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,10 +59,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
 import SubscriptionStatus from '@/components/SubscriptionStatus';
 import BillingPortalButton from '@/components/BillingPortalButton';
 import { SubscriptionStatus as SubscriptionStatusType } from '@/types/subscription';
+import { useAuthStore } from "@/stores/authstore";
 
 // Cache for storing fetched data
 const dataCache = new Map();
@@ -94,7 +94,8 @@ const BillingSkeleton = () => (
 );
 
 export default function EnhancedProfilePage() {
-  const { user, updatePassword, signOut, loading: authLoading } = useAuth();
+  const { user, updatePassword, signOut, loading: authLoading } = useAuthStore();
+
   const router = useRouter();
   const { toast } = useToast();
 

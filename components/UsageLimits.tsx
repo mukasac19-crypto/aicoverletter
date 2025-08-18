@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Sparkles, FileText, Scan, MessageSquare, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 interface FeatureUsageProps {
   feature: {

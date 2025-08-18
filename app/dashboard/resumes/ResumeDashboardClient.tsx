@@ -9,16 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { ImportGuide } from '@/components/ImportGuide';
 import { useCVResumeIntegration } from '@/lib/hooks/useCVResumeIntegration';
 import { uploadFile } from '@/lib/file-upload';
 import LimitedActionButton from '@/components/LimitedActionButton';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import {
   FileText,
   Plus,
@@ -55,6 +53,7 @@ import { Json, type TablesInsert } from '@/types/supabase';
 import { ResumeData, DatabaseResumeData, WorkExperience } from '@/types/resume';
 import { useLinkedInIntegration } from '@/lib/hooks/useLinkedInIntegration'; // Import the hook
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Import Dialog components
+import { useAuthStore } from '@/stores/authstore';
 
 export default function ResumeDashboardClient({
   initialResumes = [],
@@ -75,10 +74,10 @@ export default function ResumeDashboardClient({
   const [importedResumeId, setImportedResumeId] = useState<string | null>(null);
 
   const importFileRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const router = useRouter();
   const { toast } = useToast();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const { getLinkedCV } = useCVResumeIntegration();
   const [fileToSave, setFileToSave] = useState<File | null>(null);
   const [importSourceCV, setImportSourceCV] = useState<string | null | undefined>(null);

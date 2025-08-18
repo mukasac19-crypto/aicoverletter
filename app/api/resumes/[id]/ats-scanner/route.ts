@@ -1,9 +1,10 @@
 // app/api/resumes/[id]/ats-scanner/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 import { enforceSubscriptionLimit, trackFeatureUsage } from '@/lib/subscription-enforcement';
 import openai from '@/lib/openai';
+import { createClient } from '@/utils/server-side-client';
 
 export async function POST(
   request: Request,
@@ -12,7 +13,7 @@ export async function POST(
   try {
     const { id: resumeId } = await params;
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -155,7 +156,7 @@ export async function GET(
   try {
     const { id: resumeId } = await params;
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+     const supabase = await createClient();
     
     const { data: { session } } = await supabase.auth.getSession();
     

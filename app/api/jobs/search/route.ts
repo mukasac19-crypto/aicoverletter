@@ -2,10 +2,10 @@
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import openai from '@/lib/openai';
 import { searchJobsAcrossCompanies } from '@/lib/multi-company-greenhouse-api';
 import { Job, JobSearchAnalysis } from '@/types/jobs';
+import { createClient } from '@/utils/server-side-client';
 
 export async function POST(request: Request) {
   try {
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
 
     // Get user auth status
     const cookieStore = cookies(); // ✅ FIX: Removed 'await'
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-    const { data: { session } } = await supabase.auth.getSession();
+     const supabase = await createClient();   
+      const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
     console.log(`${isInitialLoad ? 'Loading initial jobs' : 'Searching'} for: "${query}" across multiple companies...`);

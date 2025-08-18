@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import { SubscriptionTier, SubscriptionStatus } from '@/types/subscription';
 import { stripe } from '@/lib/stripe';
-import { createClient } from '@/utils/create-client';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/utils/server-side-client';
 import { cookies } from 'next/headers';
 
 
@@ -16,12 +15,14 @@ import { cookies } from 'next/headers';
 export async function GET(request: NextRequest) {
   try {
    
-   const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
+    const supabase = await createClient();
+    const {data:{user}} = await supabase.auth.getUser()
+    const {data:{session}} = await supabase.auth.getSession()
 
-   const userId = request.headers.get('x-user-id');
-   const accessToken = request.headers.get('x-access-token');
+    const userId = user?.id;
+    const accessToken = session?.access_token;
+
 
     if (!userId || !accessToken) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized: Missing user ID' }), {
@@ -60,7 +61,10 @@ export async function GET(request: NextRequest) {
         tier: 'FREE',
         status: 'active',
       };
-      
+
+
+      console.log("No active subscription found, returning FREE status");
+      console.log("============FREE STATUS============", freeStatus);
       return NextResponse.json(freeStatus);
     }
     
@@ -87,6 +91,7 @@ export async function GET(request: NextRequest) {
       status: subscription.status,
     };
     
+    console.log("============SUBSCRIPTION STATUS============", subscriptionStatus);
     return NextResponse.json(subscriptionStatus);
   } catch (error: any) {
     console.error('Error fetching user subscription:', error);

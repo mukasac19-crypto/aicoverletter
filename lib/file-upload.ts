@@ -1,5 +1,5 @@
 // lib/file-upload.ts
-import { createBrowserClient } from '@/lib/supabase';
+import { createClient } from '@/utils/client-side-client';
 
 interface UploadOptions {
   file: File;
@@ -28,7 +28,7 @@ export async function uploadFile({
   folder = 'cvs',
   metadata = {}
 }: UploadOptions): Promise<UploadResult> {
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Initialize progress updates if callback provided
   if (onProgress) {
@@ -109,7 +109,7 @@ export async function uploadFile({
  * Delete a file from Supabase Storage
  */
 export async function deleteFile(filePath: string, folder = 'cvs'): Promise<boolean> {
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   try {
     const { error } = await supabase.storage
