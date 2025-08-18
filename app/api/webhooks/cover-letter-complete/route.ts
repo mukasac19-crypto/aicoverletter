@@ -4,12 +4,13 @@ import { NextResponse } from 'next/server';
 
 
 // Supabase admin client for webhook access (using service role key)
- const supabase = await createClient();
+ 
 
 // Webhooks need to be public endpoints without authentication
 export async function POST(request: Request) {
   try {
     // Parse webhook payload
+    const supabase = await createClient();
     const payload = await request.json();
     
     // Verify required fields
