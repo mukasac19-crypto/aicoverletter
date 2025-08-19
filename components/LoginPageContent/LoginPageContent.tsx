@@ -17,9 +17,8 @@ import { useUiStore } from "@/stores/uistore";   // UI state and actions for mod
 const LoginPageContent = () => {
   // Destructure session and authentication methods from useAuthStore
   const { session, signIn, signInWithProvider } = useAuthStore();
-  const {toggleShowLoginContent} = useUiStore()
-  // Destructure toggleAuthModal from useUiStore to control the modal
-  const { toggleAuthModal } = useUiStore();
+  const {toggleShowLoginContent,toggleAuthModal} = useUiStore()
+ 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -79,9 +78,12 @@ const LoginPageContent = () => {
 
     try {
       const returnTo = searchParams.get("returnTo");
-      const { error } = await signInWithProvider("google", {
+      const { error,data } = await signInWithProvider("google", {
         redirectTo: returnTo ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}` : undefined
       });
+
+      console.log(data,'----------google response client----------');
+      console.log(returnTo,'----------returnTo----------');
 
       if (error) {
         setErrorMsg(error.message || "Failed to login with Google");

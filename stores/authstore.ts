@@ -67,6 +67,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       },
     });
     // OAuth flow typically redirects, so no direct state update here from response
+    console.log(response.data,'----------google response----------');
     return response;
   },
 
