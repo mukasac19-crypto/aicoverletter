@@ -21,9 +21,11 @@ import {
 
 import { FeatureAuthModal } from "@/components/FeatureAuthModal";
 import { useAuthStore } from "@/stores/authstore";
+import { useUiStore } from "@/stores/uistore";
 
 const FeaturesPage = () => {
   const { user } = useAuthStore();
+   const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
   const [modalOpen, setModalOpen] = useState(false);
   const [returnTo, setReturnTo] = useState("");
 
@@ -115,13 +117,19 @@ const FeaturesPage = () => {
               Our AI-powered tools help you create professional applications, prepare for interviews, and improve your chances of landing your dream job.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/register">
-                <Button size="lg" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white">
-                  Get Started - It's Free
+              {/* <Link href="/auth/register"> */}
+                <Button 
+                onClick={() => {
+                  toggleAuthModal(true);
+                  toggleShowLoginContent(false);//show sign up form
+                }}
+                size="lg" 
+                className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white">
+                  Get Started - It's Free 
                 </Button>
-              </Link>
+              {/* </Link> */}
               <Link href="#features">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-orange-200 text-gray-700 hover:text-orange-700 hover:bg-orange-50 hover:border-orange-300">
+                <Button size="lg" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white">
                   Explore Features
                 </Button>
               </Link>
@@ -333,13 +341,20 @@ const FeaturesPage = () => {
               Join thousands of job seekers who have improved their application success rate with our AI-powered tools
             </p>
            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/register">
-                <Button size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
+              {/* <Link href="/auth/register"> */}
+                <Button 
+                size="lg" 
+                className="bg-white text-orange-700 hover:bg-orange-50"
+                onClick={() => {
+                  toggleAuthModal(true);
+                  toggleShowLoginContent(false);
+                }}
+                >
                   Get Started - It's Free
                 </Button>
-              </Link>
+              {/* </Link> */}
               <Link href="/pricing">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-orange-600">
+                <Button size="lg" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white">
                   View Pricing
                 </Button>
               </Link>

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import PricingClient from './PricingClient'; // Import the new dynamic component
 import { useAuthStore } from '@/stores/authstore';
+import { useUiStore } from '@/stores/uistore';
 
 // The page is now an async function to allow fetching data on the server.
 export default function PricingPage() {
@@ -16,6 +17,7 @@ export default function PricingPage() {
   // const supabase = createServerComponentClient({ cookies });
   // const { data: { user } } = await supabase.auth.getUser();
   const {user} = useAuthStore()
+   const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
 
   return (
     <>
@@ -186,10 +188,19 @@ export default function PricingPage() {
               </Link>
             </Button>
             {!user && (
-              <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-orange-600" asChild>
-                <Link href="/auth/register">
+              <Button 
+              onClick={() => {
+                toggleAuthModal(true);
+                toggleShowLoginContent(false); // show sign up form
+              }}  
+              size="lg" 
+              variant="outline" 
+              className="bg-transparent border-white text-white hover:bg-orange-600" 
+              asChild
+              >
+                {/* <Link href="/auth/register"> */}
                   Create Free Account
-                </Link>
+                {/* </Link> */}
               </Button>
             )}
           </div>

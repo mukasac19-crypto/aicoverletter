@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn } from "lucide-react";
+import { on } from "events";
 import { useUiStore } from "@/stores/uistore";
 
 interface FeatureAuthModalProps {
@@ -20,7 +21,8 @@ interface FeatureAuthModalProps {
 
 export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthModalProps) => {
   const router = useRouter();
-  const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
+   const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
+  
 
   const handleRedirect = (path: string) => {
     let url = path;
@@ -30,14 +32,12 @@ export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthMo
     router.push(url);
   };
 
-  //handle show auth modal
-
-  const handleShowAuthModal = (isLogin: boolean) => {
-    onOpenChange(false);
+  const handleShowAuthModal = ({showLogin}: {showLogin: boolean}) => {
     toggleAuthModal(true);
-    toggleShowLoginContent(isLogin);
+    toggleShowLoginContent(showLogin);
   };
 
+  
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,7 +50,8 @@ export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthMo
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Button onClick={() => {
-            handleShowAuthModal(true);
+            onOpenChange(false);
+            handleShowAuthModal({showLogin: true});
             // handleRedirect("/auth/login")}
             }}
             size="lg"
@@ -58,7 +59,8 @@ export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthMo
             <LogIn className="mr-2 h-4 w-4" /> Log In
           </Button>
           <Button onClick={() => {
-            handleShowAuthModal(false);
+            onOpenChange(false);
+            handleShowAuthModal({showLogin: false});
             // handleRedirect("/auth/register")
           }} variant="outline" size="lg">
             Sign Up Free <ArrowRight className="ml-2 h-4 w-4" />

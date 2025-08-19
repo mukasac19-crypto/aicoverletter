@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useAuthStore } from '@/stores/authstore';
+import { useUiStore } from '@/stores/uistore';
 
 interface SubscriptionCheckProps {
   requiredTier: SubscriptionTier;
@@ -32,6 +33,7 @@ export default function SubscriptionCheck({
   featureInfo
 }: SubscriptionCheckProps) {
   const { user, loading } = useAuthStore();
+  const { toggleAuthModal, toggleShowLoginContent } = useUiStore();
   const [userTier, setUserTier] = useState<SubscriptionTier | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -91,15 +93,27 @@ export default function SubscriptionCheck({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild className="bg-orange-600 hover:bg-orange-700">
-              <Link href="/auth/login">
+            <Button
+              onClick={() => {
+                // Open auth modal or redirect to login
+                toggleAuthModal(true);
+                toggleShowLoginContent(true); // Show login form
+              }} 
+            asChild className="bg-orange-600 hover:bg-orange-700">
+              {/* <Link href="/auth/login"> */}
                 Sign In
-              </Link>
+              {/* </Link> */}
             </Button>
-            <Button asChild variant="outline">
-              <Link href="/auth/register">
+            <Button
+              onClick={() => {
+                // Open auth modal or redirect to register
+                toggleAuthModal(true);
+                toggleShowLoginContent(false); // Show sign up form
+              }}
+              asChild variant="outline">
+              {/* <Link href="/auth/register"> */}
                 Create Account
-              </Link>
+              {/* </Link> */}
             </Button>
           </div>
         </CardContent>

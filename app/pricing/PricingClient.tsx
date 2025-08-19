@@ -8,6 +8,7 @@ import PricingPlans from "@/components/PricingPlans";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { SubscriptionTier, SubscriptionInterval } from '@/types/subscription'; // Make sure SubscriptionInterval is imported
 import { useAuthStore } from '@/stores/authstore';
+import { useUiStore } from '@/stores/uistore';
 
 
 export default function PricingClient() {
@@ -15,6 +16,8 @@ export default function PricingClient() {
 
 
   const {user,loading} = useAuthStore()
+   const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
+
   const [currentPlan, setCurrentPlan] = useState<SubscriptionTier>('FREE');
   const [isLoadingPlan, setIsLoadingPlan] = useState(true);
   const router = useRouter();
@@ -57,7 +60,10 @@ export default function PricingClient() {
   const handleSelectPlan = (tier: SubscriptionTier, interval: string) => {
     if (!user) {
       // Redirect to login if not logged in
-      router.push(`/auth/login?redirect=/pricing&interval=${interval}`);
+      // router.push(`/auth/login?redirect=/pricing&interval=${interval}`);
+      toggleAuthModal(true);
+      toggleShowLoginContent(true); // Show login up form
+
       return;
     }
     

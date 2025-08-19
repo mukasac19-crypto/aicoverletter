@@ -9,6 +9,7 @@ import Link from "next/link"
 
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
+import { useUiStore } from '@/stores/uistore'
 
 // Company logos data with actual image paths matching your files
 const companyLogos = [
@@ -56,7 +57,7 @@ const faqData = [
 
 export default function LandingPage() {
 
-  console.log("LandingPage rendered")
+  const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
 
   const [scrollPosition, setScrollPosition] = useState(0)
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
@@ -106,12 +107,19 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link href="/auth/register">
-                <Button size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
+              {/* <Link href="/auth/register"> */}
+                <Button 
+                onClick={() => {
+                  toggleAuthModal(true);
+                  toggleShowLoginContent(false); // show sign up form
+                }}
+                size="lg" 
+                className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8"
+                >
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free - No Card Required
                 </Button>
-              </Link>
+              {/* </Link> */}
             </div>
             
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -296,12 +304,17 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/auth/register">
-              <Button size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
+            {/* <Link href="/auth/register"> */}
+              <Button
+              onClick={() => {
+                toggleAuthModal(true);
+                toggleShowLoginContent(false); // show sign up form
+              }} 
+              size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
                 Try It Now - Free Forever Plan
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
+            {/* </Link> */}
           </div>
         </div>
       </section>
@@ -463,8 +476,12 @@ export default function LandingPage() {
                       ))}
                     </ul>
 
-                    <Link href="/auth/register" className="block">
+                    {/* <Link href="/auth/register" className="block"> */}
                       <Button
+                        onClick={() => {
+                          toggleAuthModal(true);
+                          toggleShowLoginContent(false); // show sign up form
+                        }}
                         className={`w-full py-6 text-base font-semibold ${
                           tier === "FREE"
                             ? "bg-gray-900 hover:bg-gray-800"
@@ -475,7 +492,7 @@ export default function LandingPage() {
                       >
                         {tier === "FREE" ? "Start Free" : tier === "PRO" ? "Get Pro Access" : "Contact Sales"}
                       </Button>
-                    </Link>
+                    {/* </Link> */}
                   </div>
                 </Card>
               </div>
@@ -576,12 +593,17 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link href="/auth/register">
-                <Button size="lg" className="bg-white text-orange-700 hover:bg-gray-100 shadow-2xl px-8 py-6 text-lg font-semibold">
+              {/* <Link href="/auth/register"> */}
+                <Button 
+                onClick={() => {
+                  toggleAuthModal(true);
+                  toggleShowLoginContent(false); // show sign up form
+                }}
+                size="lg" className="bg-white text-orange-700 hover:bg-gray-100 shadow-2xl px-8 py-6 text-lg font-semibold">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free Trial Now
                 </Button>
-              </Link>
+              {/* </Link> */}
             </div>
             
             <div className="flex items-center justify-center gap-6 text-sm">
