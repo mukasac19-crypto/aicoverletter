@@ -1,7 +1,7 @@
-// project/app/auth/login/page.tsx
+// project/app/auth/register/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,19 +10,20 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useAuthStore } from "@/stores/authstore"; // Auth state and actions
-import { useUiStore } from "@/stores/uistore";   // UI state and actions for modal
+import { useAuthStore } from "@/stores/authstore";
+import { useUiStore } from "@/stores/uistore";
 
-const LoginPageContent = () => {
-  // Destructure session and authentication methods from useAuthStore
-  const { session, signIn, signInWithProvider } = useAuthStore();
+const RegisterPageContent=()=>{
+
   const {toggleShowLoginContent} = useUiStore()
-  // Destructure toggleAuthModal from useUiStore to control the modal
-  const { toggleAuthModal } = useUiStore();
+  const { signUp, signInWithProvider } = useAuthStore();
+
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
@@ -30,37 +31,47 @@ const LoginPageContent = () => {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  // Effect to handle redirection and modal closure upon successful session
-  useEffect(() => {
-    if (session && session.user) {
-      
-      // 1. Redirect to dashboard if user is logged in
-      router.push("/dashboard");
-      // 2. Close the authentication modal
-      toggleAuthModal(false); 
-
-    }
-  }, [session, router, searchParams, toggleAuthModal]); // Depend on session, router, searchParams, and toggleAuthModal
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
+    // Validate password match
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setErrorMsg("Password must be at least 6 characters long");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data, error } = await signIn(email, password);
-    
+      const returnTo = searchParams.get("returnTo");
+      
+      const redirectURL = new URL(`${window.location.origin}/auth/login`);
+      redirectURL.searchParams.set('message', 'Check your email to confirm your account.');
+      if (returnTo) {
+        redirectURL.searchParams.set('returnTo', returnTo);
+      }
+
+      const { data, error } = await signUp(email, password, { redirectTo: redirectURL.toString() });
+
       if (error) {
-        setErrorMsg(
-          error.message || "Login failed. Please check your credentials."
-        );
+        setErrorMsg(error.message || "Registration failed");
         toast({
           title: "Error",
-          description: error.message || "Login failed",
+          description: error.message || "Registration failed",
           variant: "destructive",
         });
+      } else {
+        // The success toast is now handled in the AuthContext
+        router.push(redirectURL.toString());
       }
-      // Success is handled by the useEffect watching the session state
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred");
       toast({
@@ -84,19 +95,18 @@ const LoginPageContent = () => {
       });
 
       if (error) {
-        setErrorMsg(error.message || "Failed to login with Google");
+        setErrorMsg(error.message || "Failed to sign up with Google");
         toast({
-          title: "Login Error",
-          description: error.message || "Failed to login with Google",
+          title: "Error",
+          description: error.message || "Failed to sign up with Google",
           variant: "destructive",
         });
       }
-      // For social logins, Supabase automatically redirects. 
-      // The useEffect will catch the new session after redirect.
+      // No need to handle success here - Supabase will redirect automatically
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred");
       toast({
-        title: "Unexpected Error",
+        title: "Error",
         description: err.message || "An unexpected error occurred",
         variant: "destructive",
       });
@@ -108,7 +118,7 @@ const LoginPageContent = () => {
   return (
     <div className="flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-none ">
-        <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">Create an Account</h1>
 
         {errorMsg && <ErrorMessage message={errorMsg} />}
 
@@ -133,8 +143,20 @@ const LoginPageContent = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading || !!socialLoading}
               required
-              autoComplete="current-password"
+              autoComplete="new-password"
               aria-label="Password"
+            />
+          </div>
+          <div>
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading || !!socialLoading}
+              required
+              autoComplete="new-password"
+              aria-label="Confirm password"
             />
           </div>
           <Button 
@@ -142,18 +164,9 @@ const LoginPageContent = () => {
             className="w-full" 
             disabled={loading || !!socialLoading}
           >
-            {loading ? <LoadingSpinner /> : "Login"}
+            {loading ? <LoadingSpinner /> : "Register"}
           </Button>
         </form>
-
-        <div className="mt-4 text-center">
-          <Link
-            href="/auth/reset-password"
-            className="text-sm text-primary hover:underline"
-          >
-            Forgot your password?
-          </Link>
-        </div>
 
         <div className="relative mt-6 mb-6">
           <Separator />
@@ -196,14 +209,14 @@ const LoginPageContent = () => {
         </Button>
 
         <p className="text-center mt-6 text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <div 
           className="text-primary hover:underline"
-          onClick={() => {
-            toggleShowLoginContent(); // Toggle to show register content
-          }}
+            onClick={() => {
+                toggleShowLoginContent(); // Toggle to show login content
+            }}
           >
-            Register
+            Login
           </div>
         </p>
       </Card>
@@ -211,4 +224,4 @@ const LoginPageContent = () => {
   );
 }
 
-export default LoginPageContent;
+export default RegisterPageContent

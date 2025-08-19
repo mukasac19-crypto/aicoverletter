@@ -6,6 +6,8 @@ import {
 } from "@/components/ui/dialog";
 import React from "react";
 import LoginPageContent from "../LoginPageContent/LoginPageContent";
+import { useUiStore } from "@/stores/uistore";
+import RegisterPageContent from "../RegisterPageContent/RegisterPageContent";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,6 +15,8 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+
+  const {isShowLoginContent} = useUiStore()
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
@@ -22,7 +26,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         "
       >
         <DialogHeader className="relative flex-row justify-between items-center mb-4"></DialogHeader>
-        <div className="flex-grow">{<LoginPageContent />}</div>
+        <div className="flex-grow">{
+          isShowLoginContent ? <LoginPageContent /> : <RegisterPageContent />
+          }</div>
       </DialogContent>
     </Dialog>
   );
