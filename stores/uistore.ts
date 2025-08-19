@@ -5,7 +5,7 @@ interface UiState {
   isAuthModalOpen: boolean;
   toggleAuthModal: (open?: boolean) => void;
   isShowLoginContent:boolean;
-  toggleShowLoginContent: () => void;
+  toggleShowLoginContent: (isLogin?: boolean) => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({
@@ -14,6 +14,6 @@ export const useUiStore = create<UiState>((set) => ({
   toggleAuthModal: (open) => 
     set((state) => ({ isAuthModalOpen: open !== undefined ? open : !state.isAuthModalOpen })),
 
-  toggleShowLoginContent: () =>
-    set((state) => ({ isShowLoginContent: !state.isShowLoginContent })),      
+  toggleShowLoginContent: (isLogin) =>
+    set((state) => ({ isShowLoginContent: isLogin !== undefined ? isLogin : !state.isShowLoginContent })),      
 }));

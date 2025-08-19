@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn } from "lucide-react";
+import { useUiStore } from "@/stores/uistore";
 
 interface FeatureAuthModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface FeatureAuthModalProps {
 
 export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthModalProps) => {
   const router = useRouter();
+  const {toggleAuthModal,toggleShowLoginContent} = useUiStore()
 
   const handleRedirect = (path: string) => {
     let url = path;
@@ -27,6 +29,15 @@ export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthMo
     }
     router.push(url);
   };
+
+  //handle show auth modal
+
+  const handleShowAuthModal = (isLogin: boolean) => {
+    onOpenChange(false);
+    toggleAuthModal(true);
+    toggleShowLoginContent(isLogin);
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,10 +49,18 @@ export const FeatureAuthModal = ({ open, onOpenChange, returnTo }: FeatureAuthMo
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <Button onClick={() => handleRedirect("/auth/login")} size="lg">
+          <Button onClick={() => {
+            handleShowAuthModal(true);
+            // handleRedirect("/auth/login")}
+            }}
+            size="lg"
+            >
             <LogIn className="mr-2 h-4 w-4" /> Log In
           </Button>
-          <Button onClick={() => handleRedirect("/auth/register")} variant="outline" size="lg">
+          <Button onClick={() => {
+            handleShowAuthModal(false);
+            // handleRedirect("/auth/register")
+          }} variant="outline" size="lg">
             Sign Up Free <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
