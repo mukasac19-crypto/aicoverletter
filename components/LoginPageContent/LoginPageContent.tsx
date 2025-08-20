@@ -77,9 +77,11 @@ const LoginPageContent = () => {
     setSocialLoading("google");
 
     try {
-      const returnTo = searchParams.get("returnTo");
+      // const returnTo = searchParams.get("returnTo");
+      const returnTo = "/dashboard"; // Default returnTo path if not provided
+      //?returnTo=${encodeURIComponent(returnTo)}
       const { error,data } = await signInWithProvider("google", {
-        redirectTo: returnTo ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}` : undefined
+        redirectTo:`${process.env.SUPABASE_REDIRECT_URL}/api/auth/callback`
       });
 
       console.log(data,'----------google response client----------');

@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const response = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: options?.redirectTo || `${window.location.origin}/api/auth/callback`,
+        redirectTo:`${window.location.origin}/api/auth/callback`,
       },
     });
     // OAuth flow typically redirects, so no direct state update here from response
