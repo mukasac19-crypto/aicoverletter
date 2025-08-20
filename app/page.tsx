@@ -1,3 +1,5 @@
+//project\app\page.tsx
+
 "use client"
 
 import React, { useState, useEffect } from 'react'
@@ -511,7 +513,7 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section with Collapsible Cards */}
-      <section className="py-20 bg-white">
+      <section id="faq" className="py-20 bg-white">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
             <span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-800 mb-4">
