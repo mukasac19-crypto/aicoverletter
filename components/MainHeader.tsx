@@ -1,3 +1,5 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\MainHeader.tsx
+
 "use client"
 
 
@@ -24,11 +26,12 @@ const MainHeader=()=>{
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-auto rounded-lg flex items-center justify-center">
                 <Image
-                  src="/careerthingslogo.png"
-                  width={200}
-                  height={36}
-                  alt='CareerThings AI logo'
-                />
+  src="/careerthingslogo.png"
+  width={200}
+  height={36}
+  alt="CareerThings AI"
+/>
+
               </div>
             </Link>
             

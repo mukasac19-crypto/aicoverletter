@@ -16,12 +16,12 @@ const MainFooter = () => {
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-8 w-auto flex items-center justify-center">
                 <Image
-                  src="/careerthingslogo.png"
-                  width={160}
-                  height={30}
-                  alt='CareerThings AI logo'
-                  className="brightness-0 invert"
-                />
+  src="/careerthingslogo.png"
+  width={200}
+  height={36}
+  alt="CareerThings AI"
+/>
+
               </div>
             </div>
             <p className="text-sm text-gray-400 mb-4">

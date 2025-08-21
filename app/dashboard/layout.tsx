@@ -165,11 +165,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex items-center gap-2">
           <div className="h-8 w-auto rounded-lg flex items-center justify-center">
                             <Image
-                              src="/careerthingslogo.png"
-                              width={200}
-                              height={36}
-                              alt='CareerThings AI logo'
-                             />
+  src="/careerthingslogo.png"
+  width={200}
+  height={36}
+  alt="CareerThings AI"
+/>
+
                           </div>
 
           <div onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -289,11 +290,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen} >
               <div className="h-8 w-auto rounded-lg flex items-center justify-center">
                               <Image
-                                src="/careerthingslogo.png"
-                                width={160}
-                                height={36}
-                                alt='CareerThings AI logo'
-                               />
+  src="/careerthingslogo.png"
+  width={200}
+  height={36}
+  alt="CareerThings AI"
+/>
+
                             </div>
               <SheetTrigger asChild>
                 <Button
@@ -315,11 +317,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     >
                       <div className="h-8 w-auto rounded-lg flex items-center justify-center">
                                         <Image
-                                          src="/careerthingslogo.png"
-                                          width={200}
-                                          height={36}
-                                          alt='CareerThings AI logo'
-                                         />
+  src="/careerthingslogo.png"
+  width={200}
+  height={36}
+  alt="CareerThings AI"
+/>
+
                                       </div>
                     </Link>
                     <Button
