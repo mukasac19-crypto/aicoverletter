@@ -53,7 +53,7 @@ export async function canAccessFeature(
 
   if (currentUsage >= limit) {
     return { 
-      allowed: false, 
+      allowed:false, 
       reason: `You've reached your limit of ${limit} ${feature} for this period`,
       usage: { used: currentUsage, limit }
     };

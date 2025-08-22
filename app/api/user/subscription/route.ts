@@ -54,6 +54,8 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching subscription:', error);
       throw error;
     }
+
+    console.log(subscription,'===========supabase subs response =============') // null
     
     // If no active subscription, return FREE tier status
     if (!subscription) {
