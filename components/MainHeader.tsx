@@ -1,7 +1,6 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\MainHeader.tsx
+// project/components/MainHeader.tsx
 
 "use client"
-
 
 import Link from "next/link";
 import { useState } from "react";
@@ -11,11 +10,9 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { useAuthStore } from "@/stores/authstore";
 import { useUiStore } from "@/stores/uistore";
 
-const MainHeader=()=>{
-
+const MainHeader = () => {
   const { user } = useAuthStore();
-  const {toggleAuthModal} = useUiStore()
-
+  const { toggleAuthModal } = useUiStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -26,15 +23,16 @@ const MainHeader=()=>{
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-auto rounded-lg flex items-center justify-center">
                 <Image
-  src="/careerthingslogo.png"
-  width={200}
-  height={36}
-  alt="CareerThings AI"
-/>
-
+                  src="/careerthingslogo.png"
+                  width={200}
+                  height={36}
+                  alt="CareerThings AI"
+                  // 👇 FIX: Apply responsive classes here
+                  className="h-full w-auto object-contain" 
+                />
               </div>
             </Link>
-            
+
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
@@ -43,7 +41,6 @@ const MainHeader=()=>{
               <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                 Pricing
               </Link>
-              
               <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                 Resources
               </Link>
@@ -59,7 +56,6 @@ const MainHeader=()=>{
                 </Button>
               </Link>
             ) : (
-              // Modified: Use a button to open the modal instead of a link
               <Button
                 onClick={() => toggleAuthModal()}
                 className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25"
@@ -67,7 +63,7 @@ const MainHeader=()=>{
                 Log In
               </Button>
             )}
-            
+
             {/* Mobile menu button */}
             <button
               className="md:hidden"
@@ -78,7 +74,7 @@ const MainHeader=()=>{
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white">
@@ -89,16 +85,14 @@ const MainHeader=()=>{
             <Link href="/pricing" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
               Pricing
             </Link>
-            
             <Link href="/blog" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
               Resources
             </Link>
           </nav>
         </div>
       )}
-
     </header>
   );
-}
+};
 
 export default MainHeader;
