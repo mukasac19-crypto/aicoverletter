@@ -87,12 +87,13 @@ export default function FeatureGate({
                 </AlertDescription>
               </Alert>
               
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
-                <Link href="/pricing">
+              <Link href="/pricing" className="w-full">
+                <Button className="w-full bg-orange-600 hover:bg-orange-700">
+                  <Sparkles className="mr-2 h-4 w-4" />
                   Upgrade to Pro
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </>
           ) : (
             <Alert>

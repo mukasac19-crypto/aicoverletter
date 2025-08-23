@@ -1,7 +1,5 @@
-// /app/dashboard/resumes/new/page.tsx
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ResumeBuilder from "@/components/ResumeBuilder";
 import FeatureGate from "@/components/FeatureGate";
@@ -19,25 +17,8 @@ const generateUUID = () => crypto.randomUUID();
 
 export default function NewResumePage() {
     const { user, loading: authLoading } = useAuthStore();
-    const { checkAndTrack, loading: subLoading } = useSubscription();
+    const { loading: subLoading } = useSubscription();
     const router = useRouter();
-
-    // Check subscription limits when page loads
-    useEffect(() => {
-        const checkLimits = async () => {
-            if (!authLoading && !subLoading && user) {
-                // Check if user can create a new resume
-                const { allowed, reason } = await checkAndTrack('resumes');
-                
-                if (!allowed) {
-                    // If not allowed, we'll show the FeatureGate component
-                    console.log('User cannot create more resumes:', reason);
-                }
-            }
-        };
-
-        checkLimits();
-    }, [authLoading, subLoading, user, checkAndTrack]);
 
     // Show a loading spinner while checking for a logged-in user
     if (authLoading || subLoading) {
@@ -116,6 +97,16 @@ export default function NewResumePage() {
                 feature="resumes"
                 featureName="Resume Creation"
                 featureDescription="You've reached your resume limit. Upgrade to create more resumes."
+                fallback={
+                    <div className="container max-w-2xl py-8">
+                        <Button variant="outline" asChild className="mb-6">
+                            <Link href="/dashboard/resumes">
+                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                Back to Resumes
+                            </Link>
+                        </Button>
+                    </div>
+                }
             >
                 {/* Pass the default data to the builder */}
                 <ResumeBuilder initialData={newResumeData} />
