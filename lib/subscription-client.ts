@@ -59,9 +59,9 @@ export const SUBSCRIPTION_PLANS: Record<SubscriptionTier, SubscriptionPlan> = {
       annually: 100.00,
     },
     stripePriceIds: {
-      monthly: 'price_1RK5xpBh2Msdef2rOP2A93hO',
-      quarterly: '',
-      annually: 'price_1RK6FHBh2Msdef2rzti7qMbN',
-    },
+  monthly: 'price_1RtXicBh2Msdef2rHNoQe5X1', 
+  quarterly: '',
+  annually: 'price_1RtWyHBh2Msdef2rWGr9VmwJ', 
+},
   },
 };

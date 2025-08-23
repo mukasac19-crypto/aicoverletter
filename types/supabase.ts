@@ -1,4 +1,6 @@
-﻿export type Json =
+﻿//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\types\supabase.ts
+
+export type Json =
   | string
   | number
   | boolean

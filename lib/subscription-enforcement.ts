@@ -208,14 +208,7 @@ export async function enforceSubscriptionLimit(
 function getTierFromPlanId(planId?: string | null): SubscriptionTier {
   if (!planId) return 'FREE';
   
-  // Map plan_id to tier
-  const planIdToTier: Record<string, SubscriptionTier> = {
-    'free': 'FREE',
-    'pro': 'PRO',
-    
-  };
-
-  // Also check Stripe price IDs
+  // Build a map of price IDs to tiers from SUBSCRIPTION_PLANS
   const priceToTier: Record<string, SubscriptionTier> = {};
   
   Object.entries(SUBSCRIPTION_PLANS).forEach(([tier, plan]) => {
@@ -230,7 +223,18 @@ function getTierFromPlanId(planId?: string | null): SubscriptionTier {
     }
   });
 
-  return planIdToTier[planId] || priceToTier[planId] || 'FREE';
+  // Check if the planId is a Stripe price ID
+  if (priceToTier[planId]) {
+    return priceToTier[planId];
+  }
+
+  // Legacy support: check if it's a simple plan name
+  const planIdToTier: Record<string, SubscriptionTier> = {
+    'free': 'FREE',
+    'pro': 'PRO',
+  };
+
+  return planIdToTier[planId.toLowerCase()] || 'FREE';
 }
 
 // Get start of current month

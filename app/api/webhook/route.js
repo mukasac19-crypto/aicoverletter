@@ -1,11 +1,8 @@
 // /app/api/webhook/route.js
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-
+import { createClient } from '@/utils/server-side-client';
 import Stripe from 'stripe';
-import { createClient } from 'redis';
-
- const supabase = await createClient();
 
 // This is your Stripe webhook secret
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -67,6 +64,8 @@ export async function POST(request) {
 }
 
 async function handleCheckoutSessionCompleted(session) {
+  const supabase = await createClient();
+  
   if (!session.subscription || !session.customer) {
     console.log('No subscription or customer in session');
     return;
@@ -74,8 +73,8 @@ async function handleCheckoutSessionCompleted(session) {
   
   const { userId, tier, interval } = session.metadata || {};
   
-  if (!userId || !tier) {
-    console.log('Missing userId or tier in session metadata');
+  if (!userId) {
+    console.log('Missing userId in session metadata');
     return;
   }
   
@@ -88,10 +87,11 @@ async function handleCheckoutSessionCompleted(session) {
     interval
   );
   
-  console.log(`Subscription created for user ${userId}, tier: ${tier}, interval: ${interval}`);
+  console.log(`Subscription created for user ${userId}`);
 }
 
 async function handleSubscriptionUpdated(subscription) {
+  const supabase = await createClient();
   const customerId = subscription.customer;
   
   const { data: users, error } = await supabase
@@ -112,6 +112,7 @@ async function handleSubscriptionUpdated(subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription) {
+  const supabase = await createClient();
   const customerId = subscription.customer;
   
   const { data: users, error } = await supabase
@@ -139,6 +140,7 @@ async function handleSubscriptionDeleted(subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice) {
+  const supabase = await createClient();
   const subscriptionId = invoice.subscription;
   
   if (!subscriptionId || !invoice.customer) {
@@ -193,6 +195,7 @@ async function handleInvoicePaymentSucceeded(invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice) {
+  const supabase = await createClient();
   const subscriptionId = invoice.subscription;
   
   if (!subscriptionId || !invoice.customer) {
@@ -228,30 +231,11 @@ async function handleInvoicePaymentFailed(invoice) {
 }
 
 async function storeSubscription(subscription, userId, tier, interval) {
+  const supabase = await createClient();
   const item = subscription.items.data[0];
   
-  // The tier from metadata should already be 'PRO' or 'BUSINESS'
-  // But let's add validation to be safe
-  let planId = tier ? tier.toLowerCase() : 'free';
-  
-  // Additional validation - if somehow a price ID got passed as tier
-  const priceIdToPlan = {
-    'price_1RtXicBh2Msdef2rHNoQe5X1': 'pro', // Monthly Pro
-    'price_1RtWyHBh2Msdef2rWGr9VmwJ': 'pro', // Annual Pro
-    // Add other price IDs here as needed
-  };
-  
-  // If the tier is a price ID, convert it to plan name
-  if (priceIdToPlan[tier]) {
-    planId = priceIdToPlan[tier];
-  } else if (tier && tier.startsWith('price_')) {
-    // If it's a price ID we don't recognize, default to 'pro'
-    console.warn(`Unknown price ID passed as tier: ${tier}, defaulting to 'pro'`);
-    planId = 'pro';
-  }
-  
-  // Ensure planId is lowercase to match your mapPlanIdToTier function
-  planId = planId.toLowerCase();
+  // CRITICAL FIX: Store the actual Stripe price ID, not a tier name
+  const priceId = item.price.id;
   
   const subscriptionInterval = interval || getIntervalFromStripeInterval(item.plan.interval);
   
@@ -273,7 +257,7 @@ async function storeSubscription(subscription, userId, tier, interval) {
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     
     const subscriptionData = {
-      plan_id: planId,
+      plan_id: priceId, // CRITICAL: Store the actual Stripe price ID
       status: subscription.status,
       current_period_start: currentPeriodStart,
       current_period_end: currentPeriodEnd,
@@ -283,13 +267,13 @@ async function storeSubscription(subscription, userId, tier, interval) {
     };
     
     if (existingSubscription) {
-      console.log(`Updating existing subscription for user ${userId} with plan_id: ${planId}`);
+      console.log(`Updating existing subscription for user ${userId} with price_id: ${priceId}`);
       await supabase
         .from('subscriptions')
         .update(subscriptionData)
         .eq('id', existingSubscription.id);
     } else {
-      console.log(`Creating new subscription for user ${userId} with plan_id: ${planId}`);
+      console.log(`Creating new subscription for user ${userId} with price_id: ${priceId}`);
       await supabase
         .from('subscriptions')
         .insert({
@@ -301,7 +285,7 @@ async function storeSubscription(subscription, userId, tier, interval) {
         });
     }
     
-    console.log(`Subscription stored/updated - User: ${userId}, Plan: ${planId}, Status: ${subscription.status}`);
+    console.log(`Subscription stored/updated - User: ${userId}, Price ID: ${priceId}, Status: ${subscription.status}`);
   } catch (error) {
     console.error('Error storing subscription:', error);
     throw error;
@@ -309,6 +293,8 @@ async function storeSubscription(subscription, userId, tier, interval) {
 }
 
 async function updateSubscription(subscription, userId) {
+  const supabase = await createClient();
+  
   try {
     // Fix: Properly handle timestamps
     const currentPeriodStart = subscription.current_period_start 
@@ -322,22 +308,10 @@ async function updateSubscription(subscription, userId) {
     // Get the price ID from the subscription
     const priceId = subscription.items.data[0]?.price?.id;
     
-    // Map price ID to plan_id
-    const priceIdToPlan = {
-      'price_1RtXicBh2Msdef2rHNoQe5X1': 'pro', // Monthly Pro
-      'price_1RtWyHBh2Msdef2rWGr9VmwJ': 'pro', // Annual Pro
-      // Add other price IDs here as needed
-    };
-    
-    let planId = 'free'; // Default
-    if (priceIdToPlan[priceId]) {
-      planId = priceIdToPlan[priceId];
-    }
-    
     await supabase
       .from('subscriptions')
       .update({
-        plan_id: planId,
+        plan_id: priceId, // Store the actual Stripe price ID
         status: subscription.status,
         current_period_start: currentPeriodStart,
         current_period_end: currentPeriodEnd,
@@ -347,7 +321,7 @@ async function updateSubscription(subscription, userId) {
       .eq('user_id', userId)
       .eq('stripe_subscription_id', subscription.id);
       
-    console.log(`Subscription updated for user ${userId} with plan_id: ${planId}`);
+    console.log(`Subscription updated for user ${userId} with price_id: ${priceId}`);
   } catch (error) {
     console.error('Error updating subscription:', error);
     throw error;
