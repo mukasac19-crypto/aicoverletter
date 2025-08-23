@@ -223,10 +223,11 @@ async function storeSubscription(
   tier: string,
   interval?: string
 ) {
-  // Re-introducing 'as any' to bypass type collision.
   const sub = subscription as any;
   const item = sub.items.data[0];
-  const planId = tier;
+  
+  // CRITICAL FIX: Get the actual Stripe price ID
+  const priceId = item.price.id;
   
   const subscriptionInterval = interval || getIntervalFromStripeInterval(item.plan.interval);
   
@@ -243,7 +244,7 @@ async function storeSubscription(
     const currentPeriodEnd = sub.current_period_end * 1000;
     
     const subscriptionData = {
-      plan_id: planId,
+      plan_id: priceId, // CHANGED: Now using actual Stripe price ID
       status: sub.status,
       current_period_start: new Date(currentPeriodStart).toISOString(),
       current_period_end: new Date(currentPeriodEnd).toISOString(),
@@ -251,6 +252,8 @@ async function storeSubscription(
       interval: subscriptionInterval,
       updated_at: new Date().toISOString(),
     };
+    
+    console.log(`Storing subscription with price ID: ${priceId} for user ${userId}`);
     
     if (existingSubscription) {
       await supabase

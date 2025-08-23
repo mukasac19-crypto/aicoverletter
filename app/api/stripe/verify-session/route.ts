@@ -1,3 +1,4 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\stripe\verify-session\route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
