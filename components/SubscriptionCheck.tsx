@@ -1,6 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\SubscriptionCheck.tsx
 "use client"
-
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,13 +6,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { SubscriptionTier } from '@/types/subscription';
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
-
 import { Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useAuthStore } from '@/stores/authstore';
 import { useUiStore } from '@/stores/uistore';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 interface SubscriptionCheckProps {
   requiredTier: SubscriptionTier;
@@ -32,45 +30,22 @@ export default function SubscriptionCheck({
   showUpgradeCard = true,
   featureInfo
 }: SubscriptionCheckProps) {
-  const { user, loading } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const { toggleAuthModal, toggleShowLoginContent } = useUiStore();
-  const [userTier, setUserTier] = useState<SubscriptionTier | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { tier: userTier, loading: subLoading } = useSubscription();
   const router = useRouter();
   
-  // Fetch the user's subscription tier
-  useEffect(() => {
-    const fetchSubscriptionTier = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
-      
-      try {
-        const response = await fetch('/api/user/subscription');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch subscription status');
-        }
-        
-        const data = await response.json();
-        setUserTier(data.tier);
-      } catch (error) {
-        console.error('Error fetching subscription tier:', error);
-        // Default to FREE tier on error
-        setUserTier('FREE');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    if (!loading) {
-      fetchSubscriptionTier();
-    }
-  }, []);
+  // Map subscription tiers to their numeric value for comparison
+  const tierValues: Record<SubscriptionTier, number> = {
+    'FREE': 0,
+    'PRO': 1,
+  };
+  
+  // Check if user has required tier
+  const hasAccess = userTier && tierValues[userTier] >= tierValues[requiredTier];
   
   // While loading, show a spinner
-  if (loading || isLoading) {
+  if (authLoading || subLoading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <LoadingSpinner className="h-8 w-8" />
@@ -98,11 +73,10 @@ export default function SubscriptionCheck({
                 // Open auth modal or redirect to login
                 toggleAuthModal(true);
                 toggleShowLoginContent(true); // Show login form
-              }} 
-            asChild className="bg-orange-600 hover:bg-orange-700">
-              {/* <Link href="/auth/login"> */}
-                Sign In
-              {/* </Link> */}
+              }}
+              className="bg-orange-600 hover:bg-orange-700"
+            >
+              Sign In
             </Button>
             <Button
               onClick={() => {
@@ -110,26 +84,15 @@ export default function SubscriptionCheck({
                 toggleAuthModal(true);
                 toggleShowLoginContent(false); // Show sign up form
               }}
-              asChild variant="outline">
-              {/* <Link href="/auth/register"> */}
-                Create Account
-              {/* </Link> */}
+              variant="outline"
+            >
+              Create Account
             </Button>
           </div>
         </CardContent>
       </Card>
     );
   }
-  
-  // Map subscription tiers to their numeric value for comparison
-  const tierValues: Record<SubscriptionTier, number> = {
-    'FREE': 0,
-    'PRO': 1,
-    
-  };
-  
-  // Check if user has required tier
-  const hasAccess = userTier && tierValues[userTier] >= tierValues[requiredTier];
   
   // If has access, render the children
   if (hasAccess) {
