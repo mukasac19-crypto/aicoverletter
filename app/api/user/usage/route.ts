@@ -1,64 +1,41 @@
+// app/api/user/usage/route.ts
 import { NextResponse } from 'next/server';
-import { getUserSubscriptionTier } from '@/lib/subscription';
-import { SUBSCRIPTION_PLANS } from '@/lib/subscription-client';
 import { createClient } from '@/utils/server-side-client';
-import { cookies } from 'next/headers';
-
-
+import { getAllFeatureUsage } from '@/lib/subscription-enforcement';
 
 export async function GET(request: Request) {
   try {
-
-    const cookieStore = cookies();
-    // const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     const supabase = await createClient();
     
-    const {data:{user}} = await supabase.auth.getUser()
-    const {data:{session}} = await supabase.auth.getSession()
-
-
-    const userId = user?.id
-    const accessToken = session?.access_token
-    // Get userId from request header (sent by client)
-    // const userId = request.headers.get('x-user-id');
-    // const accessToken = request.headers.get('x-access-token');
-
-  
-
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const userId = user?.id;
+    const accessToken = session?.access_token;
+    
     console.log("============SERVER USER ID============", userId);
     console.log("============SERVER ACCESS TOKEN============", accessToken);
-  
-
+    
     if (!userId || !accessToken) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized: Missing user ID' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
-    // 1. Get the user's subscription tier (e.g., 'FREE', 'PRO')
-    const tier = await getUserSubscriptionTier(userId);
-
-    // 2. Get the usage limits for that tier using the CORRECT property name
-    const limit = SUBSCRIPTION_PLANS[tier]?.limits.coverLetters ?? 0;
-
-    // 3. Get the user's current usage count from the correct database table.
-    // const supabase = await createClient(accessToken); // Use service role for admin access
-    const { count: usage, error: usageError } = await supabase
-      .from('cover_letters')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
-
-    if (usageError) {
-      throw usageError;
-    }
-
-    // 4. Return the user's current usage and their limit
-    return NextResponse.json({
-      usage: usage ?? 0,
-      limit: limit,
-    });
-
+    
+    // Get all feature usage for the user
+    const allUsage = await getAllFeatureUsage(supabase, userId);
+    
+    // Log the usage data for debugging
+    console.log("============USER USAGE DATA============", allUsage);
+    console.log("User ID:", userId);
+    console.log("Cover Letters:", allUsage.coverLetters);
+    console.log("Resumes:", allUsage.resumes);
+    console.log("ATS Scans:", allUsage.atsScans);
+    console.log("Interview Sessions:", allUsage.interviewSessions);
+    
+    return NextResponse.json(allUsage);
+    
   } catch (error: any) {
     console.error('Error fetching user usage:', error);
     return new NextResponse(
