@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const MainFooter=()=> {
+const MainFooter = () => {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
@@ -11,13 +11,12 @@ const MainFooter=()=> {
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="h-8 w-auto flex items-center justify-center">
+              <div className="h-10 w-auto flex items-center justify-center bg-white rounded-lg p-2">
                 <Image
                   src="/careerthingslogo.png"
                   width={160}
                   height={30}
-                  alt='CareerThings AI logo'
-                  className="brightness-0 invert"
+                  alt="CareerThings AI"
                 />
               </div>
             </div>
@@ -89,6 +88,5 @@ const MainFooter=()=> {
     </footer>
   );
 }
-
 
 export default MainFooter;

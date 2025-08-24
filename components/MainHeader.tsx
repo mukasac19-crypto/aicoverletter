@@ -1,5 +1,3 @@
-// project/components/MainHeader.tsx
-
 "use client"
 
 import Link from "next/link";
@@ -16,19 +14,17 @@ const MainHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-auto rounded-lg flex items-center justify-center">
+              <div className="h-8 w-auto flex items-center justify-center">
                 <Image
                   src="/careerthingslogo.png"
                   width={200}
                   height={36}
                   alt="CareerThings AI"
-                  // 👇 FIX: Apply responsive classes here
-                  className="h-full w-auto object-contain" 
                 />
               </div>
             </Link>
