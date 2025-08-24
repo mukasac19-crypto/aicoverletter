@@ -41,7 +41,7 @@ const faqData = [
   },
   {
     question: "Is my data safe and private?",
-    answer: "Absolutely. We use bank-level encryption for all data. Your information is never shared with third parties, and you can delete your data anytime. We're fully GDPR and CCPA compliant."
+    answer: "Absolutely. CareerThings AI use bank-level encryption for all data. Your information is never shared with third parties, and you can delete your data anytime. We're fully GDPR and CCPA compliant."
   },
   {
     question: "Can I use CareerThings AI for multiple job applications?",
@@ -49,7 +49,7 @@ const faqData = [
   },
   {
     question: "What makes this better than other resume builders?",
-    answer: "Unlike template-based builders, we use advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen."
+    answer: "Unlike template-based builders, CareerThings use advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen."
   },
   {
     question: "Do you offer refunds?",
