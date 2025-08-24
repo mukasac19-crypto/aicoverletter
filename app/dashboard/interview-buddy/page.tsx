@@ -97,7 +97,7 @@ export default function InterviewBuddyPage() {
   };
   
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen px-4">
       <header className="mb-6 md:mb-8 pt-4 md:pt-6 px-4 md:px-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Interview Buddy</h1>
         <p className="text-sm md:text-base text-gray-600">Prepare for your job interviews with AI-generated questions and answers</p>
@@ -142,7 +142,7 @@ export default function InterviewBuddyPage() {
           ) : (
             <>
               {resumes.length === 0 ? (
-                <Card className="border-orange-100 mx-0 md:mx-0">
+                <Card className="border-gray-100 mx-0 md:mx-0">
                   <CardContent className="pt-4 md:pt-6 flex flex-col items-center text-center py-6 md:py-10 px-4 md:px-6">
                     <FileSpreadsheet className="h-12 w-12 md:h-16 md:w-16 text-orange-500 opacity-30 mb-3 md:mb-4" />
                     <h3 className="text-lg md:text-xl font-medium mb-2 text-gray-800">No Resumes Found</h3>

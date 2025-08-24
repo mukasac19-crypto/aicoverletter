@@ -262,7 +262,7 @@ export default function ResumeTailoringModal({
           </TabsList>
           
           <TabsContent value="job-description" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-            <Card className="border-orange-200">
+            <Card className="border-gray-200">
               <CardHeader className="pb-2 sm:pb-4">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                   <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
@@ -277,7 +277,7 @@ export default function ResumeTailoringModal({
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   placeholder="Paste the job description here..."
-                  className="min-h-[200px] sm:min-h-[300px] focus-visible:ring-orange-500"
+                  className="min-h-[200px] sm:min-h-[300px] border-gray-300 focus-visible:ring-gray-500"
                   disabled={isLoading}
                 />
               </CardContent>
