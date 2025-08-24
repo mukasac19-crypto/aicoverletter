@@ -72,7 +72,7 @@ export default function FeatureUsageIndicator({
   
   if (variant === 'detailed') {
     return (
-      <Card className={cn("p-4", className)}>
+      <Card className={cn("p-4 border-gray-300", className)}>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-medium flex items-center gap-2">

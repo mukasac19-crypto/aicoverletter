@@ -275,7 +275,7 @@ const ResumeATSScanner: React.FC<ResumeATSScannerProps> = ({ resumeId, initialJo
                         value={jobDescription}
                         onChange={(e) => setJobDescription(e.target.value)}
                         placeholder="Paste the job description here..."
-                        className="min-h-[150px]"
+                        className="min-h-[150px] border-gray-300"
                         disabled={isScanning}
                     />
                     

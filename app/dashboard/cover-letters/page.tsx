@@ -706,7 +706,7 @@ export default function CoverLetterGenerator() {
                       className={`flex items-center rounded-md border p-3 flex-grow ${
                         hasCV
                           ? "border-green-500/50 bg-green-500/10"
-                          : "border-orange-100 bg-muted/50"
+                          : "border-gray-300 bg-muted/50"
                       } cursor-pointer`}
                       onClick={() => setIsDataSourcesOpen(true)}
                     >

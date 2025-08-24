@@ -340,7 +340,7 @@ export default function ATSScannerPage() {
 										value={jobDescription}
 										onChange={(e) => setJobDescription(e.target.value)}
 										placeholder="Paste the job description here..."
-										className="min-h-[200px]"
+										className="min-h-[200px] border-gray-300"
 										disabled={isScanning}
 									/>
 									<LimitedActionButton

@@ -79,7 +79,7 @@ export default function JobDescriptionInput({
         <TabsContent value="paste">
           <Textarea
             placeholder={isPrePopulated ? "Review the auto-loaded job description..." : "Paste the job description here..."}
-            className="min-h-[200px] mb-4 focus-visible:border-orange-600"
+            className="min-h-[200px] mb-4 border-gray-400 focus-visible:border-gray-500"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -103,7 +103,7 @@ export default function JobDescriptionInput({
           <Label className="text-sm font-medium">Choose Writing Style</Label>
         </div>
         <Select value={selectedTone} onValueChange={setSelectedTone}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full border-gray-400">
             <SelectValue placeholder="Select tone" />
           </SelectTrigger>
           <SelectContent>
