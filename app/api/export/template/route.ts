@@ -1,3 +1,5 @@
+//project\app\api\export\template\route.ts
+
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
@@ -200,12 +202,13 @@ async function generatePDFResponse(
     });
     console.log(`PDF generated successfully, size: ${pdfBuffer.length} bytes`);
 
-    return new NextResponse(pdfBuffer, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}.pdf"`,
-      },
-    });
+// Create a new Buffer from the existing one to resolve the type issue.
+return new NextResponse(Buffer.from(pdfBuffer), {
+  headers: {
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `attachment; filename="${filename}.pdf"`,
+  },
+});
   } catch (error) {
     console.error('Error generating PDF:', error);
     throw new Error(`Failed to generate PDF: ${(error as Error).message}`);
@@ -249,7 +252,8 @@ async function generateDOCXResponse(content: string, template: any, filename: st
     });
     const buffer = await Packer.toBuffer(doc);
     console.log(`DOCX generated successfully, size: ${buffer.length} bytes`);
-    return new NextResponse(buffer, {
+   // AFTER
+return new NextResponse(Buffer.from(buffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': `attachment; filename="${filename}.docx"`,

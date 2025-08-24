@@ -1,37 +1,53 @@
-import { NextResponse } from 'next/server'
-// The client you created from the Server-Side Auth instructions
-import { createClient } from '@/utils/server-side-client'
+// app/api/auth/callback/route.ts
+import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/server-side-client';
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get('next') ?? '/'
-  if (!next.startsWith('/')) {
-    // if "next" is not a relative URL, use the default
-    next = '/'
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next') || '/dashboard';
+  const error = requestUrl.searchParams.get('error');
+
+  // Handle OAuth errors
+  if (error) {
+    console.error('OAuth error:', error);
+    return NextResponse.redirect(
+      new URL(`/auth/login?error=${encodeURIComponent(error)}`, requestUrl.origin)
+    );
   }
 
-  console.log("**********ORIGIN**********", origin)
-  console.log("**********NEXT**********", next)
+  if (!code) {
+    console.error('No authorization code provided');
+    return NextResponse.redirect(
+      new URL('/auth/login?error=no_code', requestUrl.origin)
+    );
+  }
 
-  if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === 'development'
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
-      } else {
-        return NextResponse.redirect(`${origin}${next}`)
-      }
+  try {
+    const supabase = await createClient();
+    
+    // Exchange the code for a session
+    const { data, error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (sessionError) {
+      console.error('Session exchange error:', sessionError);
+      return NextResponse.redirect(
+        new URL(`/auth/login?error=${encodeURIComponent(sessionError.message)}`, requestUrl.origin)
+      );
     }
-  }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    // Successful authentication
+    // For production, ensure we're using the correct URL
+    const redirectUrl = new URL(next, requestUrl.origin);
+    
+    // Important: Don't use x-forwarded-host on Railway as it can cause issues
+    // Railway handles HTTPS termination properly
+    return NextResponse.redirect(redirectUrl);
+    
+  } catch (error) {
+    console.error('Unexpected error during auth callback:', error);
+    return NextResponse.redirect(
+      new URL('/auth/login?error=unexpected_error', requestUrl.origin)
+    );
+  }
 }

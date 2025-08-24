@@ -1,3 +1,5 @@
+//project\utils\server-side-client.ts
+
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 

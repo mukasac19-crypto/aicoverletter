@@ -29,7 +29,7 @@ const createStripe = () => {
 
   return new Stripe(key, {
     // FIX: Updated to the exact API version required by your installed Stripe library.
-    apiVersion: '2025-03-31.basil', 
+apiVersion: '2025-07-30.basil',
     appInfo: {
       name: 'AI Cover Letter Assistant',
       version: '1.0.0',

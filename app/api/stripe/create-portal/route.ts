@@ -11,7 +11,7 @@ import { createClient } from '@/utils/server-side-client';
 // Ensure you have STRIPE_SECRET_KEY in your .env.local file
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // FIX: Updated the API version to match the one required by your installed Stripe library.
-  apiVersion: '2025-03-31.basil',
+apiVersion: '2025-07-30.basil',
 });
 
 export async function POST(request: NextRequest) {

@@ -1,38 +1,67 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  //output: 'export', // Keep this if you need static exports
   eslint: {
-    ignoreDuringBuilds: true, // Keep this if you want to ignore ESLint errors during builds
+    ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true // Keep this if you don't want image optimization
+    unoptimized: true,
   },
-
-  // === ADD THIS LINE ===
+  
+  // Use transpilePackages for Next.js 13.1+
   transpilePackages: ['undici'],
-  // =====================a
-
-  // === REMOVE THIS ENTIRE BLOCK ===
-  // webpack: (config, { isServer, dev }) => {
-  //   // Add transpilation for undici package to handle private class fields
-  //   config.module.rules.push({
-  //     test: /\.js$/,
-  //     include: /node_modules\/undici/,
-  //     use: {
-  //       loader: 'babel-loader',
-  //       options: {
-  //         presets: ['@babel/preset-env'],
-  //         plugins: [
-  //           '@babel/plugin-proposal-private-methods',
-  //           '@babel/plugin-proposal-class-properties',
-  //           '@babel/plugin-proposal-private-property-in-object'
-  //         ]
-  //       }
-  //     }
-  //   });
-  //   return config;
-  // },
-  // ================================
+  
+  // Add headers to prevent caching issues
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, max-age=0'
+          },
+        ],
+      },
+    ];
+  },
+  
+  // Add redirects configuration to handle trailing slashes consistently
+  async redirects() {
+    return [
+      {
+        source: '/dashboard/:path*/',
+        destination: '/dashboard/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  
+  // Ensure proper handling of runtime configuration
+  experimental: {
+    // Disable app directory if you're using pages directory
+    appDir: false,
+  },
 };
 
 export default nextConfig;
