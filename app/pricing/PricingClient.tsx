@@ -60,7 +60,7 @@ export default function PricingClient() {
   const handleSelectPlan = (tier: SubscriptionTier, interval: string) => {
     if (!user) {
       // Redirect to login if not logged in
-      // router.push(`/auth/login?redirect=/pricing&interval=${interval}`);
+     
       toggleAuthModal(true);
       toggleShowLoginContent(true); // Show login up form
 
@@ -68,12 +68,13 @@ export default function PricingClient() {
     }
     
   //   // If user is already on this tier, redirect to billing
+    console.log("==========current plan===========",currentPlan,tier)
     if (tier === currentPlan) {
       router.push('/dashboard/billing');
       return;
     }
     
-  //   // Create checkout session
+   // Create checkout session
     router.push(`/api/stripe/create-checkout?tier=${tier}&interval=${interval}`);
   };
   
