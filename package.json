@@ -5,7 +5,7 @@
   "type": "module",
   "engines": {
     "node": ">=20.16.0"
-   },
+  },
   "scripts": {
     "dev": "next dev",
     "dev:https": "local-ssl-proxy --key localhost+2-key.pem --cert localhost+2.pem --source 3001 --target 3000",
@@ -25,7 +25,6 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@hookstate/core": "^4.0.2",
-    "@next-devtools/core": "^0.3.0-beta.1",
     "@next/eslint-plugin-next": "^14.2.5",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
