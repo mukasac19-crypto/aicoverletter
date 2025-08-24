@@ -49,11 +49,11 @@ const faqData = [
   },
   {
     question: "What makes this better than other resume builders?",
-    answer: "Unlike template-based builders, CareerThings use advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen."
+    answer: "Unlike template-based builders, CareerThings uses advanced AI to create truly personalized content. Each document is uniquely tailored to the specific job, not just filled with generic text. Plus, our ATS optimization ensures your resume gets seen."
   },
   {
     question: "Do you offer refunds?",
-    answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied with our service, contact support for a full refund. No questions asked."
+    answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied with our service, contact support for a full refund."
   }
 ]
 
