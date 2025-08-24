@@ -106,7 +106,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
    useEffect(() => {
     if (!loading && !user) {
-      router.replace(`/auth/login?returnTo=/dashboard`);
+router.replace(`/?returnTo=${pathname}`);
     }
   }, [user, loading, router]);
 

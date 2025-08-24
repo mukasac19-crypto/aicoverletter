@@ -1,6 +1,6 @@
 // middleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
-import { updateSession } from '@/utils/supabase/middleware';
+import { createServerClient } from '@supabase/ssr';
 
 const TEMP_ADMIN_EMAIL = 'jennifernanyombi1@gmail.com';
 const PROTECTED_API_ROUTES: Record<string, { feature?: string; tier?: string }> = {
@@ -11,164 +11,108 @@ const PROTECTED_API_ROUTES: Record<string, { feature?: string; tier?: string }> 
   '/api/templates/premium': { tier: 'PRO' },
 };
 
-// List of paths that should skip middleware entirely
-const PUBLIC_PATHS = [
-  '/_next',
-  '/api/_',
-  '/favicon.ico',
-  '/public',
-  '/auth/callback', // Important: Allow callback to process without interference
-];
-
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  
-  // Skip middleware for static assets and public paths
-  if (PUBLIC_PATHS.some(path => pathname.startsWith(path)) || pathname.includes('.')) {
-    return NextResponse.next();
-  }
+  const response = NextResponse.next({
+    request: request,
+  });
 
-  // CRITICAL: Update session first and get the response with proper cookies
-  const supabaseResponse = await updateSession(request);
-  
-  // Extract user from the session update
-  // We need to create a client with the updated cookies from supabaseResponse
-  const { createServerClient } = await import('@supabase/ssr');
-  
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
-          // Get cookies from the response that has the updated session
-          return supabaseResponse.cookies.getAll();
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // Set any additional cookies on the response
-          cookiesToSet.forEach(({ name, value, options }) => {
-            supabaseResponse.cookies.set(name, value, options);
-          });
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options)
+            );
+          } catch (e) {
+            console.warn('Middleware cookie set error:', e);
+          }
         },
       },
     }
   );
 
-  // Get user with the properly updated session
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Define protected routes
-  const protectedRoutes = ['/dashboard', '/api/user'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  console.log('Request pathname:', request.nextUrl.pathname);
 
-  // Handle unauthenticated access to protected routes
+  // --- Standard User Authentication Checks ---
+  const protectedRoutes = [
+    '/dashboard',
+    '/api/user',
+  ];
+  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route));
+
   if (!user && isProtectedRoute) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/auth/login'; // Changed from '/' to '/auth/login'
-    redirectUrl.searchParams.set('returnTo', pathname);
-    
-    // Create redirect response and preserve cookies
-    const redirectResponse = NextResponse.redirect(redirectUrl);
-    
-    // CRITICAL: Copy all cookies from supabaseResponse to redirectResponse
-    supabaseResponse.cookies.getAll().forEach(cookie => {
-      redirectResponse.cookies.set(cookie.name, cookie.value);
-    });
-    
-    return redirectResponse;
+    redirectUrl.pathname = '/';  // Redirect to home, not /auth/login
+    redirectUrl.searchParams.set('returnTo', request.nextUrl.pathname);  // Use returnTo to match dashboard
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect authenticated users from home to dashboard
-  if (user && pathname === '/') {
-    const dashboardUrl = new URL('/dashboard', request.url);
-    
-    // Create redirect response and preserve cookies
-    const redirectResponse = NextResponse.redirect(dashboardUrl);
-    
-    // CRITICAL: Copy all cookies from supabaseResponse to redirectResponse
-    supabaseResponse.cookies.getAll().forEach(cookie => {
-      redirectResponse.cookies.set(cookie.name, cookie.value);
-    });
-    
-    return redirectResponse;
+  // Redirect to dashboard if logged in and on the root path
+  if (user && request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Admin route checks
+  // --- Admin Route Checks ---
   const adminRoutes = ['/oslo'];
-  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route)) && 
-                       pathname !== '/oslo/auth/login';
+  const isAdminRoute = adminRoutes.some(route => request.nextUrl.pathname.startsWith(route)) && request.nextUrl.pathname !== '/oslo/auth/login';
 
   if (isAdminRoute) {
     if (!user) {
       const redirectUrl = new URL('/oslo/auth/login', request.url);
-      const redirectResponse = NextResponse.redirect(redirectUrl);
-      
-      // Preserve cookies
-      supabaseResponse.cookies.getAll().forEach(cookie => {
-        redirectResponse.cookies.set(cookie.name, cookie.value);
-      });
-      
-      return redirectResponse;
+      return NextResponse.redirect(redirectUrl);
     }
-    
     if (user.email === TEMP_ADMIN_EMAIL) {
-      return supabaseResponse;
+      return response;
     }
-    
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
         .single();
-        
-      if (!profile?.is_admin) {
+      if (profileError || !profile?.is_admin) {
         const redirectUrl = new URL('/oslo/auth/login', request.url);
         redirectUrl.searchParams.set('error', 'unauthorized');
-        const redirectResponse = NextResponse.redirect(redirectUrl);
-        
-        // Preserve cookies
-        supabaseResponse.cookies.getAll().forEach(cookie => {
-          redirectResponse.cookies.set(cookie.name, cookie.value);
-        });
-        
-        return redirectResponse;
+        return NextResponse.redirect(redirectUrl);
       }
     } catch (error) {
-      console.error('Profile check error:', error);
       const redirectUrl = new URL('/oslo/auth/login', request.url);
-      const redirectResponse = NextResponse.redirect(redirectUrl);
-      
-      // Preserve cookies
-      supabaseResponse.cookies.getAll().forEach(cookie => {
-        redirectResponse.cookies.set(cookie.name, cookie.value);
-      });
-      
-      return redirectResponse;
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
-  // API route protection headers
-  const protection = PROTECTED_API_ROUTES[pathname];
-  if (protection && user) {
-    supabaseResponse.headers.set('x-subscription-check-required', 'true');
-    supabaseResponse.headers.set('x-subscription-feature', protection.feature || '');
-    supabaseResponse.headers.set('x-subscription-tier', protection.tier || '');
+  // --- Pro Feature Subscription Checks ---
+  const proFeatureRoutes = [
+    '/dashboard/resumes/ats-scanner',
+    '/dashboard/interview-buddy',
+  ];
+  if (proFeatureRoutes.some(route => request.nextUrl.pathname.startsWith(route)) && user) {
+    // Let these pass, check subscription in the component
   }
 
-  // ALWAYS return the supabaseResponse that has the updated session
-  return supabaseResponse;
+  // Add headers for subscription checks in API routes
+  const protection = PROTECTED_API_ROUTES[request.nextUrl.pathname];
+  if (protection && user) {
+    response.headers.set('x-subscription-check-required', 'true');
+    response.headers.set('x-subscription-feature', protection.feature || '');
+    response.headers.set('x-subscription-tier', protection.tier || '');
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt
-     * - images and other static files with extensions
-     */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 };
