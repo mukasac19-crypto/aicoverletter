@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Shield, AtSign, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,6 +79,12 @@ export default function AdminLoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
+                <Link 
+                  href="/oslo/auth/forgot-password" 
+                  className="text-sm text-orange-600 hover:text-orange-700"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div className="relative">
                 <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />

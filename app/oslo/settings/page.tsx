@@ -1,6 +1,8 @@
+// app/oslo/settings/page.tsx - UPDATED VERSION
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,10 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useOsloAuth } from "@/hooks/useOsloAuth";
+import { KeyRound, Mail, Shield, User } from "lucide-react";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<any>({});
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useOsloAuth();
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -66,13 +72,77 @@ export default function SettingsPage() {
         <Button onClick={handleSave}>Save Changes</Button>
       </div>
 
-      <Tabs defaultValue="system">
+      <Tabs defaultValue="account">
         <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
           <TabsTrigger value="limits">Limits</TabsTrigger>
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="account" className="space-y-6">
+          {/* Account Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-orange-600" />
+                Account Information
+              </CardTitle>
+              <CardDescription>
+                Your admin account details
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Role</p>
+                  <p className="text-sm text-muted-foreground">Administrator</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Security Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <KeyRound className="h-5 w-5 text-orange-600" />
+                Security
+              </CardTitle>
+              <CardDescription>
+                Manage your account security settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Password</p>
+                    <p className="text-sm text-muted-foreground">
+                      Secure your account with a strong password
+                    </p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    onClick={() => router.push('/oslo/settings/change-password')}
+                  >
+                    Change Password
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
         <TabsContent value="system">
           <Card>
             <CardHeader>
@@ -93,6 +163,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+        
         <TabsContent value="limits">
           <Card>
             <CardHeader>
@@ -117,6 +188,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+        
         <TabsContent value="pricing">
           <Card>
             <CardHeader>
@@ -141,6 +213,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+        
         <TabsContent value="notifications">
           <Card>
             <CardHeader>

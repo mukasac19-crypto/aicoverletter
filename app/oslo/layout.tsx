@@ -1,3 +1,5 @@
+//project\app\oslo\layout.tsx
+
 "use client";
 
 import Link from "next/link";

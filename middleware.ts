@@ -1,3 +1,4 @@
+// middleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
@@ -11,10 +12,8 @@ const PROTECTED_API_ROUTES: Record<string, { feature?: string; tier?: string }> 
 };
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  const response = NextResponse.next({
+    request: request,
   });
 
   const supabase = createServerClient(
@@ -22,42 +21,17 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options)
+            );
+          } catch (e) {
+            console.warn('Middleware cookie set error:', e);
+          }
         },
       },
     }
@@ -88,7 +62,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // --- Admin Route Checks ---
-  const adminRoutes = ['/oslo'];
+  const adminRoutes = [
+  '/oslo',
+  '/oslo/settings',
+  '/oslo/settings/change-password',
+];
+
   const isAdminRoute = adminRoutes.some(route => request.nextUrl.pathname.startsWith(route)) && request.nextUrl.pathname !== '/oslo/auth/login';
 
   if (isAdminRoute) {
