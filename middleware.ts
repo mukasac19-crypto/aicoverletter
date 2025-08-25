@@ -41,7 +41,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log('Request pathname:', request.nextUrl.pathname);
 
   // --- Standard User Authentication Checks ---
   const protectedRoutes = [

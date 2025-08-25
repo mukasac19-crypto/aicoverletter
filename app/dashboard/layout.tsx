@@ -33,6 +33,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { useAuthStore } from "@/stores/authstore";
+import { createClient } from "@/utils/client-side-client";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -44,6 +45,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { toast } = useToast();
 
   const { user, signOut, loading } = useAuthStore();
+  const {auth} = createClient()
+
+
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -103,12 +107,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     setIsMounted(true);
   }, []);
 
+  //listen to auth changes
+  useEffect(()=>{
+       // Listen for auth state changes (login/logout/refresh)
+        const { data: listener } = auth.onAuthStateChange((_event, session) => {
+          // setSession(session);
+          console.log(session,'==============SESS============')
+          if(session === null){
+            router.replace("/")
+          }
+        });
 
-   useEffect(() => {
-    if (!loading && !user) {
-router.replace(`/?returnTo=${pathname}`);
-    }
-  }, [user, loading, router]);
+        console.log(listener,'=========Listener')
+  },[])
+
+
+
+
 
 
   useEffect(() => {

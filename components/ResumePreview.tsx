@@ -60,6 +60,10 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
   defaultZoom = 65,
   removeCard = false,
 }) => {
+
+
+  const resContainerRef = useRef(null)
+
   const [renderedHtml, setRenderedHtml] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +80,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
     null
   );
   const [imageError, setImageError] = useState<string | null>(null);
+
 
   // Update zoom level when defaultZoom prop changes
   useEffect(() => {
@@ -695,7 +700,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
           <div
             ref={containerRef}
             id="resume-preview-container"
-            className="w-full h-full overflow-auto flex justify-center px-2"
+            className="w-full h-full overflow-auto flex justify-center px-2 bg-green-300"
           >
             {/* Responsive container for the resume with zoom scaling */}
             <div
@@ -707,6 +712,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
                 maxWidth: "100%",
                 minHeight: "11in",
                 padding: isSidebarTemplate ? 0 : undefined,
+                backgroundColor:"orange"
               }}
             >
               {/* Use iframe for isolated CSS rendering */}
@@ -720,9 +726,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
                   border: "none",
                   minHeight: "11in",
                   maxWidth: "100%",
+                  backgroundColor:"pink",
                 }}
                 className="block"
               />
+
             </div>
           </div>
         </div>

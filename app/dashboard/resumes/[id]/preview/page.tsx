@@ -241,6 +241,7 @@ export default function ResumePreviewPage() {
           .single();
         
         if (resumeError) throw resumeError;
+
         
         // Verify user has access to this resume (must be owner or resume is public)
         if (user && user.id !== resumeData.user_id && !resumeData.is_public) {
