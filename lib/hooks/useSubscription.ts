@@ -7,7 +7,7 @@ import { SubscriptionStatus, SubscriptionTier } from '@/types/subscription';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { LimitedFeature } from '@/lib/subscription-enforcement';
-import { createClient } from '@/utils/client-side-client'; // Client creation
+import initSupabase, { createClient } from '@/utils/client-side-client'; // Client creation
 
 export interface FeatureUsage {
   used: number;
@@ -30,7 +30,7 @@ export function useSubscription() {
   const router = useRouter();
 
   // Initialize Supabase client once and make it stable
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = initSupabase
 
   // Memoize fetchSubscriptionData with useCallback
   // It only re-creates if user or supabase client changes

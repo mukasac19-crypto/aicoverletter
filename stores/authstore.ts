@@ -2,12 +2,13 @@
 "use client"
 
 import { create } from 'zustand';
-import { createClient } from '@/utils/client-side-client';
+import initSupabase, { createClient } from '@/utils/client-side-client';
 import { Session, User, Provider, AuthResponse, OAuthResponse, AuthError, UserResponse } from '@supabase/supabase-js';
 
 // Initialize the Supabase client outside of the store definition
 // This ensures it's created only once and is stable across renders.
-const supabase = createClient();
+// const supabase = createClient();
+const supabase = initSupabase
 
 // Define the shape of your Zustand store state
 export interface AuthState {

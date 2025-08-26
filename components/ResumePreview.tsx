@@ -764,13 +764,14 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
                 disabled={zoomLevel >= 150}
                 className="h-8 w-8 p-0"
               >
-                <ZoomIn className="h-4 w-4" />
+              <ZoomIn className="h-4 w-4" />
               </Button>
             </div>
 
             {/* Page navigation controls - only show if multiple pages */}
             {totalPages > 1 && (
               <div className="flex items-center space-x-1 ml-3 border-l pl-3">
+                
                 <Button
                   variant="outline"
                   size="sm"

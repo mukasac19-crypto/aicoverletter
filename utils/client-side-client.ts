@@ -64,3 +64,9 @@ export function createClient() {
     }
   );
 }
+
+
+
+//iniitalise supabase client from one place
+const initSupabase = createClient()
+export default initSupabase
