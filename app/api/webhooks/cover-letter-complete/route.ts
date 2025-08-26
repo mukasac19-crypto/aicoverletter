@@ -1,4 +1,6 @@
 // app/api/webhooks/cover-letter-complete/route.ts
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/utils/server-side-client';
 import { NextResponse } from 'next/server';
 

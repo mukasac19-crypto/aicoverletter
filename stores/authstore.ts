@@ -143,7 +143,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user: session?.user ?? null, 
           loading: false 
         }); // Always update state and set loading to false
-
+        
+        console.log("****************SESSION CHANGE************",session,_event)
         if (session?.user?.email) {
           // Re-fetch impersonation status on auth state change
           const { data: tokenData, error } = await supabase

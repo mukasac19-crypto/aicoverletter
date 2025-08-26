@@ -61,13 +61,15 @@ export function useSubscription() {
           headers: { 
             'x-access-token': accessToken as string,
             'x-user-id': user.id 
-          } 
+          },
+          cache: "no-store", 
         }),
         fetch('/api/user/usage', { 
           headers: { 
             'x-access-token': accessToken as string,
             'x-user-id': user.id 
-          } 
+          },
+          cache: "no-store"
         }),
       ]);
 

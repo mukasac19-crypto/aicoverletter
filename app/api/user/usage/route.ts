@@ -1,4 +1,6 @@
 // app/api/user/usage/route.ts
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/server-side-client';
 import { getAllFeatureUsage } from '@/lib/subscription-enforcement';

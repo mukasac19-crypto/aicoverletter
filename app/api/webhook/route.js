@@ -1,4 +1,6 @@
 // /app/api/webhook/route.js
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/utils/server-side-client';

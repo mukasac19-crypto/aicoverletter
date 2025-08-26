@@ -1,4 +1,6 @@
 // app/api/user/subscription/route.ts
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server';
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import { SubscriptionTier, SubscriptionStatus } from '@/types/subscription';
