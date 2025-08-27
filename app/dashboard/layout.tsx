@@ -48,6 +48,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, signOut, loading } = useAuthStore();
   const {auth} = createClient()
 
+  const { data: listener } = auth.onAuthStateChange((_event, session) => {
+          // setSession(session);
+          console.log(session,'==============SESS oo1============')
+          if(session === null){
+            router.replace("/")
+          }
+        });
+
 
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);

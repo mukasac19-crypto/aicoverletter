@@ -25,7 +25,7 @@ export function useSubscription() {
   const [error, setError] = useState<string | null>(null);
   
   // Get user and loading state from the global AuthStore
-  const { user, loading: authLoading } = useAuthStore();
+  const { user, loading: authLoading,session } = useAuthStore();
 
   const { toast } = useToast();
   const router = useRouter();
@@ -36,8 +36,8 @@ export function useSubscription() {
   // Memoize fetchSubscriptionData with useCallback
   // It only re-creates if user or supabase client changes
   const fetchSubscriptionData = useCallback(async () => {
-    console.log(user, "=================== useSubscription user from useAuthStore ===================");
-    if (!user) {
+    console.log(session, "=================== useSubscription user from useAuthStore ===================");
+    if (!session) {
       setSubscription(null);
       setUsageStats(null);
       setIsLoading(false);
@@ -47,10 +47,8 @@ export function useSubscription() {
     try {
       setIsLoading(true);
 
-      const { data: { session } } = await supabase.auth.getSession();
       const accessToken = session?.access_token;
 
-      console.log(accessToken, "=================== useSubscription accessToken ===================");
       
       if (!accessToken) {
         throw new Error('User is not authenticated');
@@ -61,14 +59,14 @@ export function useSubscription() {
         fetch('/api/user/subscription', { 
           headers: { 
             'x-access-token': accessToken as string,
-            'x-user-id': user.id 
+            'x-user-id': user?.id ?? ""
           },
           cache: "no-store", 
         }),
         fetch('/api/user/usage', { 
           headers: { 
             'x-access-token': accessToken as string,
-            'x-user-id': user.id 
+            'x-user-id': user?.id ?? ""
           },
           cache: "no-store"
         }),
@@ -105,14 +103,14 @@ export function useSubscription() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, supabase, toast]); // Dependencies for useCallback
+  }, [user, supabase, toast,session]); // Dependencies for useCallback
 
   // Initial fetch effect: calls the stable fetchSubscriptionData
   useEffect(() => {
-    console.log("----------------------- use sub effect run");
+    console.log("----------------------- use sub effect run",authLoading);
     // Only fetch if authLoading is false and user is known (null or object)
     if (!authLoading) { 
-      fetchSubscriptionData();
+      // fetchSubscriptionData();
     }
   }, [authLoading]); // Dependencies for useEffect
 
