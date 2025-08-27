@@ -110,7 +110,7 @@ export function useSubscription() {
     console.log("----------------------- use sub effect run",authLoading);
     // Only fetch if authLoading is false and user is known (null or object)
     if (!authLoading) { 
-      // fetchSubscriptionData();
+      fetchSubscriptionData();
     }
   }, [authLoading]); // Dependencies for useEffect
 
