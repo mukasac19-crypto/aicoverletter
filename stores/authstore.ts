@@ -1,5 +1,6 @@
 // stores/authStore.ts
 "use client"
+export const dynamic = 'force-dynamic'
 
 import { create } from 'zustand';
 import initSupabase, { createClient } from '@/utils/client-side-client';

@@ -1,5 +1,6 @@
 // hooks/useSubscription.ts
 "use client";
+export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'; // Added useMemo
 import { useAuthStore } from '@/stores/authstore'; // Corrected import to useAuthStore

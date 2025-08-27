@@ -1,5 +1,6 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\layout.tsx
 "use client";
+export const dynamic = 'force-dynamic'
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
