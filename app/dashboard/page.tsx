@@ -377,12 +377,18 @@ export default function DashboardPage() {
               </span>
             </div>
             <span className="text-3xl font-bold text-orange-600">{recentResumes.length}</span>
-            <div className="text-sm font-medium text-gray-700 tracking-wide">Resumes</div>
+            <div className="text-sm font-medium text-gray-700 tracking-wide">
+             Resumes
+            </div>
             <div className="text-xs text-gray-400 mt-1">
               {resumeUsage && !resumeUsage.unlimited ? (
-                <span>{resumeUsage.used} / {resumeUsage.limit} used</span>
-              ) : (
-                <span>Total uploaded or created</span>
+                <span>
+                 {resumeUsage.used} / {resumeUsage.limit} used
+                </span>
+              ) : (              
+                <span>
+                  Total uploaded or created
+                </span>
               )}
             </div>
           </div>
@@ -399,7 +405,9 @@ export default function DashboardPage() {
               {coverLetterUsage && !coverLetterUsage.unlimited ? (
                 <span>{coverLetterUsage.used} / {coverLetterUsage.limit} used</span>
               ) : (
-                <span>Total created</span>
+                <span>
+                  Total created
+                </span>
               )}
             </div>
           </div>

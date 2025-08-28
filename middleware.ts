@@ -12,7 +12,7 @@ const PROTECTED_API_ROUTES: Record<string, { feature?: string; tier?: string }> 
 };
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next({
+  let response = NextResponse.next({
     request: request,
   });
 
@@ -25,13 +25,17 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options)
-            );
-          } catch (e) {
-            console.warn('Middleware cookie set error:', e);
-          }
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set({ name, value, ...options });
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
@@ -40,7 +44,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
 
   // --- Standard User Authentication Checks ---
   const protectedRoutes = [
@@ -51,8 +54,8 @@ export async function middleware(request: NextRequest) {
 
   if (!user && isProtectedRoute) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/';  // Redirect to home, not /auth/login
-    redirectUrl.searchParams.set('returnTo', request.nextUrl.pathname);  // Use returnTo to match dashboard
+    redirectUrl.pathname = '/';
+    redirectUrl.searchParams.set('returnTo', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
@@ -63,10 +66,10 @@ export async function middleware(request: NextRequest) {
 
   // --- Admin Route Checks ---
   const adminRoutes = [
-  '/oslo',
-  '/oslo/settings',
-  '/oslo/settings/change-password',
-];
+    '/oslo',
+    '/oslo/settings',
+    '/oslo/settings/change-password',
+  ];
 
   const isAdminRoute = adminRoutes.some(route => request.nextUrl.pathname.startsWith(route)) && request.nextUrl.pathname !== '/oslo/auth/login';
 
