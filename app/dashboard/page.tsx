@@ -30,7 +30,7 @@ import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { createClient } from "@/utils/client-side-client";
+import initSupabase, { createClient } from "@/utils/client-side-client";
 
 import { formatDistance } from 'date-fns';
 import { useSubscription } from "@/lib/hooks/useSubscription";
@@ -133,8 +133,10 @@ export default function DashboardPage() {
       if (!user) return;
       
       try {
+
         setLoadingResumes(true);
-        const supabase = createClient();
+
+        const supabase = initSupabase
         
         const currentDate = new Date();
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -187,7 +189,7 @@ export default function DashboardPage() {
       
       try {
         setLoadingLetters(true);
-        const supabase = createClient();
+        const supabase = initSupabase
         
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -283,7 +285,7 @@ export default function DashboardPage() {
       if (!user) return;
       try {
         setLoadingFollowUps(true);
-        const supabase = createClient();
+        const supabase = initSupabase
         
         const presentDate = new Date();
         const startOfMonth = new Date(presentDate.getFullYear(), presentDate.getMonth(), 1);

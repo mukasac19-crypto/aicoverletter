@@ -1,5 +1,7 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\EnhancedProfilePage.tsx
 "use client";
+export const dynamic = 'force-dynamic'
+
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import UserProfileSection from "@/components/UserProfileSection";

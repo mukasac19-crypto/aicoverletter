@@ -1,4 +1,5 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\profile\route.ts
+export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server';
 
