@@ -1,5 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\profile\page.tsx
-"use client";
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\profile\page.ts
 
 import EnhancedProfilePage from '@/components/EnhancedProfilePage';
 import initSupabase from '@/utils/client-side-client';
