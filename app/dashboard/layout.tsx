@@ -34,7 +34,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { useAuthStore } from "@/stores/authstore";
-import { createClient } from "@/utils/client-side-client";
+import initSupabase, { createClient } from "@/utils/client-side-client";
+import { Session } from "@supabase/supabase-js";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -45,25 +46,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { user, signOut, loading } = useAuthStore();
-  const {auth} = createClient()
-
-  const { data: listener } = auth.onAuthStateChange((_event, session) => {
-          // setSession(session);
-          console.log(session,'==============SESS oo1============')
-          if(session === null){
-            router.replace("/")
-          }
-        });
-
-        console.log(listener,'========LLLLLLLLLLLLLLLLLLLLLLLLLLL========================')
-
+  const {signOut} = useAuthStore()
 
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [signOutLoading, setSignOutLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  //
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Navigation items - Removed Billing item
 
@@ -118,21 +111,38 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     setIsMounted(true);
   }, []);
 
-  //listen to auth changes
-  useEffect(()=>{
-       // Listen for auth state changes (login/logout/refresh)
-        const { data: listener } = auth.onAuthStateChange((_event, session) => {
-          // setSession(session);
-          console.log(session,'==============SESS============')
-          if(session === null){
-            router.replace("/")
-          }
-        });
+  useEffect(() => {
+    const getSession = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await initSupabase.auth.getSession();
 
-        console.log(listener,'=========Listener')
-  },[])
+        if (error) {
+          console.error("Error fetching session:", error.message);
+        }
 
+        setSession(session);
+      } catch (e) {
+        console.error("Unexpected error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    getSession();
+
+    const { data: authListener } = initSupabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
 
 
@@ -240,7 +250,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </div> */}
         <div className="flex items-center gap-4">
-          {user && (
+          {session?.user && (
             <div className="relative group">
               <button
                 id="avatarButton"
@@ -252,8 +262,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 tabIndex={0}
                 onClick={() => setDropdownOpen((open) => !open)}
               >
-                {user.user_metadata?.full_name?.[0]?.toUpperCase() ||
-                  user.email?.[0]?.toUpperCase() ||
+                {session?.user.user_metadata?.full_name?.[0]?.toUpperCase() ||
+                  session?.user.email?.[0]?.toUpperCase() ||
                   "U"}
               </button>
               {/* Popover */}
@@ -275,7 +285,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
                   <div className="font-medium truncate">
-                    {user && user.email}
+                    {session?.user && session?.user.email}
                   </div>
                 </div>
                 <ul

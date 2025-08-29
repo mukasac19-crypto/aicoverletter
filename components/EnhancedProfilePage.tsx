@@ -95,8 +95,8 @@ const BillingSkeleton = () => (
   </div>
 );
 
-export default function EnhancedProfilePage() {
-  const { user, updatePassword, signOut, loading: authLoading } = useAuthStore();
+export default function EnhancedProfilePage({user}:{user:any}) {
+  const { updatePassword, signOut, loading: authLoading } = useAuthStore();
 
   const router = useRouter();
   const { toast } = useToast();

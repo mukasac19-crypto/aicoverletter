@@ -43,7 +43,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { useAuthStore } from "@/stores/authstore";
+import { Session } from "@supabase/supabase-js";
 
 // Define types for our data structures
 interface CoverLetter {
@@ -76,14 +76,14 @@ interface Stats {
 }
 
 export default function DashboardPage() {
-  const { profile, loading } = useProfile();
+  // const { profile, loading } = useProfile();
   const { toast } = useToast();
-  const { user } = useAuthStore();
+  // const { user } = useAuthStore();
 
-  console.log("Dashboard user:", user);
+
   const router = useRouter();
 
-  const { getUsage, loading: subLoading,usageStats,tier } = useSubscription();
+  const { getUsage,usageStats,tier } = useSubscription();
   
   const [hasCVUploaded, setHasCVUploaded] = useState(false);
   const [hasLinkedInConnected, setHasLinkedInConnected] = useState(false);
@@ -111,6 +111,44 @@ export default function DashboardPage() {
   const coverLetterUsage = useMemo(() => getUsage('coverLetters'), [getUsage, usageStats]);
   const atsUsage = useMemo(() => getUsage('atsScans'), [getUsage, usageStats]);
 
+    //
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+
+  useEffect(() => {
+      const getSession = async () => {
+        try {
+          const {
+            data: { session },
+            error,
+          } = await initSupabase.auth.getSession();
+  
+          if (error) {
+            console.error("Error fetching session:", error.message);
+          }
+  
+          setSession(session);
+        } catch (e) {
+          console.error("Unexpected error:", e);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      getSession();
+  
+      const { data: authListener } = initSupabase.auth.onAuthStateChange(
+        (event, session) => {
+          setSession(session);
+        }
+      );
+  
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }, []);
+
   // Check onboarding status on initial load
   useEffect(() => {
     if (!isCheckingStatus && onboardingCompleted === false) {
@@ -130,7 +168,7 @@ export default function DashboardPage() {
   // Fetch recent resumes from Supabase
   useEffect(() => {
     const fetchRecentResumes = async () => {
-      if (!user) return;
+      if (!session) return;
       
       try {
 
@@ -145,7 +183,7 @@ export default function DashboardPage() {
         const { data, error } = await supabase
           .from('resumes')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', session.user.id)
           .or(`created_at.gte.${startOfMonthISO},updated_at.gte.${startOfMonthISO}`)
           .order('updated_at', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
@@ -177,15 +215,15 @@ export default function DashboardPage() {
       }
     };
     
-    if (user) {
+    if (session && session.user) {
       fetchRecentResumes();
     }
-  }, [user]);
+  }, [session]);
   
   // Fetch recent cover letters from Supabase
   useEffect(() => {
     const fetchRecentCoverLetters = async () => {
-      if (!user) return;
+      if (!session) return;
       
       try {
         setLoadingLetters(true);
@@ -198,7 +236,7 @@ export default function DashboardPage() {
         const { data, error } = await supabase
           .from('cover_letters')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', session.user.id)
           .or(`created_at.gte.${startOfMonthISO},updated_at.gte.${startOfMonthISO}`)
           .order('updated_at', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
@@ -241,7 +279,7 @@ export default function DashboardPage() {
         const { data: statsData, error: statsError } = await supabase
           .from('cover_letters')
           .select('id, created_at, content', { count: 'exact' })
-          .eq('user_id', user.id);
+          .eq('user_id', session.user.id);
         
         if (statsError) throw statsError;
         
@@ -274,16 +312,21 @@ export default function DashboardPage() {
       }
     };
     
-    if (user) {
+    if (session && session.user) {
       fetchRecentCoverLetters();
     }
-  }, [user]);
+  }, [session]);
 
   // Fetch recent follow-up emails from Supabase
   useEffect(() => {
     const fetchRecentFollowUps = async () => {
-      if (!user) return;
+     
       try {
+
+
+         if (!session){
+         router.replace("/")
+         };
         setLoadingFollowUps(true);
         const supabase = initSupabase
         
@@ -294,7 +337,7 @@ export default function DashboardPage() {
         const { data, error } = await supabase
           .from('follow_up_emails')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', session?.user.id)
           .gte('created_at', startOfMonthISO)
           .order('created_at', { ascending: false })
           .limit(5);
@@ -321,10 +364,10 @@ export default function DashboardPage() {
       }
     };
     
-    if (user) {
+    if (session && session.user) {
       fetchRecentFollowUps();
     }
-  }, [user]);
+  }, [session]);
 
   const handleCVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
