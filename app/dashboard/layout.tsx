@@ -112,6 +112,32 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   useEffect(() => {
+    // Define the event handler for beforeunload
+    const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+      console.log('Browser is about to refresh or unload. Logging out user...');
+      try {
+        const { error } = await initSupabase.auth.signOut();
+        if (error) {
+          console.error('Logout error:', error.message);
+        } else {
+          console.log('User successfully logged out.');
+        }
+      } catch (e) {
+        console.error('An unexpected error occurred during logout:', e);
+      }
+    };
+
+    // Add the event listener
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []); 
+
+
+  useEffect(() => {
     const getSession = async () => {
       try {
         const {
