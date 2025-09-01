@@ -140,13 +140,13 @@ export default function ATSScannerPage() {
   }
 
   return (
-    <div className="space-y-8 p-10">
+    <div className="space-y-8 p-4 sm:p-6 md:p-10">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <ScanSearch className="h-8 w-8 text-orange-600" />
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-3">
+          <ScanSearch className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
           ATS Scanner
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">
           Analyze your resumes against job descriptions to improve your chances with Applicant Tracking Systems
         </p>
       </div>
@@ -173,7 +173,7 @@ export default function ATSScannerPage() {
                 Select a resume to scan for ATS compatibility
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               {resumes.length === 0 ? (
                 <div className="text-center py-8 space-y-4">
                   <FileSpreadsheet className="h-16 w-16 mx-auto text-muted-foreground opacity-20" />
@@ -190,14 +190,14 @@ export default function ATSScannerPage() {
               ) : (
                 <div className="space-y-4">
                   {resumes.slice(0, 5).map((resume) => (
-                    <div key={resume.id} className="flex items-center justify-between border rounded-lg p-4 hover:border-orange-200 hover:bg-orange-50/30 transition-colors">
-                      <div>
-                        <h3 className="font-medium">{resume.title}</h3>
+                    <div key={resume.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between border rounded-lg p-4 hover:border-orange-200 hover:bg-orange-50/30 transition-colors gap-3">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium truncate">{resume.title}</h3>
                         <p className="text-sm text-muted-foreground">
                           Last updated: {formatDate(resume.updated_at)}
                         </p>
                       </div>
-                      <Button asChild>
+                      <Button asChild className="w-full sm:w-auto">
                         <Link href={`/dashboard/resumes/${resume.id}/ats-scanner`}>
                           <ScanSearch className="h-4 w-4 mr-2" />
                           Scan Now
@@ -233,32 +233,32 @@ export default function ATSScannerPage() {
                   Your most recent ATS scan results
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4">
                   {recentAnalyses.map((analysis) => (
                     <div key={analysis.id} className="border rounded-lg p-4 hover:border-blue-200 hover:bg-blue-50/30 transition-colors">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="font-medium">{analysis.resumes?.title || "Untitled Resume"}</h3>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-medium truncate">{analysis.resumes?.title || "Untitled Resume"}</h3>
                           <div className="flex items-center text-sm text-muted-foreground mt-1">
                             <Calendar className="h-3 w-3 mr-1.5" />
                             {formatDate(analysis.created_at)}
                           </div>
                         </div>
                         {analysis.analysis_result?.overall?.score !== undefined && (
-                          <div className="text-right">
+                          <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-0">
                             <div className={`font-bold text-lg ${getScoreColor(analysis.analysis_result.overall.score)}`}>
                               {Math.round(analysis.analysis_result.overall.score * 100)}%
                             </div>
                             <Progress
                               value={Math.round(analysis.analysis_result.overall.score * 100)}
-                              className={`h-1.5 w-20 mt-1 ${getProgressBarColor(analysis.analysis_result.overall.score)}`}
+                              className={`h-1.5 w-20 sm:mt-1 ${getProgressBarColor(analysis.analysis_result.overall.score)}`}
                             />
                           </div>
                         )}
                       </div>
-                      <div className="mt-4 pt-4 border-t flex justify-end">
-                        <Button asChild size="sm">
+                      <div className="mt-4 pt-4 border-t flex justify-center sm:justify-end">
+                        <Button asChild size="sm" className="w-full sm:w-auto">
                           <Link href={`/dashboard/resumes/${analysis.resume_id}/ats-scanner?load=${analysis.id}`}>
                             <ScanSearch className="h-4 w-4 mr-2" />
                             Rescan & View Details
@@ -284,28 +284,61 @@ export default function ATSScannerPage() {
         <div className="space-y-6">
           {usageLoading ? (
             <Card>
-              <CardContent className="p-6 flex justify-center items-center">
+              <CardContent className="p-4 sm:p-6 flex justify-center items-center">
                 <LoadingSpinner />
               </CardContent>
             </Card>
           ) : atsUsage ? (
-            <FeatureUsageIndicator
-              variant="detailed"
-              feature="ATS Scans"
-              used={atsUsage.used}
-              limit={atsUsage.limit}
-              unlimited={atsUsage.unlimited}
-            />
+            <>
+              {/* Mobile: Compact inline version */}
+              <div className="md:hidden bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-orange-800">ATS Scans</span>
+                  {atsUsage.unlimited ? (
+                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                      Unlimited
+                    </Badge>
+                  ) : (
+                    <span className="text-sm font-bold text-orange-700">
+                      {atsUsage.limit - atsUsage.used} left
+                    </span>
+                  )}
+                </div>
+                {!atsUsage.unlimited && (
+                  <div className="space-y-1">
+                    <Progress 
+                      value={(atsUsage.used / atsUsage.limit) * 100} 
+                      className="h-1.5"
+                    />
+                    <div className="flex justify-between text-xs text-orange-600">
+                      <span>{atsUsage.used} used</span>
+                      <span>of {atsUsage.limit}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Desktop: Full detailed card */}
+              <div className="hidden md:block">
+                <FeatureUsageIndicator
+                  variant="detailed"
+                  feature="ATS Scans"
+                  used={atsUsage.used}
+                  limit={atsUsage.limit}
+                  unlimited={atsUsage.unlimited}
+                />
+              </div>
+            </>
           ) : null}
 
           <Card className="border-2 border-emerald-100">
             <CardHeader className="border-b bg-emerald-50/50">
-              <CardTitle className="flex items-center text-emerald-800">
+              <CardTitle className="flex items-center text-emerald-800 text-base sm:text-lg">
                 <ScanSearch className="h-5 w-5 mr-2 text-emerald-600" />
                 About ATS Scanning
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4 text-sm">
                     <p>
                         <strong>Applicant Tracking Systems (ATS)</strong> are software used by employers to manage job applications. They scan resumes for keywords and formatting before a human ever sees them.
@@ -323,8 +356,8 @@ export default function ATSScannerPage() {
                             "Missing important sections",
                             "Overall compatibility score"
                         ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                            <li key={i} className="flex items-start gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                                 <span>{item}</span>
                             </li>
                         ))}
@@ -339,12 +372,12 @@ export default function ATSScannerPage() {
 
           <Card className="border-2 border-purple-100">
             <CardHeader className="border-b bg-purple-50/50">
-              <CardTitle className="flex items-center text-purple-800">
+              <CardTitle className="flex items-center text-purple-800 text-base sm:text-lg">
                 <BarChart2 className="h-5 w-5 mr-2 text-purple-600" />
                 Tips to Improve ATS Score
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="space-y-4 text-sm">
                 {[
                   {

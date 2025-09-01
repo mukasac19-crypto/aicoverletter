@@ -1,4 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\UsageLimits.tsx
+// C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\UsageLimits.tsx
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -148,7 +148,7 @@ export default function UsageLimits({ showCard = true }: { showCard?: boolean })
   }
 
   const content = (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4"> {/* Added padding for when showCard is false */}
       {features.map((feature, index) => (
         <FeatureUsageItem
           key={feature.name}
@@ -157,19 +157,10 @@ export default function UsageLimits({ showCard = true }: { showCard?: boolean })
         />
       ))}
       
-      {tier === 'FREE' && (
-        <div className="mt-6 pt-4 border-t">
-          <Button 
-            className="w-full bg-orange-600 hover:bg-orange-700"
-            asChild
-          >
-            <Link href="/pricing">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Upgrade to Pro for Unlimited Access
-            </Link>
-          </Button>
-        </div>
-      )}
+      {/* The main upgrade button that was here has been removed.
+        It now lives on the main dashboard page (page.tsx) to be 
+        visible even when the usage list is folded.
+      */}
     </div>
   );
 
@@ -197,7 +188,7 @@ export default function UsageLimits({ showCard = true }: { showCard?: boolean })
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0"> {/* Adjusted padding to match content */}
         {content}
       </CardContent>
     </Card>

@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\ats-history\page.tsx
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -306,21 +304,22 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
   }
   
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 sm:p-6 md:p-10">
       <div>
         <div className="flex items-center gap-4 mb-2">
           <Link href="/dashboard/ats-scanner">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to ATS Scanner
+              <span className="hidden sm:inline">Back to ATS Scanner</span>
+              <span className="sm:hidden">Back</span>
             </Button>
           </Link>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <BarChart2 className="h-8 w-8 text-orange-600" />
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-3">
+          <BarChart2 className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
           ATS Analysis History
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">
           View and track all your resume ATS compatibility analyses
         </p>
       </div>
@@ -336,62 +335,62 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
       )}
       
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Scans</CardTitle>
+          <CardHeader className="pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Scans</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalScans}</div>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{stats.totalScans}</div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Average Score</CardTitle>
+          <CardHeader className="pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Average Score</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${getScoreColor(stats.averageScore)}`}>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className={`text-xl sm:text-2xl font-bold ${getScoreColor(stats.averageScore)}`}>
               {Math.round(stats.averageScore * 100)}%
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Highest Score</CardTitle>
+          <CardHeader className="pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Highest Score</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${getScoreColor(stats.highestScore)}`}>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className={`text-xl sm:text-2xl font-bold ${getScoreColor(stats.highestScore)}`}>
               {Math.round(stats.highestScore * 100)}%
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Recent Change</CardTitle>
+          <CardHeader className="pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Recent Change</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="flex items-center gap-1 sm:gap-2">
               {stats.recentImprovement > 0 ? (
                 <>
-                  <TrendingUp className="h-5 w-5 text-green-500" />
-                  <span className="text-2xl font-bold text-green-500">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                  <span className="text-xl sm:text-2xl font-bold text-green-500">
                     +{Math.round(stats.recentImprovement * 100)}%
                   </span>
                 </>
               ) : stats.recentImprovement < 0 ? (
                 <>
-                  <TrendingDown className="h-5 w-5 text-red-500" />
-                  <span className="text-2xl font-bold text-red-500">
+                  <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
+                  <span className="text-xl sm:text-2xl font-bold text-red-500">
                     {Math.round(stats.recentImprovement * 100)}%
                   </span>
                 </>
               ) : (
                 <>
-                  <Minus className="h-5 w-5 text-gray-500" />
-                  <span className="text-2xl font-bold text-gray-500">0%</span>
+                  <Minus className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                  <span className="text-xl sm:text-2xl font-bold text-gray-500">0%</span>
                 </>
               )}
             </div>
@@ -405,7 +404,7 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
           <CardTitle>Filter & Search</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -418,31 +417,33 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
               </div>
             </div>
             
-            <Select value={filterResume} onValueChange={setFilterResume}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Filter by resume" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Resumes</SelectItem>
-                {uniqueResumes.map(resume => (
-                  <SelectItem key={resume.id} value={resume.id}>
-                    {resume.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date-desc">Newest First</SelectItem>
-                <SelectItem value="date-asc">Oldest First</SelectItem>
-                <SelectItem value="score-desc">Highest Score</SelectItem>
-                <SelectItem value="score-asc">Lowest Score</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-row gap-3 sm:gap-4">
+              <Select value={filterResume} onValueChange={setFilterResume}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Filter by resume" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Resumes</SelectItem>
+                  {uniqueResumes.map(resume => (
+                    <SelectItem key={resume.id} value={resume.id}>
+                      {resume.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date-desc">Newest First</SelectItem>
+                  <SelectItem value="date-asc">Oldest First</SelectItem>
+                  <SelectItem value="score-desc">Highest Score</SelectItem>
+                  <SelectItem value="score-asc">Lowest Score</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -474,23 +475,23 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
           {filteredAnalyses.map((analysis) => (
             <Card key={analysis.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-base sm:text-lg truncate">
                       {analysis.resumes?.title || 'Untitled Resume'}
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2 mt-1">
                       <Calendar className="h-3 w-3" />
-                      {formatDate(analysis.created_at)}
+                      <span className="text-xs sm:text-sm">{formatDate(analysis.created_at)}</span>
                     </CardDescription>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-2xl font-bold ${getScoreColor(analysis.analysis_result?.overall?.score || 0)}`}>
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-0">
+                    <div className={`text-xl sm:text-2xl font-bold ${getScoreColor(analysis.analysis_result?.overall?.score || 0)}`}>
                       {Math.round((analysis.analysis_result?.overall?.score || 0) * 100)}%
                     </div>
                     <Progress 
                       value={Math.round((analysis.analysis_result?.overall?.score || 0) * 100)} 
-                      className={`h-2 w-20 mt-1 ${getProgressBarColor(analysis.analysis_result?.overall?.score || 0)}`}
+                      className={`h-2 w-20 sm:mt-1 ${getProgressBarColor(analysis.analysis_result?.overall?.score || 0)}`}
                     />
                   </div>
                 </div>
@@ -546,10 +547,11 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
               </CardContent>
               
               <CardFooter className="border-t pt-3">
-                <div className="flex gap-2 ml-auto">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
                   <Button 
                     variant="outline" 
                     size="sm"
+                    className="w-full sm:w-auto"
                     onClick={() => {
                       setSelectedAnalysis(analysis);
                       setShowDetailModal(true);
@@ -561,6 +563,7 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
                   <Button 
                     variant="outline" 
                     size="sm"
+                    className="w-full sm:w-auto"
                     onClick={() => downloadAnalysis(analysis)}
                   >
                     <Download className="h-4 w-4 mr-2" />
@@ -569,6 +572,7 @@ ${analysis.analysis_result?.improvements?.map(improvement => `- ${improvement}`)
                   <Button 
                     variant="default" 
                     size="sm"
+                    className="w-full sm:w-auto"
                     asChild
                   >
                     <Link href={`/dashboard/resumes/${analysis.resume_id}/ats-scanner?jobDescription=${encodeURIComponent(analysis.job_description)}`}>

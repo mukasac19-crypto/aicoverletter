@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { createClient } from "@/utils/client-side-client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -97,40 +99,73 @@ export default function InterviewBuddyPage() {
   };
   
   return (
-    <div className="bg-white min-h-screen px-4">
-      <header className="mb-6 md:mb-8 pt-4 md:pt-6 px-4 md:px-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Interview Buddy</h1>
-        <p className="text-sm md:text-base text-gray-600">Prepare for your job interviews with AI-generated questions and answers</p>
+    <div className="bg-white min-h-screen p-4 sm:p-6 md:p-10">
+      <header className="mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Interview Buddy</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">Prepare for your job interviews with AI-generated questions and answers</p>
       </header>
 
-      {/* Subscription and Usage Indicator */}
-      <div className="px-4 md:px-6 mb-6">
+      {/* Subscription and Usage Indicator - Mobile optimized */}
+      <div className="mb-6">
         {!usageLoading && interviewUsage && (
-          <FeatureUsageIndicator
-            feature="Interview Sessions"
-            used={interviewUsage.used}
-            limit={interviewUsage.limit}
-            unlimited={interviewUsage.unlimited}
-            variant="detailed"
-          />
+          <>
+            {/* Mobile: Compact inline version */}
+            <div className="md:hidden bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-blue-800">Interview Sessions</span>
+                {interviewUsage.unlimited ? (
+                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                    Unlimited
+                  </Badge>
+                ) : (
+                  <span className="text-sm font-bold text-blue-700">
+                    {interviewUsage.limit - interviewUsage.used} left
+                  </span>
+                )}
+              </div>
+              {!interviewUsage.unlimited && (
+                <div className="space-y-1">
+                  <Progress 
+                    value={(interviewUsage.used / interviewUsage.limit) * 100} 
+                    className="h-1.5"
+                  />
+                  <div className="flex justify-between text-xs text-blue-600">
+                    <span>{interviewUsage.used} used</span>
+                    <span>of {interviewUsage.limit}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Desktop: Full detailed card */}
+            <div className="hidden md:block">
+              <FeatureUsageIndicator
+                feature="Interview Sessions"
+                used={interviewUsage.used}
+                limit={interviewUsage.limit}
+                unlimited={interviewUsage.unlimited}
+                variant="detailed"
+              />
+            </div>
+          </>
         )}
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="mb-6 w-full flex justify-between bg-muted/50 rounded-lg p-1 gap-2 flex-nowrap">
+        <TabsList className="mb-6 w-full grid grid-cols-2 bg-muted/50 rounded-lg p-1 gap-1">
           <TabsTrigger 
             value="generate" 
-            className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+            className="flex items-center justify-center px-2 sm:px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
-            <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-            <span className="hidden xs:inline">Generate</span> Interview
+            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Generate</span>
           </TabsTrigger>
           <TabsTrigger 
             value="history"
-            className="min-w-[80px] flex-1 flex items-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+            className="flex items-center justify-center px-2 sm:px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-gray-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
-            <FileText className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-            <span className="hidden xs:inline">Interview</span> History
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-xs sm:text-sm">History</span>
           </TabsTrigger>
         </TabsList>
 
@@ -142,8 +177,8 @@ export default function InterviewBuddyPage() {
           ) : (
             <>
               {resumes.length === 0 ? (
-                <Card className="border-gray-100 mx-0 md:mx-0">
-                  <CardContent className="pt-4 md:pt-6 flex flex-col items-center text-center py-6 md:py-10 px-4 md:px-6">
+                <Card className="border-gray-100">
+                  <CardContent className="pt-6 flex flex-col items-center text-center py-6 md:py-10">
                     <FileSpreadsheet className="h-12 w-12 md:h-16 md:w-16 text-orange-500 opacity-30 mb-3 md:mb-4" />
                     <h3 className="text-lg md:text-xl font-medium mb-2 text-gray-800">No Resumes Found</h3>
                     <p className="text-sm md:text-base text-gray-600 max-w-md mb-4 md:mb-6">
@@ -158,7 +193,7 @@ export default function InterviewBuddyPage() {
                 	</CardContent>
             	</Card>
           	) : (
-          		<div className="px-0 md:px-0">
+          		<div>
           			<InterviewBuddyGenerator
           				resumes={resumes}
           				initialResumeId={resumeId || ''}
@@ -172,25 +207,25 @@ export default function InterviewBuddyPage() {
     	</TabsContent>
 
     	<TabsContent value="history">
-    		<Card className="border-orange-100 mx-0 md:mx-0">
-    			<CardHeader className="bg-orange-50/50 px-4 md:px-6 py-4 md:py-6">
-    				<CardTitle className="text-gray-800 text-lg md:text-xl">Interview History</CardTitle>
-    				<CardDescription className="text-gray-600 text-sm md:text-base">
+    		<Card className="border-orange-100">
+    			<CardHeader className="bg-orange-50/50 p-4 sm:p-6">
+    				<CardTitle className="text-gray-800 text-lg sm:text-xl">Interview History</CardTitle>
+    				<CardDescription className="text-gray-600 text-sm sm:text-base">
     					Your previous interview practice sessions
     				</CardDescription>
     			</CardHeader>
-    			<CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+    			<CardContent className="pt-4 sm:pt-6 p-4 sm:p-6">
     				{recentSessions.length > 0 ? (
     					<div className="divide-y divide-orange-100">
     						{recentSessions.map((session) => (
-    							<div key={session.id} className="py-3 md:py-4 flex flex-col sm:flex-row justify-between gap-2 md:gap-4">
-    								<div className="flex items-start">
-    									<div className="bg-orange-100/50 p-1.5 md:p-2 rounded mr-2 md:mr-3 mt-1">
-    										<MessagesSquare className="h-3 w-3 md:h-4 md:w-4 text-orange-600" />
+    							<div key={session.id} className="py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between gap-3">
+    								<div className="flex items-start flex-1 min-w-0">
+    									<div className="bg-orange-100/50 p-1.5 sm:p-2 rounded mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
+    										<MessagesSquare className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
     									</div>
-    									<div>
-    										<p className="font-medium text-gray-800 text-sm md:text-base">{session.job_title || 'Interview Session'}</p>
-    										<p className="text-xs md:text-sm text-gray-600">
+    									<div className="min-w-0 flex-1">
+    										<p className="font-medium text-gray-800 text-sm sm:text-base truncate">{session.job_title || 'Interview Session'}</p>
+    										<p className="text-xs sm:text-sm text-gray-600 truncate">
     											Resume: {session.resumes?.title || 'Unnamed Resume'}
     										</p>
     										<p className="text-xs text-gray-500">
@@ -198,8 +233,8 @@ export default function InterviewBuddyPage() {
     										</p>
     									</div>
     								</div>
-    								<div className="flex gap-2 ml-6 sm:ml-0 mt-2 sm:mt-0">
-    									<Button variant="outline" size="sm" asChild className="w-full sm:w-auto border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-700 text-xs md:text-sm">
+    								<div className="ml-7 sm:ml-0">
+    									<Button variant="outline" size="sm" asChild className="w-full sm:w-auto border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-700 text-xs sm:text-sm">
     										<Link href={`/dashboard/interview-buddy/sessions/${session.id}`}>
     											View Session
     										</Link>
@@ -209,10 +244,10 @@ export default function InterviewBuddyPage() {
     						))}
     					</div>
     				) : (
-    					<div className="text-center py-6 md:py-8">
-    						<MessagesSquare className="h-10 w-10 md:h-12 md:w-12 text-orange-500 mx-auto mb-3 md:mb-4 opacity-60" />
-    						<h3 className="text-base md:text-lg font-medium mb-1 md:mb-2 text-gray-800">No interview sessions yet</h3>
-    						<p className="text-sm md:text-base text-gray-600 mb-3 md:mb-4">
+    					<div className="text-center py-6 sm:py-8">
+    						<MessagesSquare className="h-10 w-10 sm:h-12 sm:w-12 text-orange-500 mx-auto mb-3 sm:mb-4 opacity-60" />
+    						<h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 text-gray-800">No interview sessions yet</h3>
+    						<p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
     							You haven&apos;t created any interview practice sessions.
     						</p>
     						<Button 
