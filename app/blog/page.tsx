@@ -45,6 +45,21 @@ const BlogPage = () => {
         fetchBlogs(nextPage, searchTerm);
     };
 
+    // Function to strip HTML tags and get plain text
+    const stripHtml = (html: string): string => {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+    };
+
+    // Function to get clean excerpt from HTML content
+    const getExcerpt = (htmlContent: string, maxLength: number): string => {
+        const plainText = stripHtml(htmlContent);
+        return plainText.length > maxLength 
+            ? plainText.substring(0, maxLength).trim() + '...' 
+            : plainText;
+    };
+
     const heroPost = useMemo(() => blogs.length > 0 ? blogs[0] : null, [blogs]);
     const topStories = useMemo(() => blogs.length > 1 ? blogs.slice(1, 5) : [], [blogs]);
     const recentPosts = useMemo(() => blogs.length > 5 ? blogs.slice(5) : [], [blogs]);
@@ -80,7 +95,8 @@ const BlogPage = () => {
                                         <h2 className="text-2xl sm:text-3xl font-bold hover:text-blue-600 transition-colors duration-300 mb-3 sm:mb-4">{heroPost.title}</h2>
                                     </Link>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 sm:mb-4">{new Date(heroPost.published_at).toLocaleDateString()}</p>
-                                    <p className="text-base text-gray-700 dark:text-gray-300">{heroPost.content.substring(0, 150)}...</p>
+                                    {/* Fixed: Strip HTML from content */}
+                                    <p className="text-base text-gray-700 dark:text-gray-300">{getExcerpt(heroPost.content, 150)}</p>
                                 </div>
                             </div>
                         </Card>
@@ -116,7 +132,8 @@ const BlogPage = () => {
                                         <Badge variant="outline" className="mb-2">{blog.category || 'General'}</Badge>
                                         <Link href={`/blog/${blog.id}`}><h3 className="text-xl sm:text-2xl font-bold hover:text-blue-600 transition-colors duration-300 mb-2">{blog.title}</h3></Link>
                                         <p className="text-sm text-gray-500 mb-2">{new Date(blog.published_at).toLocaleDateString()}</p>
-                                        <p className="text-base text-gray-600 dark:text-gray-400">{blog.content.substring(0, 120)}...</p>
+                                        {/* Fixed: Strip HTML from content */}
+                                        <p className="text-base text-gray-600 dark:text-gray-400">{getExcerpt(blog.content, 120)}</p>
                                     </div>
                                 </Card>
                             ))}
