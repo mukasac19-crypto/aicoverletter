@@ -1,3 +1,5 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\MainHeader.tsx
+
 "use client"
 
 import Link from "next/link";
