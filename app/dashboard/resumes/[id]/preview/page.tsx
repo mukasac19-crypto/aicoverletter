@@ -522,8 +522,10 @@ const styles = StyleSheet.create({
           />
         }
 
+        {/* download button can be put anywhere */}
+
         { pdfurl && <a href={pdfurl} download="test.pdf">
-         Download Resume
+          Download Resume
         </a>}
 
         {/* <MyDoc/> */}
