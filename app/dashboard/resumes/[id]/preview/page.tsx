@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -7,34 +6,27 @@ import { createClient } from '@/utils/client-side-client';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { renderResumeTemplate } from '@/lib/resume-template-renderer';
-import { ArrowLeft, Download, Edit, Eye, ZoomIn, ZoomOut } from 'lucide-react';
+import { ArrowLeft, Download, Edit, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import Link from 'next/link';
 import { DEFAULT_RESUME_TEMPLATES } from '@/lib/default-resume-templates';
 import { mapDatabaseToResumeData } from '@/lib/resume-mappers';
 import ResumePreview from '@/components/ResumePreview';
 import { useAuthStore } from '@/stores/authstore';
-import html2canvas from 'html2canvas';
-
-//pdf render
-import { Page, Text, View, Document, StyleSheet, usePDF,PDFViewer } from '@react-pdf/renderer';
+import { exportResumeWithProgress } from "@/lib/export-service";
 
 const validateResumeData = (resumeData: any) => {
   if (!resumeData) return null;
   
-  console.log("Validating resume data:", resumeData);
-  
   const validatedResume = { ...resumeData };
   
+  // Convert snake_case to camelCase
   if (validatedResume.personal_info && !validatedResume.personalInfo) {
-    console.log("Converting personal_info to personalInfo");
     validatedResume.personalInfo = validatedResume.personal_info;
   }
   
   if (validatedResume.work_experience && !validatedResume.workExperience) {
-    console.log("Converting work_experience to workExperience");
     validatedResume.workExperience = validatedResume.work_experience;
   }
   
@@ -42,6 +34,7 @@ const validateResumeData = (resumeData: any) => {
     validatedResume.customSections = validatedResume.custom_sections;
   }
   
+  // Ensure required fields exist
   if (!validatedResume.personalInfo) {
     validatedResume.personalInfo = {
       firstName: validatedResume.title?.split(' ')[0] || 'First',
@@ -49,57 +42,17 @@ const validateResumeData = (resumeData: any) => {
       title: validatedResume.title || 'Resume',
       contact: { email: '', phone: '', location: '' }
     };
-  } else if (!validatedResume.personalInfo.firstName || !validatedResume.personalInfo.lastName) {
-    validatedResume.personalInfo = {
-      ...validatedResume.personalInfo,
-      firstName: validatedResume.personalInfo.firstName || validatedResume.title?.split(' ')[0] || 'First',
-      lastName: validatedResume.personalInfo.lastName || validatedResume.title?.split(' ').slice(1).join(' ') || 'Last',
-    };
   }
   
-  if (!validatedResume.personalInfo.contact) {
-    validatedResume.personalInfo.contact = { email: '', phone: '', location: '' };
-  }
+  // Initialize arrays
+  const arrayFields = ['workExperience', 'education', 'skills', 'projects', 
+    'languages', 'certifications', 'interests', 'internships', 'references', 'customSections'];
   
-  if (!validatedResume.workExperience || !Array.isArray(validatedResume.workExperience)) {
-    validatedResume.workExperience = [];
-  }
-  
-  if (!validatedResume.education || !Array.isArray(validatedResume.education)) {
-    validatedResume.education = [];
-  }
-  
-  if (!validatedResume.skills || !Array.isArray(validatedResume.skills)) {
-    validatedResume.skills = [];
-  }
-  
-  if (!validatedResume.projects || !Array.isArray(validatedResume.projects)) {
-    validatedResume.projects = [];
-  }
-  
-  if (!validatedResume.languages || !Array.isArray(validatedResume.languages)) {
-    validatedResume.languages = [];
-  }
-  
-  if (!validatedResume.certifications || !Array.isArray(validatedResume.certifications)) {
-    validatedResume.certifications = [];
-  }
-  
-  if (!validatedResume.interests || !Array.isArray(validatedResume.interests)) {
-    validatedResume.interests = [];
-  }
-  
-  if (!validatedResume.internships || !Array.isArray(validatedResume.internships)) {
-    validatedResume.internships = [];
-  }
-  
-  if (!validatedResume.references || !Array.isArray(validatedResume.references)) {
-    validatedResume.references = [];
-  }
-  
-  if (!validatedResume.customSections || !Array.isArray(validatedResume.customSections)) {
-    validatedResume.customSections = [];
-  }
+  arrayFields.forEach(field => {
+    if (!validatedResume[field] || !Array.isArray(validatedResume[field])) {
+      validatedResume[field] = [];
+    }
+  });
   
   return validatedResume;
 };
@@ -117,119 +70,22 @@ const normalizeTemplate = (template: any): any => {
   };
 };
 
-const getFallbackTemplate = () => {
-  if (DEFAULT_RESUME_TEMPLATES && DEFAULT_RESUME_TEMPLATES.length > 0) {
-    const defaultTemplate = DEFAULT_RESUME_TEMPLATES[0];
-
-    return normalizeTemplate({
-      id: defaultTemplate.id,
-      name: defaultTemplate.name,
-      description: defaultTemplate.description,
-      htmlContent: defaultTemplate.htmlContent,
-      cssContent: defaultTemplate.cssContent,
-    });
-  }
-  
-  return normalizeTemplate({
-    id: 'fallback-template',
-    name: 'Fallback Template',
-    description: 'Basic fallback template',
-    htmlContent: `
-      <div class="container">
-        <header>
-          <h1>{{name}}</h1>
-          <p>{{title}}</p>
-          <div>
-            <p>{{email}}</p>
-            <p>{{phone}}</p>
-            <p>{{address}}</p>
-          </div>
-        </header>
-        
-        {{professional-summary}}
-        {{work-experience}}
-        {{education}}
-        {{skills}}
-        {{projects}}
-        {{certifications}}
-        {{languages}}
-        {{interests}}
-        {{references}}
-      </div>
-    `,
-    cssContent: `
-      
-    `
-  });
-};
-
-
-
 export default function ResumePreviewPage() {
-
-
-
   const [resume, setResume] = useState<any | null>(null);
   const [template, setTemplate] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [html, setHtml] = useState<string>('');
-  const [css, setCss] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'fit' | 'full'>('fit');
   const [zoomLevel, setZoomLevel] = useState<number>(75);
   const [isExporting, setIsExporting] = useState<boolean>(false);
-  const  [pdfurl,setPdfurl] = useState<string | null >(null)
   
   const params = useParams();
   const router = useRouter();
   const { user } = useAuthStore();
   const { toast } = useToast();
   const supabase = createClient();
-  const containerRef = useRef<HTMLDivElement>(null);
   
   const resumeId = params.id as string;
-   
-    // Create styles
-const styles = StyleSheet.create({
-  page: {
-    width:"100%",
-    height:"100%",
-    backgroundColor: '#E4E4E4',
-  },
-  section: {
-    width:"100%",
-    margin: 10,
-    padding: 10,
-    backgroundColor:"green"
-  },
-});
 
-
-    const MyDoc =(
-       <Document>
-            <Page size="A4" style={styles.page}>
-            <View style={styles.section}>
-              <div className='w-full h-full bg-yellow-500'>
-                <style>{css}</style>
-                <div dangerouslySetInnerHTML={{ __html: html }} />
-              </div>
-            </View>
-            
-          </Page>
-         </Document>
-    )
-
-  const [instance, updateInstance] = usePDF({ document: MyDoc});
-
-  useEffect(()=>{
-
-    if(instance && instance.url){
-        setPdfurl(instance.url)
-    }
-
-  },[instance])
-
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -255,12 +111,10 @@ const styles = StyleSheet.create({
         }
         
         const mappedResume = mapDatabaseToResumeData(resumeData);
-        console.log("Mapped resume data for preview:", mappedResume);
-        
         const validatedResume = validateResumeData(mappedResume);
-        console.log('Validated resume data:', validatedResume);
         setResume(validatedResume);
         
+        // Fetch template
         if (resumeData.template_id) {
           const { data: templateData, error: templateError } = await supabase
             .from('resume_templates')
@@ -269,50 +123,23 @@ const styles = StyleSheet.create({
             .maybeSingle();
           
           if (!templateError && templateData) {
-            console.log('Found template in resume_templates table:', templateData.name);
             setTemplate(normalizeTemplate(templateData));
-            return;
-          }
-          
-          const { data: oldTemplateData, error: oldTemplateError } = await supabase
-            .from('templates')
-            .select('*')
-            .eq('id', resumeData.template_id)
-            .maybeSingle();
-          
-          if (!oldTemplateError && oldTemplateData) {
-            console.log('Found template in templates table:', oldTemplateData.name);
-            setTemplate(normalizeTemplate(oldTemplateData));
             return;
           }
         }
         
-        const { data: anyTemplate, error: anyError } = await supabase
+        // Fallback to first available template
+        const { data: anyTemplate } = await supabase
           .from('resume_templates')
           .select('*')
           .limit(1)
           .maybeSingle();
         
-        if (!anyError && anyTemplate) {
-          console.log('Using random template from resume_templates table');
+        if (anyTemplate) {
           setTemplate(normalizeTemplate(anyTemplate));
-          return;
+        } else if (DEFAULT_RESUME_TEMPLATES?.length > 0) {
+          setTemplate(normalizeTemplate(DEFAULT_RESUME_TEMPLATES[0]));
         }
-        
-        const { data: anyOldTemplate, error: anyOldError } = await supabase
-          .from('templates')
-          .select('*')
-          .limit(1)
-          .maybeSingle();
-        
-        if (!anyOldError && anyOldTemplate) {
-          console.log('Using random template from templates table');
-          setTemplate(normalizeTemplate(anyOldTemplate));
-          return;
-        }
-        
-        console.log('Using fallback template');
-        setTemplate(getFallbackTemplate());
       } catch (err: any) {
         console.error('Error fetching data:', err);
         setError(err.message || 'Failed to load resume data');
@@ -329,78 +156,36 @@ const styles = StyleSheet.create({
     fetchData();
   }, [resumeId, user, supabase, toast]);
 
-  
-  useEffect(() => {
-    if (resume && template) {
-      try {
-        console.log('Rendering template with resume:', resume);
-        console.log('Using template:', template);
-        const renderedHtml = renderResumeTemplate(template, resume);
-        
-        const bodyContentMatch = renderedHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-        const bodyContent = bodyContentMatch ? bodyContentMatch[1] : renderedHtml;
-        
-        const headStylesMatch = renderedHtml.match(/<head[^>]*>([\s\S]*)<\/head>/i);
-        let headStyles = '';
-        if (headStylesMatch) {
-          const styleMatches = headStylesMatch[1].match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
-          if (styleMatches) {
-            headStyles = styleMatches.join('');
-          }
-        }
-        
-        setCss(`
-          ${template.cssContent}
-          ${headStyles.replace(/<style[^>]*>|<\/style>/gi, '')}
-        `);
-        
-        setHtml(bodyContent);
-
-      } catch (err: any) {
-        console.error('Error rendering template:', err);
-        setError(`Failed to render resume: ${err.message}`);
-        
-        setHtml(`
-          <div style="padding: 20px; color: #e53e3e;">
-            <h2>Error rendering resume template</h2>
-            <p>${err.message}</p>
-          </div>
-        `);
-      }
+  const handleExport = async (format: 'pdf' | 'docx' = 'pdf') => {
+    if (!resume || !template) {
+      toast({
+        title: "Error",
+        description: "Resume data not available for export.",
+        variant: "destructive",
+      });
+      return;
     }
-  }, [resume, template]);
-  
-  const handleExport = async () => {
+
     try {
       setIsExporting(true);
-      setError(null);
+      
+      const result = await exportResumeWithProgress(
+        resume,
+        template,
+        format,
+        (progress, status) => {
+          // Progress callback if needed
+        },
+        `${resume.personalInfo?.firstName || 'Resume'}-${resume.personalInfo?.lastName || ''}-Resume`.replace(/ /g, '_')
+      );
 
-      if (!containerRef.current) return;
-
-      const originalStyle = containerRef.current.style.cssText;
-      containerRef.current.style.height = '297mm';
-      containerRef.current.style.overflow = 'visible';
-      containerRef.current.style.width = '210mm';
-
-      const canvas = await html2canvas(containerRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      containerRef.current.style.cssText = originalStyle;
-
-      const imgData = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = imgData;
-      link.download = `${resume.personalInfo.firstName}-${resume.personalInfo.lastName}-Resume.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (!result.success) {
+        throw new Error(result.error || 'Export failed');
+      }
 
       toast({
         title: "Export Successful",
-        description: "Your resume has been exported as an image.",
+        description: `Your resume has been exported as ${format.toUpperCase()}.`,
       });
     } catch (err: any) {
       console.error('Error exporting resume:', err);
@@ -414,274 +199,172 @@ const styles = StyleSheet.create({
     }
   };
   
-  const toggleViewMode = () => {
-    setViewMode(prev => prev === 'fit' ? 'full' : 'fit');
-  };
-  
-  const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 10, 150));
-  };
-  
-  const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 10, 40));
-  };
-  
-  const handleZoomReset = () => {
-    setZoomLevel(75);
-  };
-  
-  const handleFullscreen = () => {
-    const container = containerRef.current;
-    if (container) {
-      if (container.requestFullscreen) {
-        container.requestFullscreen();
-      } else if ((container as any).webkitRequestFullscreen) {
-        (container as any).webkitRequestFullscreen();
-      } else if ((container as any).msRequestFullscreen) {
-        (container as any).msRequestFullscreen();
-      }
-    }
-  };
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 10, 150));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 10, 40));
+  const handleZoomReset = () => setZoomLevel(75);
   
   if (isLoading) {
     return (
-      <div className="container py-8 flex justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner className="h-8 w-8 mb-4 mx-auto" />
+          <p className="text-muted-foreground">Loading resume preview...</p>
+        </div>
       </div>
     );
   }
   
   if (error) {
     return (
-      <div className="container py-8">
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-        <div className="flex justify-center mt-6">
-          <Button asChild>
-            <Link href="/dashboard/resumes">Back to Resumes</Link>
-          </Button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="max-w-md w-full">
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+          <div className="flex justify-center">
+            <Button asChild>
+              <Link href="/dashboard/resumes">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Resumes
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
-
-
-  
-
-
-  
-  const heightClass = viewMode === 'fit' 
-    ? "h-screen sm:h-[600px] md:h-[700px] lg:h-[800px] xl:h-[900px]" 
-    : "h-screen";
   
   return (
-    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center flex-wrap gap-2">
-          <Button variant="ghost" asChild className="mr-4">
-            <Link href="/dashboard/resumes">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{resume.title}</h1>
-            <p className="text-muted-foreground">Preview your resume</p>
-          </div>
-        </div>
-
-
-        <div className="flex flex-wrap gap-2">
-          {user && user.id === resume.userId && (
-            <Button variant="outline" asChild>
-              <Link href={`/dashboard/resumes/${resumeId}`}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Resume
-              </Link>
-            </Button>
-          )}
-          <Button 
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            {isExporting ? <LoadingSpinner className="h-4 w-4 mr-2" /> : <Download className="h-4 w-4 mr-2" />}
-            {isExporting ? "Exporting..." : "Download Image"}
-          </Button>
-        </div>
-      </div>
-
-      {/* preview */}
-      <div className='w-full h-[60vh] p-4 bg-pink-100 overflow-x-auto'>
-        { pdfurl && 
-          <iframe 
-            src={pdfurl} 
-            width="600px" 
-            height="500px" 
-            title="PDF Viewer"
-          />
-        }
-
-        {/* download button can be put anywhere */}
-
-        { pdfurl && <a href={pdfurl} download="test.pdf">
-          Download Resume
-        </a>}
-
-        {/* <MyDoc/> */}
-        {/* <PDFViewer style={{width:"600px",height:"600px"}}>
-          <MyDoc/>
-        </PDFViewer> */}
-
-        
-
-       
-      </div>
-      
-     {/* <Card ref={containerRef} className="overflow-x-auto w-full">
-        <style>{css}</style>
-        <div className="resume-preview-content bg-pink-300 w-full" dangerouslySetInnerHTML={{ __html: html }} />
-        <CardFooter className="flex flex-col md:flex-row justify-between bg-muted/20 border-t p-4 gap-2">
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={toggleViewMode}>
-              {viewMode === 'fit' ? 'Full Height' : 'Fit to Screen'}
-            </Button>
-            <Button variant="outline" onClick={handleFullscreen}>
-              <Eye className="h-4 w-4 mr-2" />
-              Fullscreen
-            </Button>
-          </div>
-          <div className="flex gap-2 items-center flex-wrap">
-            <div className="flex space-x-1 mr-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomOut}
-                disabled={zoomLevel <= 40}
-                className="h-8 w-8 p-0"
-              >
-                <ZoomOut className="h-4 w-4" />
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-white border-b sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/dashboard/resumes">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomReset}
-                className="h-8 px-2"
+              <div>
+                <h1 className="text-xl font-semibold">{resume?.title || 'Resume Preview'}</h1>
+                <p className="text-sm text-muted-foreground">Full page preview</p>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {user && user.id === resume?.userId && (
+                <Button variant="outline" asChild>
+                  <Link href={`/dashboard/resumes/${resumeId}`}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Resume
+                  </Link>
+                </Button>
+              )}
+              <Button 
+                onClick={() => handleExport('pdf')}
+                disabled={isExporting}
               >
-                <span className="text-xs">{zoomLevel}%</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleZoomIn}
-                disabled={zoomLevel >= 150}
-                className="h-8 w-8 p-0"
-              >
-                <ZoomIn className="h-4 w-4" />
+                {isExporting ? (
+                  <>
+                    <LoadingSpinner className="h-4 w-4 mr-2" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </>
+                )}
               </Button>
             </div>
           </div>
-        </CardFooter>
-      </Card> */}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Zoom Controls */}
+        <div className="flex justify-center mb-6">
+          <Card className="inline-flex items-center gap-2 p-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={zoomLevel <= 40}
+              className="h-8 w-8 p-0"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomReset}
+              className="h-8 px-3"
+            >
+              <span className="text-sm font-medium">{zoomLevel}%</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={zoomLevel >= 150}
+              className="h-8 w-8 p-0"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+          </Card>
+        </div>
+
+        {/* Resume Preview Container */}
+        <div className="flex justify-center">
+          <div 
+            className="bg-white rounded-lg shadow-2xl overflow-hidden"
+            style={{
+              transform: `scale(${zoomLevel / 100})`,
+              transformOrigin: 'top center',
+              transition: 'transform 0.2s ease-in-out',
+              marginBottom: `${(zoomLevel - 100) * 5}px` // Adjust margin based on zoom
+            }}
+          >
+            {/* A4 Page Container */}
+            <div 
+              className="relative"
+              style={{
+                width: '210mm',
+                minHeight: '297mm',
+                maxWidth: '100vw',
+                backgroundColor: 'white',
+              }}
+            >
+              {resume && template ? (
+                <ResumePreview
+                  resume={resume}
+                  template={template}
+                  height="auto"
+                  defaultZoom={100}
+                  removeCard={true}
+                  responsiveHeight={true}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full p-8">
+                  <Alert>
+                    <AlertDescription>
+                      Unable to load resume preview. Please try again.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Page indicator */}
+        <div className="text-center mt-6 text-sm text-muted-foreground">
+          <p>A4 Page Format (210mm × 297mm)</p>
+        </div>
+      </div>
     </div>
   );
 }
-
-
-
-
-
-// .resume-preview-content {
-//             font-family: Arial, sans-serif;
-//             line-height: 1.5;
-//             color: #333;
-//             width: 210mm; /* A4 width */
-//             min-height: 297mm; /* A4 height */
-//             margin: 0 auto;
-//             padding: 20mm;
-//             box-sizing: border-box;
-//             transform-origin: top left;
-//           }
-          
-//           .resume-preview-content div, 
-//           .resume-preview-content p, 
-//           .resume-preview-content h1, 
-//           .resume-preview-content h2, 
-//           .resume-preview-content h3, 
-//           .resume-preview-content h4, 
-//           .resume-preview-content h5, 
-//           .resume-preview-content h6, 
-//           .resume-preview-content ul, 
-//           .resume-preview-content ol, 
-//           .resume-preview-content li {
-//             margin: 0;
-//             padding: 0;
-//             box-sizing: border-box;
-//           }
-          
-//           @media print {
-//             body {
-//               margin: 0;
-//               padding: 0;
-//             }
-            
-//             .resume-preview-content {
-//               margin: 0;
-//               padding: 0;
-//               transform: none !important;
-//             }
-//           }
-          
-//           @media screen and (max-width: 768px) {
-//             .resume-preview-content {
-//               width: 80vw; /* Scale to 80% of viewport width */
-//               min-height: auto; /* Allow height to adjust */
-//               padding: 10mm;
-//               transform: scale(0.7); /* Scale down to fit small screens */
-//               transform-origin: top left;
-//               background-color:blue;
-//             }
-//           }
-          
-//           @media screen and (max-width: 480px) {
-//             .resume-preview-content {
-//               width: 90vw;
-//               height:60vh;
-//               padding: 5mm;
-//               transform: scale(0.5);
-//               background-color:aqua;
-//             }
-
-
-
-// body {
-//         font-family: Arial, sans-serif;
-//         margin: 0;
-//         padding: 0;
-//         color: #333;
-//       }
-      
-//       .container {
-//         max-width: 210mm;
-//         min-height: 297mm;
-//         margin: 0 auto;
-//         padding: 20mm;
-//         box-sizing: border-box;
-//         background-color:red;
-//       }
-      
-//       h1, h2, h3 {
-//         margin-top: 0;
-//         color: #2c3e50;
-//       }
-      
-//       .section-heading {
-//         border-bottom: 1px solid #eee;
-//         padding-bottom: 5px;
-//         margin-top: 20px;
-//         font-size: 18px;
-//       }
-      
-//       .section-content {
-//         margin-bottom: 20px;
-//       }
