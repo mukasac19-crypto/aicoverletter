@@ -1,3 +1,5 @@
+//project\app\dashboard\resumes\[id]\preview\page.tsx
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -17,18 +19,24 @@ import { useAuthStore } from '@/stores/authstore';
 import { exportResumeWithProgress } from "@/lib/export-service";
 
 // Utility functions
+// Corrected utility function
 const validateResumeData = (resumeData: any) => {
   if (!resumeData) return null;
   const validatedResume = { ...resumeData };
+
   if (validatedResume.personal_info && !validatedResume.personalInfo) {
     validatedResume.personalInfo = validatedResume.personal_info;
   }
+
   if (validatedResume.work_experience && !validatedResume.workExperience) {
     validatedResume.workExperience = validatedResume.work_experience;
   }
+
   if (validatedResume.custom_sections && !validatedResume.customSections) {
-    validatedResume.customSections = validated-resume.custom_sections;
+    // ✅ This line is now fixed
+    validatedResume.customSections = validatedResume.custom_sections;
   }
+
   if (!validatedResume.personalInfo) {
     validatedResume.personalInfo = {
       firstName: validatedResume.title?.split(' ')[0] || 'First',
@@ -37,13 +45,16 @@ const validateResumeData = (resumeData: any) => {
       contact: { email: '', phone: '', location: '' }
     };
   }
+
   const arrayFields = ['workExperience', 'education', 'skills', 'projects',
     'languages', 'certifications', 'interests', 'internships', 'references', 'customSections'];
+  
   arrayFields.forEach(field => {
     if (!validatedResume[field] || !Array.isArray(validatedResume[field])) {
       validatedResume[field] = [];
     }
   });
+
   return validatedResume;
 };
 

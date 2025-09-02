@@ -471,6 +471,74 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
     );
   };
 
+  const MobilePreview = () => (
+    <div className="fixed inset-0 bg-gray-100 z-[100] flex flex-col animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
+      {/* Header for the Modal */}
+      <div className="bg-white border-b shadow-sm p-2 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setShowMobilePreview(false)} className="h-8 px-2">
+                <X className="h-4 w-4 mr-1" />
+                Close
+            </Button>
+            <h2 className="text-sm font-semibold">Resume Preview</h2>
+        </div>
+        <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={handleZoomOut} disabled={zoomLevel <= 40} className="h-7 w-7 p-0">
+                <ZoomOut className="h-3 w-3" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleZoomReset} className="h-7 px-2">
+                <span className="text-xs">{zoomLevel}%</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleZoomIn} disabled={zoomLevel >= 150} className="h-7 w-7 p-0">
+                <ZoomIn className="h-3 w-3" />
+            </Button>
+        </div>
+      </div>
+
+      {/* Scrollable Body containing the A4 Preview */}
+      <div className="flex-1 overflow-auto p-4">
+        {!selectedTemplate ? (
+            <div className="flex items-center justify-center h-full">
+                <Alert className="max-w-xs">
+                    <AlertTitle>No Template Selected</AlertTitle>
+                    <AlertDescription>Please select a template to see a preview.</AlertDescription>
+                </Alert>
+            </div>
+        ) : (
+            <div
+                className="bg-white rounded-lg shadow-lg mx-auto"
+                style={{
+                    transform: `scale(${zoomLevel / 100})`,
+                    transformOrigin: 'top center',
+                    transition: 'transform 0.2s ease-in-out',
+                    marginBottom: `${(zoomLevel - 100) * 5}px`,
+                }}
+            >
+                <div
+                    className="relative bg-white"
+                    style={{
+                        width: '210mm',
+                        minHeight: '297mm',
+                    }}
+                >
+                    {/* ✅ FIX: Added a check here to ensure resumeData and selectedTemplate exist */}
+                    {resumeData && selectedTemplate && (
+                      <ResumePreview
+                          resume={resumeData}
+                          template={selectedTemplate}
+                          height="auto"
+                          defaultZoom={100}
+                          removeCard={true}
+                          responsiveHeight={true}
+                      />
+                    )}
+                </div>
+            </div>
+        )}
+      </div>
+    </div>
+  );
+
   if (isLoading) { return (<div className="min-h-[80vh] flex items-center justify-center w-full"><div className="text-center"><LoadingSpinner className="h-8 w-8 mb-4 text-orange-600" /><p className="text-muted-foreground">Loading Resume Editor...</p></div></div>); }
   if (error) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert variant="destructive"><AlertTriangle className="h-4 w-4" /><AlertTitle>Error Loading Resume</AlertTitle><AlertDescription>{error}</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
   if (!resumeData) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert><AlertDescription>Resume data could not be loaded or created.</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
@@ -591,9 +659,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
             </CardHeader>
             <CardContent className="p-0">
               <Accordion type="single" collapsible value={activeTab} onValueChange={setActiveTab} className="w-full">
-                {/* Accordion Items */}
                 <div className="overflow-x-auto">
-                  {/* Accordion Items */}
                   <AccordionItem value="personal-info" className="border-b">
                     <AccordionTrigger className="px-2 sm:px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Personal Info</AccordionTrigger>
                     <AccordionContent className="px-2 sm:px-4 pt-2 pb-4 bg-white">
@@ -684,7 +750,10 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   <Button variant="outline" size="sm" onClick={() => { if (resumeData && selectedTemplate) { window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank'); } }} className="bg-white text-gray-700 border-gray-300 h-8 w-8 p-0"> <Eye className="h-3 w-3" /> </Button>
                 </div>
               </div>
-              <div className="bg-gray-100 flex justify-center overflow-x-auto border-l border-r border-gray-200" style={{ height: expandedPreview ? 'calc(100vh - 160px)' : '540px' }}>
+              <div 
+                className="bg-gray-100 flex justify-center overflow-auto p-4 sm:p-8 border-l border-r border-gray-200" 
+                style={{ height: expandedPreview ? 'calc(100vh - 160px)' : '540px' }}
+              >
                 {!selectedTemplate ? (
                   <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 rounded-md w-full m-4 bg-white">
                     <div className="text-center space-y-2 p-4">
@@ -694,20 +763,34 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full py-3 flex justify-center min-w-0">
-                    <div className="transition-all relative min-w-0">
-                      <ResumePreview
-                        resume={resumeData}
-                        template={selectedTemplate}
-                        height="510px"
-                        defaultZoom={zoomLevel}
-                        removeCard={true}
-                      />
-                      <div className="absolute bottom-2 right-2">
-                        <Button size="sm" onClick={() => { if (resumeData && selectedTemplate) { window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank'); } }} variant="outline" className="bg-white text-gray-700 border-gray-300 h-7 shadow-sm" >
-                          <Maximize className="h-3 w-3 mr-1" /> <span className="text-xs">Expand</span>
-                        </Button>
-                      </div>
+                  <div
+                    className="bg-white rounded-lg shadow-lg"
+                    style={{
+                      transform: `scale(${zoomLevel / 100})`,
+                      transformOrigin: 'top center',
+                      transition: 'transform 0.2s ease-in-out',
+                      marginBottom: `${(zoomLevel - 100) * 5}px`, 
+                    }}
+                  >
+                    <div
+                      className="relative bg-white"
+                      style={{
+                        width: '210mm',
+                        minHeight: '297mm',
+                      }}
+                    >
+                      {resumeData && selectedTemplate && (
+                        <div className="w-full h-full">
+                          <ResumePreview
+                            resume={resumeData}
+                            template={selectedTemplate}
+                            height="auto"
+                            defaultZoom={100}
+                            removeCard={true}
+                            responsiveHeight={true}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -732,6 +815,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         )}
       </div>
       <MobileActionButton />
+      {isMobileView && showMobilePreview && <MobilePreview />}
       <input ref={importFileRef} type="file" accept=".pdf,.docx,.txt,.xlsx,.xls" className="hidden" onChange={handleFileSelect} />
     </div>
   );
