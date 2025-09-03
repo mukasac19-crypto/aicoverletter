@@ -142,7 +142,7 @@ async function generateCoverLetterJob(data: any) {
       });
   
       const responseContent = completion.choices[0]?.message?.content?.trim();
-      if (!responseContent) {
+            if (!responseContent) {
         throw new Error('OpenAI returned an empty response.');
       }
   
@@ -464,6 +464,14 @@ worker.on('failed', (job, err) => {
     console.error(`Job ${job?.id} failed:`, err);
 });
 
-console.log('OpenAI Worker initialized successfully');
+worker.on('error', err => {
+    console.error('Worker error:', err);
+});
+
+worker.on('ready', () => {
+    console.log('OpenAI Worker is connected to Redis and ready to process jobs.');
+});
+
+console.log('OpenAI Worker initialized...');
 
 export default worker;

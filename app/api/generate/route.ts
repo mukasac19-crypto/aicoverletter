@@ -67,6 +67,7 @@ export async function POST(request: Request) {
 
       const queueEvents = new QueueEvents("openai-requests", { connection: redisConnection });
 
+      console.log(`[API] Job ${job.id} added to queue. Waiting for completion...`);
 
       let result: any;
       try {
