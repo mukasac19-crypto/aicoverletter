@@ -1,3 +1,5 @@
+//project\app\dashboard\cover-letters\[id]\page.tsx
+
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/server-side-client';

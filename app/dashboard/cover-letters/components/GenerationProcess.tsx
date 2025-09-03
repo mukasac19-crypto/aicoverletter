@@ -1,3 +1,5 @@
+//project\app\dashboard\cover-letters\components\GenerationProcess.tsx
+
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";

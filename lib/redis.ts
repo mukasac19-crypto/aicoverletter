@@ -1,3 +1,5 @@
+//project\lib\redis.ts
+
 import Redis from 'ioredis';
 
 const redisUrl = process.env.REDIS_URL;
