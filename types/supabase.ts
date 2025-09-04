@@ -1,5 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\types\supabase.ts
-
+﻿//project\types\supabase.ts
 export type Json =
   | string
   | number
@@ -9,7 +8,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -136,6 +135,50 @@ export type Database = {
           {
             foreignKeyName: "admin_settings_updated_by_fkey"
             columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_data_sources"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      blogs: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string | null
+          header_image_url: string | null
+          id: string
+          published_at: string | null
+          related_articles: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string | null
+          header_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          related_articles?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string | null
+          header_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          related_articles?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blogs_author_id_fkey"
+            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "user_data_sources"
             referencedColumns: ["user_id"]
@@ -333,6 +376,44 @@ export type Database = {
           },
           {
             foreignKeyName: "follow_up_emails_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_data_sources"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      impersonation_tokens: {
+        Row: {
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          expires_at: string
+          id?: string
+          token: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impersonation_tokens_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_data_sources"
@@ -605,6 +686,7 @@ export type Database = {
           remote_preference: boolean | null
           status: string | null
           stripe_customer_id: string | null
+          stripe_customer_id_test: string | null
           updated_at: string | null
         }
         Insert: {
@@ -634,6 +716,7 @@ export type Database = {
           remote_preference?: boolean | null
           status?: string | null
           stripe_customer_id?: string | null
+          stripe_customer_id_test?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -663,6 +746,7 @@ export type Database = {
           remote_preference?: boolean | null
           status?: string | null
           stripe_customer_id?: string | null
+          stripe_customer_id_test?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -944,6 +1028,7 @@ export type Database = {
           custom_sections: Json | null
           education: Json
           id: string
+          imported_at: string | null
           interests: string[] | null
           internships: Json | null
           is_imported: boolean | null
@@ -954,7 +1039,10 @@ export type Database = {
           reference_text: string | null
           references: Json | null
           skills: Json
+          source: string | null
           source_cv: string | null
+          source_file_name: string | null
+          source_file_type: string | null
           template_id: string | null
           title: string
           updated_at: string | null
@@ -967,6 +1055,7 @@ export type Database = {
           custom_sections?: Json | null
           education: Json
           id?: string
+          imported_at?: string | null
           interests?: string[] | null
           internships?: Json | null
           is_imported?: boolean | null
@@ -977,7 +1066,10 @@ export type Database = {
           reference_text?: string | null
           references?: Json | null
           skills: Json
+          source?: string | null
           source_cv?: string | null
+          source_file_name?: string | null
+          source_file_type?: string | null
           template_id?: string | null
           title: string
           updated_at?: string | null
@@ -990,6 +1082,7 @@ export type Database = {
           custom_sections?: Json | null
           education?: Json
           id?: string
+          imported_at?: string | null
           interests?: string[] | null
           internships?: Json | null
           is_imported?: boolean | null
@@ -1000,7 +1093,10 @@ export type Database = {
           reference_text?: string | null
           references?: Json | null
           skills?: Json
+          source?: string | null
           source_cv?: string | null
+          source_file_name?: string | null
+          source_file_type?: string | null
           template_id?: string | null
           title?: string
           updated_at?: string | null
@@ -1281,6 +1377,10 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_old_usage_limits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       disable_activity_log_triggers: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1288,9 +1388,9 @@ export type Database = {
       fn_create_initial_admin: {
         Args: {
           admin_email: string
-          admin_password: string
           admin_first_name: string
           admin_last_name: string
+          admin_password: string
         }
         Returns: string
       }
@@ -1323,6 +1423,7 @@ export type Database = {
           remote_preference: boolean | null
           status: string | null
           stripe_customer_id: string | null
+          stripe_customer_id_test: string | null
           updated_at: string | null
         }[]
       }
@@ -1333,11 +1434,19 @@ export type Database = {
       fn_log_admin_action: {
         Args: {
           action: string
-          entity_type: string
-          entity_id: string
           details: Json
+          entity_id: string
+          entity_type: string
         }
         Returns: string
+      }
+      get_cover_letter_stats: {
+        Args: { p_user_id: string }
+        Returns: {
+          average_length: number
+          this_month_letters: number
+          total_letters: number
+        }[]
       }
       update_cover_letter_without_logs: {
         Args: { p_cover_letter_id: string; p_update_data: Json }

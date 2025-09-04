@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Sparkles, FileText, Linkedin, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, FileText, Linkedin, Loader2, Lock } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import JobDescriptionInput from "@/components/JobDescriptionInput";
 import DataSourcesManager from "./DataSourcesManager";
 import { ResumeSourceSelector } from "@/components/ResumeSourceSelector"; 
@@ -16,6 +17,9 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import type { CoverLetter as CoverLetterType } from "@/types/cover-letter";
 import { Database } from "@/types/supabase";
 import type { CvFile as ImportedCvFile } from '@/lib/cv-helpers';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useUsageTracking } from '@/hooks/useUsageTracking';
+import { UsageLimit } from '@/components/FeatureGate';
 
 // --- Helper Component & Type Definitions ---
 
@@ -55,6 +59,9 @@ interface CreateCoverLetterTabProps {
 
 
 const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }: CreateCoverLetterTabProps) => {
+  const { subscription, hasFeatureAccess } = useSubscription();
+  const coverLetterUsage = useUsageTracking('cover_letters');
+  
   const [step, setStep] = useState(1);
   
   const [isDataSourcesOpen, setIsDataSourcesOpen] = useState(false);
@@ -73,6 +80,9 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
   const [showTemplateSelection, setShowTemplateSelection] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [generatingLetter, setGeneratingLetter] = useState(false);
+
+  // Check if user can create cover letters
+  const canCreateCoverLetter = hasFeatureAccess('unlimited_cover_letters') || coverLetterUsage.canUseFeature;
 
   const loadCvFiles = useCallback(async () => {
     // Mock implementation
@@ -104,11 +114,35 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
         toast({ title: "User not found", description: "You must be logged in to generate a letter.", variant: "destructive" });
         return;
     }
+    
+    if (!canCreateCoverLetter) {
+      toast({
+        title: "Cover letter limit reached",
+        description: "Upgrade to create more cover letters",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setGeneratingLetter(true);
     setIsRegenerating(false);
     setGenerationProgress(0);
     
     try {
+      // Check usage limits for free tier
+      if (subscription.tier === 'FREE') {
+        const canCreate = await coverLetterUsage.incrementUsage();
+        if (!canCreate) {
+          toast({
+            title: "Cover letter limit reached",
+            description: "Upgrade to create more cover letters",
+            variant: "destructive",
+          });
+          setGeneratingLetter(false);
+          return;
+        }
+      }
+
       const result: GenerationResult = await generateCoverLetter({
         jobDescription,
         tone: "professional",
@@ -145,7 +179,7 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     } finally {
       setGeneratingLetter(false);
     }
-  }, [jobDescription, user, toast]);
+  }, [jobDescription, user, toast, canCreateCoverLetter, subscription.tier, coverLetterUsage]);
   
   const handleRegenerateCoverLetter = useCallback(async (letter: CoverLetterType) => {
       if (!letter) return;
@@ -183,132 +217,147 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     toast({
       title: "No Template Selected",
       description: "Your cover letter will use the default format.",
+      variant: "default"
     });
   };
   
-  const hasCV = cvFiles.some(cv => cv.isSelected);
-  const hasLinkedIn = linkedInProfile?.status === 'connected';
-  
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (generatingLetter) {
-        let progress = 0;
-        interval = setInterval(() => {
-            progress += Math.random() * 10;
-            if (progress >= 100) {
-                progress = 99;
-                clearInterval(interval);
-            }
-            setGenerationProgress(progress);
-        }, 300);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [generatingLetter]);
-  
-  // FIX: Prepare simplified props for the DataSourcesManager
-  const cvFilesForManager: CVFileForManager[] = cvFiles.map(cv => ({
-      name: cv.name,
-      isSelected: !!cv.isSelected // Ensure it's always a boolean
-  }));
-
-  const linkedInProfileForManager: LinkedInProfileForManager | null = linkedInProfile && linkedInProfile.name 
-    ? { name: linkedInProfile.name } 
-    : null;
-
   if (step === 1) {
     return (
-      <div>
-        <DataSourcesManager
-          isOpen={isDataSourcesOpen}
-          setIsOpen={setIsDataSourcesOpen}
-          hasCV={hasCV}
-          hasLinkedIn={hasLinkedIn}
-          cvFiles={cvFilesForManager}
-          linkedInProfile={linkedInProfileForManager}
-        />
-        <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardHeader className="pb-3">
-             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-               <div>
-                 <CardTitle className="text-2xl flex items-center">
-                   <Sparkles className="h-5 w-5 mr-2 text-primary" />
-                   Create a Cover Letter
-                 </CardTitle>
-               </div>
-               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                 <div className={`flex items-center rounded-full px-2 py-1 ${hasCV ? 'bg-green-500/10 text-green-600' : 'bg-muted'}`}>
-                   <FileText className="h-3 w-3 mr-1" />
-                   <span>CV {hasCV ? '✓' : ''}</span>
-                 </div>
-                 <div className={`flex items-center rounded-full px-2 py-1 ${hasLinkedIn ? 'bg-green-500/10 text-green-600' : 'bg-muted'}`}>
-                   <Linkedin className="h-3 w-3 mr-1" />
-                   <span>LinkedIn {hasLinkedIn ? '✓' : ''}</span>
-                 </div>
-               </div>
-             </div>
-          </CardHeader>
-          <CardContent>
-             <div className="p-1">
-               <JobDescriptionInput 
-                 onSubmit={handleJobDescriptionSubmit} 
-                 cvUploaded={hasCV}
-                 linkedInConnected={hasLinkedIn}
-                 user={user}
-               />
-             </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="max-w-5xl mx-auto">
+        <CardHeader>
+          <CardTitle>Job Description</CardTitle>
+          <CardDescription>Enter the job posting information to create a tailored cover letter</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Usage limit display for free users */}
+          {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+            <div className="mb-6">
+              <UsageLimit
+                feature="cover_letters"
+                current={coverLetterUsage.usage.used_count}
+                limit={coverLetterUsage.usage.limit_count}
+              />
+            </div>
+          )}
+          
+          {subscription.tier === 'FREE' && !canCreateCoverLetter && (
+            <Alert className="mb-6 border-destructive">
+              <Lock className="h-4 w-4" />
+              <AlertTitle>Cover Letter Limit Reached</AlertTitle>
+              <AlertDescription>
+                You&apos;ve reached your monthly limit. Upgrade to create more cover letters.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <JobDescriptionInput
+            onSubmit={handleJobDescriptionSubmit}
+            user={user}
+            initialJobDescription={jobDescription}
+            disabled={!canCreateCoverLetter}
+          />
+        </CardContent>
+      </Card>
     );
   }
   
   if (step === 2) {
-    if (generatingLetter) {
-      const generationDataSource = dataSource === 'none' ? 'cv' : dataSource;
-      return (
-        <GenerationProcess 
-          progress={generationProgress}
-          isRegenerating={isRegenerating}
-          dataSource={generationDataSource}
-        />
-      );
-    }
+    // Adapter: Convert full CvFile type to the simpler CVFileForManager type expected by DataSourcesManager
+    const cvFilesForManager: CVFileForManager[] = cvFiles.map(cv => ({
+      name: cv.name,
+      isSelected: cv.isSelected ?? false,
+    }));
     
+    const linkedInProfileForManager: LinkedInProfileForManager | null = linkedInProfile
+      ? { name: linkedInProfile.name || 'LinkedIn Profile' }
+      : null;
+
+    const selectedData = dataSource === 'cv' ? cvFiles.find(cv => cv.isSelected) : 
+                         dataSource === 'linkedin' ? linkedInProfile : 
+                         dataSource === 'both' ? { cv: cvFiles.find(cv => cv.isSelected), linkedin: linkedInProfile } :
+                         null;
+
     return (
-      <div>
-        <Button variant="outline" onClick={() => setStep(1)} className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Job Description
-        </Button>
-        <ResumeSourceSelector
-          cvFiles={cvFiles}
-          linkedInProfile={linkedInProfile}
-          onDataSourceSelected={handleDataSourceSelected}
-        />
-        <div className="mt-6 flex justify-end">
+      <div className="max-w-3xl mx-auto p-4 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Select Data Source</CardTitle>
+            <CardDescription>
+              Choose which source to use for your cover letter. This will help personalize your letter.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <ResumeSourceSelector
+              cvFiles={cvFiles}
+              linkedInProfile={linkedInProfile}
+              onDataSourceSelected={handleDataSourceSelected}
+            />
+            
+            <Collapsible
+              open={isDataSourcesOpen}
+              onOpenChange={setIsDataSourcesOpen}
+              className="w-full space-y-2"
+            >
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center justify-between w-full p-4 text-left"
+                >
+                  <span className="text-sm font-medium">
+                    {isDataSourcesOpen ? "Hide" : "Show"} data source details
+                  </span>
+                  {isDataSourcesOpen ? <ArrowLeft className="h-4 w-4"/> : <ArrowRight className="h-4 w-4"/>}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <DataSourcesManager
+                  isOpen={isDataSourcesOpen}
+                  setIsOpen={setIsDataSourcesOpen}
+                  hasCV={cvFiles.length > 0}
+                  hasLinkedIn={linkedInProfile !== null}
+                  cvFiles={cvFilesForManager}
+                  linkedInProfile={linkedInProfileForManager}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </Card>
+        
+        <div className="flex justify-between items-center">
+          <Button variant="outline" onClick={() => setStep(1)}>
+            <ArrowLeft className="mr-2 h-4 w-4"/>
+            Back
+          </Button>
           <Button
             onClick={() => {
-              if (dataSource !== 'none' && resumeData) {
-                handleGenerateCoverLetter(resumeData, dataSource);
+              if (dataSource === 'none') {
+                handleGenerateCoverLetter(resumeData, 'none' as any);
               } else {
-                toast({ 
-                  title: "Please select a data source",
-                  variant: "destructive",
-                  description: "You must select a CV or LinkedIn profile to proceed."
-                });
+                if (selectedData) {
+                  handleGenerateCoverLetter(selectedData, dataSource as 'cv' | 'linkedin' | 'both');
+                } else {
+                  toast({
+                    title: "No source selected",
+                    description: "Please select a data source to proceed.",
+                    variant: "destructive"
+                  });
+                }
               }
             }}
-            disabled={dataSource === 'none' || !resumeData || generatingLetter}
+            disabled={dataSource === 'none' || !resumeData || generatingLetter || !canCreateCoverLetter}
           >
             {generatingLetter ? (
               <>
                 <LoadingSpinner className="mr-2"/> 
                 Generating...
               </>
-            ) : 'Generate Cover Letter'}
-            <ArrowRight className="ml-2 h-4 w-4"/>
+            ) : (
+              <>
+                Generate Cover Letter
+                <ArrowRight className="ml-2 h-4 w-4"/>
+              </>
+            )}
           </Button>
         </div>
       </div>

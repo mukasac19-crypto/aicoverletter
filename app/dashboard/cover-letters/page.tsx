@@ -1,3 +1,5 @@
+//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\cover-letters\page.tsx
+
 "use client";
 
 import Image from "next/image";
@@ -12,12 +14,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { createBrowserClient } from "@/lib/supabase";
 import { useTemplates } from "@/lib/hooks/useTemplates";
+import { getTierDisplayName, getTierBadgeColor } from '@/lib/subscription-client';
+import { UsageLimit } from '@/components/FeatureGate';
 import {
  FileText,
  Sparkles,
@@ -32,6 +39,8 @@ import {
  Linkedin,
  Loader2,
  MailCheck,
+ Lock,
+ Crown,
 } from "lucide-react";
 import { CVManager } from "@/components/CVManager";
 import { LinkedInManager } from "@/components/LinkedInManager";
@@ -85,6 +94,8 @@ export default function CoverLetterGenerator() {
  const router = useRouter();
  const searchParams = useSearchParams();
  const { user } = useAuth();
+ const { subscription, hasFeatureAccess } = useSubscription();
+ const coverLetterUsage = useUsageTracking('cover_letters');
  const { toast } = useToast();
  const supabase = createBrowserClient();
  const { fetchTemplates, templates } = useTemplates();
@@ -114,6 +125,9 @@ export default function CoverLetterGenerator() {
    { id: "2", title: "Software Developer at Company B", date: "2023-05-08", timeAgo: "2 days ago", job_title: "Software Developer", company_name: "Company B", content: "Cover letter content here..." },
    { id: "3", title: "Project Coordinator at Company C", date: "2023-05-05", timeAgo: "5 days ago", job_title: "Project Coordinator", company_name: "Company C", content: "Cover letter content here..." },
  ]);
+
+ // Check if user can create cover letters
+ const canCreateCoverLetter = hasFeatureAccess('unlimited_cover_letters') || coverLetterUsage.canUseFeature;
 
  useEffect(() => {
    const tabParam = searchParams.get("tab");
@@ -293,8 +307,33 @@ export default function CoverLetterGenerator() {
        toast({ title: "No Template Selected", description: "A default template is loading. Please wait a moment and try again.", variant: "destructive" });
        return;
      }
+     
+     // Check if user can create cover letters
+     if (!canCreateCoverLetter) {
+       toast({
+         title: "Cover letter limit reached",
+         description: "Upgrade to create more cover letters",
+         variant: "destructive",
+       });
+       return;
+     }
+     
      setGeneratingLetter(true);
      try {
+       // Check usage limits for free tier
+       if (subscription.tier === 'FREE') {
+         const canCreate = await coverLetterUsage.incrementUsage();
+         if (!canCreate) {
+           toast({
+             title: "Cover letter limit reached",
+             description: "Upgrade to create more cover letters",
+             variant: "destructive",
+           });
+           setGeneratingLetter(false);
+           return;
+         }
+       }
+
        const generationResult = await generateCoverLetter({
          jobDescription,
          tone: selectedTone,
@@ -337,7 +376,7 @@ export default function CoverLetterGenerator() {
        setGeneratingLetter(false);
      }
    },
-   [user, jobDescription, selectedTone, toast, selectedTemplate]
+   [user, jobDescription, selectedTone, toast, selectedTemplate, canCreateCoverLetter, subscription.tier, coverLetterUsage]
  );
  
  const handleRegenerateCoverLetter = useCallback(async () => {
@@ -584,10 +623,44 @@ export default function CoverLetterGenerator() {
  return (
    <div>
      <header className="mb-8">
-       <h1 className="text-3xl font-bold">Cover Letters</h1>
-       <p className="text-muted-foreground">
-         Create and manage your personalized cover letters
-       </p>
+       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+         <div>
+           <h1 className="text-3xl font-bold">Cover Letters</h1>
+           <p className="text-muted-foreground">
+             Create and manage your personalized cover letters
+           </p>
+         </div>
+         
+         {/* Subscription Status */}
+         <div className="flex items-center gap-4">
+           <Badge className={getTierBadgeColor(subscription.tier)}>
+             {subscription.tier === 'BUSINESS' && <Crown className="h-3 w-3 mr-1" />}
+             {subscription.tier === 'PRO' && <Sparkles className="h-3 w-3 mr-1" />}
+             {getTierDisplayName(subscription.tier)} Plan
+           </Badge>
+           {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+             <div className="text-sm text-muted-foreground">
+               {coverLetterUsage.remainingUses} of {coverLetterUsage.usage.limit_count} remaining
+             </div>
+           )}
+         </div>
+       </div>
+
+       {/* Usage limit warning for free users */}
+       {subscription.tier === 'FREE' && coverLetterUsage.usage && coverLetterUsage.remainingUses <= 2 && (
+         <Alert className="mt-4">
+           <Lock className="h-4 w-4" />
+           <AlertTitle>Limited Cover Letters Remaining</AlertTitle>
+           <AlertDescription className="flex items-center justify-between">
+             <span>
+               You have {coverLetterUsage.remainingUses} cover letter{coverLetterUsage.remainingUses !== 1 ? 's' : ''} remaining this month.
+             </span>
+             <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
+               Upgrade Now
+             </Button>
+           </AlertDescription>
+         </Alert>
+       )}
      </header>
 
      <Tabs
@@ -632,6 +705,17 @@ export default function CoverLetterGenerator() {
                  </div>
                </CardHeader>
                <CardContent>
+                 {/* Usage limit display for free users */}
+                 {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+                   <div className="mb-4">
+                     <UsageLimit
+                       feature="cover_letters"
+                       current={coverLetterUsage.usage.used_count}
+                       limit={coverLetterUsage.usage.limit_count}
+                     />
+                   </div>
+                 )}
+                 
                  <div className="flex flex-wrap gap-4 mb-4">
                    <div
                      className={`flex items-center rounded-md border p-3 ${
@@ -739,11 +823,22 @@ export default function CoverLetterGenerator() {
                  </div>
                </CardHeader>
                <CardContent>
+                 {subscription.tier === 'FREE' && !canCreateCoverLetter && (
+                   <Alert className="mb-4 border-destructive">
+                     <Lock className="h-4 w-4" />
+                     <AlertTitle>Cover Letter Limit Reached</AlertTitle>
+                     <AlertDescription>
+                       You've reached your monthly limit. Upgrade to create more cover letters.
+                     </AlertDescription>
+                   </Alert>
+                 )}
+                 
                  <div className="p-1">
                    <JobDescriptionInput
                      onSubmit={handleJobDescriptionSubmit}
                      cvUploaded={hasCV}
                      linkedInConnected={hasLinkedIn}
+                     disabled={!canCreateCoverLetter}
                    />
                  </div>
                </CardContent>
@@ -781,7 +876,7 @@ export default function CoverLetterGenerator() {
                    }
                  }}
                  disabled={
-                   dataSource === "none" || !resumeData || generatingLetter
+                   dataSource === "none" || !resumeData || generatingLetter || !canCreateCoverLetter
                  }
                >
                  {generatingLetter ? (
@@ -790,7 +885,10 @@ export default function CoverLetterGenerator() {
                      Generating...
                    </>
                  ) : (
-                   "Generate Cover Letter"
+                   <>
+                     Generate Cover Letter
+                     {!canCreateCoverLetter && <Lock className="ml-2 h-4 w-4" />}
+                   </>
                  )}
                  <ArrowRight className="ml-2 h-4 w-4" />
                </Button>
@@ -914,6 +1012,24 @@ export default function CoverLetterGenerator() {
          </Card>
        </TabsContent>
      </Tabs>
+
+     {/* Upgrade CTA for Free Users */}
+     {subscription.tier === 'FREE' && activeTab === 'create' && (
+       <Card className="mt-8 border-primary/50 bg-primary/5">
+         <CardContent className="p-6 flex items-center justify-between">
+           <div className="space-y-1">
+             <h3 className="text-lg font-semibold">Need More Cover Letters?</h3>
+             <p className="text-sm text-muted-foreground">
+               Upgrade to Professional for unlimited cover letters and premium features
+             </p>
+           </div>
+           <Button onClick={() => router.push('/pricing')}>
+             <Sparkles className="h-4 w-4 mr-2" />
+             View Plans
+           </Button>
+         </CardContent>
+       </Card>
+     )}
    </div>
  );
 }

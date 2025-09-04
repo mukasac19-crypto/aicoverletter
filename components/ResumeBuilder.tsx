@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { createBrowserClient } from "@/lib/supabase";
 import { ImportGuide } from '@/components/ImportGuide';
@@ -22,7 +24,7 @@ import {
   FileText, Plus, Trash2, Clock, Search, Filter, Upload, Save, Download, Copy, Eye, CheckCircle2,
   AlertTriangle, X, Info, MoveUp, MoveDown, Folder, FileBadge, Palette, ChevronDown, ZoomIn, ZoomOut,
   Maximize, PanelLeft, LayoutList, Loader2, RefreshCw, Edit, ScanSearch, Share2, FileSpreadsheet,
-  MoreVertical, Sparkles, ArrowLeft
+  MoreVertical, Sparkles, ArrowLeft, Lock, Crown
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -97,6 +99,9 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   const [exportResult, setExportResult] = useState<ExportResult | null>(null);
 
   const { user, loading: authLoading } = useAuth();
+  const { subscription, hasFeatureAccess } = useSubscription();
+  const resumeUsage = useUsageTracking('resumes');
+  const exportUsage = useUsageTracking('exports_per_month');
 
   const router = useRouter();
   const params = useParams();
@@ -107,9 +112,12 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
   const resumeId = initialResumeId || (params.id as string);
 
+  // Check if user can create or export
+  const isNewResume = !resumeId;
+  const canCreateResume = hasFeatureAccess('unlimited_resumes') || resumeUsage.canUseFeature;
+  const canExport = hasFeatureAccess('bulk_export') || exportUsage.canUseFeature;
+
   // *** FIX #1: SYNCHRONIZE WITH INCOMING DATA ***
-  // This hook ensures the component's internal state updates
-  // when the `initialData` prop from the parent page changes.
   useEffect(() => {
     if (initialData) {
       console.log("ResumeBuilder: initialData prop received, updating internal state.", initialData);
@@ -127,8 +135,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   }, []);
 
   // *** FIX #2: SIMPLIFY INITIALIZATION LOGIC ***
-  // This hook no longer fetches the resume (the parent page does that).
-  // It now waits for `resumeData` to be populated, then fetches templates.
   useEffect(() => {
     const initializeComponent = async () => {
       if (authLoading) {
@@ -139,7 +145,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       
       if (!resumeData) {
         // If resumeData is not yet available from the parent, wait.
-        // The parent will pass it via `initialData`, triggering the first useEffect.
         setIsLoading(true); // Keep showing loading until we have data
         return;
       }
@@ -184,7 +189,6 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
     initializeComponent();
   }, [resumeData, authLoading, supabase, toast]);
 
-
   const updateSection = <K extends keyof ResumeData>(
     section: K,
     data: ResumeData[K]
@@ -209,6 +213,17 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
   const handleSaveClick = () => {
     if (!resumeData) return;
+    
+    // Check if it's a new resume and user can't create more
+    if (isNewResume && !canCreateResume) {
+      toast({
+        title: "Resume limit reached",
+        description: "Upgrade to create more resumes",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!selectedTemplate || !selectedTemplate.id) {
       console.log("Save clicked but no template selected or template ID missing. Opening modal.");
       setSaveInitiated(true);
@@ -244,6 +259,20 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
     try {
       setIsSaving(true);
       setError(null);
+
+      // Check usage limits for new resumes (only for free tier)
+      if (!isUpdating && subscription.tier === 'FREE') {
+        const canCreate = await resumeUsage.incrementUsage();
+        if (!canCreate) {
+          toast({
+            title: "Resume limit reached",
+            description: "Upgrade to create more resumes",
+            variant: "destructive",
+          });
+          setIsSaving(false);
+          return;
+        }
+      }
 
       const dataToSend: ResumeData = {
         ...resumeData,
@@ -340,12 +369,49 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   };
 
   const exportResume = async (format: 'pdf' | 'docx' | 'txt') => {
-    if (!resumeData) { toast({ title: "Error", description: "No resume data available.", variant: "destructive" }); return; }
-    if (!selectedTemplate) { toast({ title: "Template Required", description: "Please select a template." }); setShowTemplateModal(true); return; }
+    if (!resumeData) { 
+      toast({ title: "Error", description: "No resume data available.", variant: "destructive" }); 
+      return; 
+    }
+    if (!selectedTemplate) { 
+      toast({ title: "Template Required", description: "Please select a template." }); 
+      setShowTemplateModal(true); 
+      return; 
+    }
+    
+    // Check export limits
+    if (!canExport) {
+      toast({
+        title: "Export limit reached",
+        description: "Upgrade to export more documents",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
-      setExportFormat(format); setIsExporting(true); setExportProgress(0);
-      setExportStatus('Preparing export...'); setShowExportProgress(true); setExportResult(null);
+      setExportFormat(format); 
+      setIsExporting(true); 
+      setExportProgress(0);
+      setExportStatus('Preparing export...'); 
+      setShowExportProgress(true); 
+      setExportResult(null);
+      
+      // Check usage limits for exports (only for free tier)
+      if (subscription.tier === 'FREE') {
+        const canDoExport = await exportUsage.incrementUsage();
+        if (!canDoExport) {
+          toast({
+            title: "Export limit reached",
+            description: "Upgrade to export more documents",
+            variant: "destructive",
+          });
+          setIsExporting(false);
+          setShowExportProgress(false);
+          return;
+        }
+      }
+      
       toast({ title: `Preparing ${format.toUpperCase()}`, description: "Generating document..." });
 
       const result = await exportResumeWithProgress(
@@ -363,7 +429,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       setExportResult({ success: false, filename: `resume.${format}`, format: format, error: error.message || "Failed to export." });
       toast({ title: "Export Failed", description: error.message || "Error exporting resume.", variant: "destructive" });
     } finally {
-      setIsExporting(false); setShowExportOptions(false);
+      setIsExporting(false); 
+      setShowExportOptions(false);
     }
   };
 
@@ -464,9 +531,21 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
           <DropdownMenuContent align="end" className="w-56 p-2 bg-white rounded-md shadow-xl border border-teal-100 mb-2">
             <DropdownMenuItem onClick={toggleMobilePreview} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Eye className="h-5 w-5 mr-3 text-teal-600" /> <span>Preview</span> </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowTemplateModal(true)} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Palette className="h-5 w-5 mr-3 text-teal-600" /> <span>Template</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Save className="h-5 w-5 mr-3 text-teal-600" /> <span>Save</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-teal-600" /> <span>Export PDF</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Download className="h-5 w-5 mr-3 text-teal-600" /> <span>Export DOCX</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName || (isNewResume && !canCreateResume)} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
+              <Save className="h-5 w-5 mr-3 text-teal-600" /> 
+              <span>Save</span> 
+              {isNewResume && !canCreateResume && <Lock className="h-3 w-3 ml-1" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
+              <Download className="h-5 w-5 mr-3 text-teal-600" /> 
+              <span>Export PDF</span> 
+              {!canExport && <Lock className="h-3 w-3 ml-1" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
+              <Download className="h-5 w-5 mr-3 text-teal-600" /> 
+              <span>Export DOCX</span> 
+              {!canExport && <Lock className="h-3 w-3 ml-1" />}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -503,9 +582,23 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 {resumeData.title || 'Untitled Resume'}
               </h1>
               {resumeId && (
-                <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)} className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white">
-                  <ScanSearch className="h-3.5 w-3.5 mr-1" /> ATS Scan
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)} 
+                  className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white"
+                  disabled={!hasFeatureAccess('ats_scanner')}
+                  title={!hasFeatureAccess('ats_scanner') ? "Professional plan required" : ""}
+                >
+                  <ScanSearch className="h-3.5 w-3.5 mr-1" /> 
+                  ATS Scan
+                  {!hasFeatureAccess('ats_scanner') && <Lock className="h-3 w-3 ml-1" />}
                 </Button>
+              )}
+              {subscription.tier === 'FREE' && isNewResume && resumeUsage.usage && (
+                <span className="text-xs text-muted-foreground">
+                  {resumeUsage.remainingUses} of {resumeUsage.usage.limit_count} resumes remaining
+                </span>
               )}
             </div>
             {!isMobileView && (
@@ -515,24 +608,49 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 </Button>
                 <div ref={dropdownRef} className="relative">
                   <div className="flex">
-                    <Button onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName} className="rounded-r-none border-r-0 bg-teal-600 hover:bg-teal-700 text-white h-9 px-4">
-                      {isSaving ? <LoadingSpinner className="mr-2" /> : <Save className="h-4 w-4 mr-2" />} {recentlySaved ? "Saved!" : (isSaving ? "Saving..." : "Save")}
+                    <Button 
+                      onClick={handleSaveClick} 
+                      disabled={isSaving || !resumeData?.personalInfo?.firstName || (isNewResume && !canCreateResume)} 
+                      className="rounded-r-none border-r-0 bg-teal-600 hover:bg-teal-700 text-white h-9 px-4"
+                      title={isNewResume && !canCreateResume ? "Upgrade to create more resumes" : ""}
+                    >
+                      {isSaving ? <LoadingSpinner className="mr-2" /> : <Save className="h-4 w-4 mr-2" />} 
+                      {recentlySaved ? "Saved!" : (isSaving ? "Saving..." : "Save")}
+                      {isNewResume && !canCreateResume && <Lock className="h-3 w-3 ml-2" />}
                     </Button>
                     <DropdownMenu open={showExportOptions} onOpenChange={setShowExportOptions}>
                       <DropdownMenuTrigger asChild>
-                        <Button className="rounded-l-none bg-teal-600 hover:bg-teal-700 text-white px-2 h-9" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate} aria-label="Export options">
+                        <Button className="rounded-l-none bg-teal-600 hover:bg-teal-700 text-white px-2 h-9" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate || !canExport} aria-label="Export options">
                           <ChevronDown className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting} className="cursor-pointer"> {isExporting && exportFormat === 'pdf' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} Export as PDF </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting} className="cursor-pointer"> {isExporting && exportFormat === 'docx' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} Export as DOCX </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleExportOption('txt')} disabled={isExporting} className="cursor-pointer"> {isExporting && exportFormat === 'txt' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} Export as TXT </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting || !canExport} className="cursor-pointer"> 
+                          {isExporting && exportFormat === 'pdf' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} 
+                          Export as PDF 
+                          {!canExport && <Lock className="h-3 w-3 ml-1" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting || !canExport} className="cursor-pointer"> 
+                          {isExporting && exportFormat === 'docx' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} 
+                          Export as DOCX 
+                          {!canExport && <Lock className="h-3 w-3 ml-1" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExportOption('txt')} disabled={isExporting || !canExport} className="cursor-pointer"> 
+                          {isExporting && exportFormat === 'txt' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} 
+                          Export as TXT 
+                          {!canExport && <Lock className="h-3 w-3 ml-1" />}
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 </div>
               </div>
+            )}
+            {/* Show export limit warning */}
+            {subscription.tier === 'FREE' && exportUsage.usage && exportUsage.remainingUses <= 2 && (
+              <span className="text-xs text-destructive">
+                {exportUsage.remainingUses} export{exportUsage.remainingUses !== 1 ? 's' : ''} remaining
+              </span>
             )}
           </div>
         </div>
@@ -550,6 +668,37 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   <X className="h-4 w-4 mr-1" /> Dismiss
                 </Button>
               </div>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {/* Usage limit alerts for free users */}
+      {subscription.tier === 'FREE' && isNewResume && !canCreateResume && (
+        <div className="container mx-auto px-4 mt-4">
+          <Alert className="border-destructive">
+            <Lock className="h-4 w-4" />
+            <AlertTitle>Resume Limit Reached</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>You've reached your limit of {resumeUsage.usage?.limit_count || 3} resumes. Upgrade to create more.</span>
+              <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
+                Upgrade Now
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {subscription.tier === 'FREE' && exportUsage.usage && exportUsage.remainingUses === 0 && (
+        <div className="container mx-auto px-4 mt-4">
+          <Alert className="border-destructive">
+            <Lock className="h-4 w-4" />
+            <AlertTitle>Export Limit Reached</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>You've reached your monthly export limit. Upgrade for unlimited exports.</span>
+              <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
+                Upgrade Now
+              </Button>
             </AlertDescription>
           </Alert>
         </div>
@@ -706,8 +855,16 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     <Button size="sm" onClick={() => window.open(`/dashboard/resumes/${resumeData.id}/preview`, '_blank')} variant="outline" className="text-teal-700 border-teal-200 hover:bg-teal-50 h-8" >
                       <Maximize className="h-3 w-3 mr-1" /> <span className="text-xs">Open Full View</span>
                     </Button>
-                    <Button size="sm" onClick={() => handleExportOption('pdf')} className="bg-teal-600 hover:bg-teal-700 text-white h-8" >
-                      <Download className="h-3 w-3 mr-1" /> <span className="text-xs">Download PDF</span>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleExportOption('pdf')} 
+                      className="bg-teal-600 hover:bg-teal-700 text-white h-8" 
+                      disabled={!canExport}
+                      title={!canExport ? "Upgrade for more exports" : ""}
+                    >
+                      <Download className="h-3 w-3 mr-1" /> 
+                      <span className="text-xs">Download PDF</span>
+                      {!canExport && <Lock className="h-3 w-3 ml-1" />}
                     </Button>
                   </div>
                 </div>

@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\components\JobDescriptionInput.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -23,6 +21,7 @@ interface JobDescriptionInputProps {
   initialJobTitle?: string;
   initialCompanyName?: string;
   isPrePopulated?: boolean;
+  disabled?: boolean; // Added disabled prop
 }
 
 export default function JobDescriptionInput({ 
@@ -33,7 +32,8 @@ export default function JobDescriptionInput({
   initialJobDescription = "",
   initialJobTitle = "",
   initialCompanyName = "",
-  isPrePopulated = false
+  isPrePopulated = false,
+  disabled = false // Added default value
 }: JobDescriptionInputProps) {
   const [description, setDescription] = useState(initialJobDescription);
   const [jobUrl, setJobUrl] = useState("");
@@ -49,6 +49,8 @@ export default function JobDescriptionInput({
   }, [initialJobDescription]);
 
   const handleSubmit = async () => {
+    if (disabled) return; // Prevent submission if disabled
+    
     setIsLoading(true);
     // Pass both the description/URL and the selected tone
     onSubmit(activeTab === "paste" ? description : jobUrl, selectedTone);
@@ -69,7 +71,7 @@ export default function JobDescriptionInput({
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="paste">
+          <TabsTrigger value="paste" disabled={disabled}>
             <FileText className="w-4 h-4 mr-2" />
             {isPrePopulated ? "Review Description" : "Paste Description"}
           </TabsTrigger>
@@ -87,6 +89,7 @@ export default function JobDescriptionInput({
             className="min-h-[200px] mb-4"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            disabled={disabled}
           />
         </TabsContent>
 
@@ -97,6 +100,7 @@ export default function JobDescriptionInput({
             className="mb-4"
             value={jobUrl}
             onChange={(e) => setJobUrl(e.target.value)}
+            disabled={disabled}
           />
         </TabsContent>
       </Tabs>
@@ -107,7 +111,7 @@ export default function JobDescriptionInput({
           <PenTool className="h-4 w-4 text-muted-foreground" />
           <Label className="text-sm font-medium">Choose Writing Style</Label>
         </div>
-        <Select value={selectedTone} onValueChange={setSelectedTone}>
+        <Select value={selectedTone} onValueChange={setSelectedTone} disabled={disabled}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select tone" />
           </SelectTrigger>
@@ -124,7 +128,7 @@ export default function JobDescriptionInput({
 
       <Button
         onClick={handleSubmit}
-        disabled={isLoading || (activeTab === "paste" ? !description : !jobUrl)}
+        disabled={disabled || isLoading || (activeTab === "paste" ? !description : !jobUrl)}
         className="w-full"
       >
         {isLoading ? "Analyzing..." : isPrePopulated ? "Continue with Job Details" : "Generate"}
