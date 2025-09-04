@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\page.tsx
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -177,7 +175,63 @@ export default function DashboardPage() {
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        {/* Mobile: Horizontal compact layout */}
+        <div className="md:hidden">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center space-x-4">
+                <div className="flex-1 text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-1">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm font-medium text-muted-foreground">Resumes</p>
+                  </div>
+                  <p className="text-2xl font-bold">{stats.totalResumes}</p>
+                  {!isPro && resumeUsage.usage && (
+                    <Progress 
+                      value={(resumeUsage.usage.used_count / resumeUsage.usage.limit_count) * 100} 
+                      className="mt-2 h-1"
+                    />
+                  )}
+                </div>
+                
+                <div className="h-12 w-px bg-border" />
+                
+                <div className="flex-1 text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-1">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm font-medium text-muted-foreground">Cover Letters</p>
+                  </div>
+                  <p className="text-2xl font-bold">{stats.totalCoverLetters}</p>
+                  {!isPro && coverLetterUsage.usage && (
+                    <Progress 
+                      value={(coverLetterUsage.usage.used_count / coverLetterUsage.usage.limit_count) * 100} 
+                      className="mt-2 h-1"
+                    />
+                  )}
+                </div>
+                
+                <div className="h-12 w-px bg-border" />
+                
+                <div className="flex-1 text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-1">
+                    <Download className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm font-medium text-muted-foreground">Exports</p>
+                  </div>
+                  <p className="text-2xl font-bold">{exportUsage.usage?.used_count || 0}</p>
+                  {!isPro && exportUsage.usage && (
+                    <Progress 
+                      value={exportUsage.percentageUsed} 
+                      className="mt-2 h-1"
+                    />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Desktop: Keep existing card layout */}
+        <Card className="hidden md:block">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Resumes</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
@@ -193,7 +247,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="hidden md:block">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Cover Letters</CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
@@ -209,7 +263,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="hidden md:block">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Exports This Month</CardTitle>
             <Download className="h-4 w-4 text-muted-foreground" />
@@ -302,7 +356,7 @@ export default function DashboardPage() {
               <CardContent>
                 <Button 
                   className="w-full" 
-onClick={() => router.push('/dashboard/cover-letters?tab=create')}
+                  onClick={() => router.push('/dashboard/cover-letters?tab=create')}
                   disabled={!coverLetterUsage.canUseFeature}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -331,7 +385,7 @@ onClick={() => router.push('/dashboard/cover-letters?tab=create')}
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
-onClick={() => router.push('/dashboard/ats-scanner')}
+                    onClick={() => router.push('/dashboard/ats-scanner')}
                     disabled={!isPro}
                   >
                     {!isPro && <Shield className="h-4 w-4 mr-2" />}
@@ -407,20 +461,14 @@ onClick={() => router.push('/dashboard/ats-scanner')}
           <CardContent className="flex items-center justify-between p-6">
             <div className="space-y-1">
               <h3 className="text-lg font-semibold">Unlock Premium Features</h3>
-<p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Get unlimited resumes, cover letters, and access to advanced features
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end text-sm">
-                <span className="font-semibold">Starting at $9/month</span>
-                <span className="text-muted-foreground">Cancel anytime</span>
-              </div>
-              <Button onClick={() => router.push('/pricing')}>
-                View Plans
-                <ArrowUpRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
+            <Button onClick={() => router.push('/pricing')}>
+              View Plans
+              <ArrowUpRight className="h-4 w-4 ml-2" />
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -470,7 +518,7 @@ onClick={() => router.push('/dashboard/ats-scanner')}
                   <Button 
                     variant="link" 
                     className="p-0 h-auto mt-1" 
-onClick={() => router.push('/dashboard/cover-letters?tab=create')}
+                    onClick={() => router.push('/dashboard/cover-letters?tab=create')}
                   >
                     Create cover letter →
                   </Button>

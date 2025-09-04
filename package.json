@@ -107,7 +107,7 @@
     "vaul": "^0.9.9",
     "xlsx": "^0.18.5",
     "zod": "^3.23.8",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/doctrine": "^0.0.9",
