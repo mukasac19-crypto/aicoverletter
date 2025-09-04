@@ -108,7 +108,7 @@ export default function SubscriptionCheck({
   const tierValues: Record<SubscriptionTier, number> = {
     'FREE': 0,
     'PRO': 1,
-    'BUSINESS': 2
+    
   };
   
   // Check if user has required tier

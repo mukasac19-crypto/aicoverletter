@@ -1,146 +1,97 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\resumes\route.ts
-
-
-import { NextResponse } from 'next/server';
+// app/api/resumes/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { mapResumeToDatabase, mapDatabaseToResumeData } from '@/lib/resume-mappers';
-import { ResumeData } from '@/types/resume';
-import { v4 as uuidv4 } from 'uuid';
+import { withAuth, checkFeatureUsage } from '@/lib/api-helpers';
 
-// GET all resumes for the authenticated user
-export async function GET(request: Request) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+export async function GET(request: NextRequest) {
+  return withAuth(request, async ({ userId, isPro, supabase }) => {
+    const { searchParams } = new URL(request.url);
+    const includeDeleted = searchParams.get('includeDeleted') === 'true';
     
-    // Get user session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please sign in.' }, 
-        { status: 401 }
-      );
-    }
-    
-    // Get all resumes for the user
-    const { data, error } = await supabase
+    let query = supabase
       .from('resumes')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', userId)
       .order('updated_at', { ascending: false });
     
-    if (error) {
-      console.error('Error fetching resumes:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to fetch resumes' }, 
-        { status: 500 }
-      );
+    if (!includeDeleted) {
+      query = query.is('deleted_at', null);
     }
     
-    // Map database format to application format
-    const resumesData = data.map(resume => mapDatabaseToResumeData(resume));
+    const { data, error } = await query;
     
-    return NextResponse.json(resumesData);
-  } catch (error: any) {
-    console.error('Error in GET /api/resumes:', error);
-    return NextResponse.json(
-      { error: error.message || 'An unexpected error occurred' },
-      { status: 500 }
-    );
-  }
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    
+    return NextResponse.json({ data });
+  });
 }
 
-// Create a new resume
-export async function POST(request: Request) {
-  try {
-    console.log('Creating new resume');
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+export async function POST(request: NextRequest) {
+  return withAuth(request, async ({ userId, isPro, supabase }) => {
+    const resumeData = await request.json();
     
-    // Get user session
-    const { data: { session } } = await supabase.auth.getSession();
+    // Check if updating or creating new
+    const isUpdate = !!resumeData.id;
     
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please sign in.' }, 
-        { status: 401 }
-      );
+    if (!isUpdate) {
+      // Check resume limit for new resumes
+      const usageCheck = await checkFeatureUsage(userId, 'resumes', isPro, supabase);
+      if (!usageCheck.allowed) {
+        return NextResponse.json(
+          { 
+            error: 'Resume Limit Reached',
+            message: usageCheck.error,
+            upgradeUrl: '/pricing'
+          }, 
+          { status: 403 }
+        );
+      }
     }
     
-    // Get request body - only expect resumeData field
-    const { resumeData } = await request.json();
-    
-    if (!resumeData) {
-      return NextResponse.json(
-        { error: 'Resume data is required' }, 
-        { status: 400 }
-      );
-    }
-    
-    // Add user ID and generate new resume ID if not provided
-    const completeResumeData: ResumeData = {
+    // Prepare data for insert/update
+    const dataToSave = {
       ...resumeData,
-      id: resumeData.id || uuidv4(),
-      userId: session.user.id,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      user_id: userId,
+      updated_at: new Date().toISOString(),
+      is_pro: isPro, // Track if created with PRO account
     };
     
-    // Convert to database format (this will map sourceCV to source_cv)
-    const dbResumeData = mapResumeToDatabase(completeResumeData);
-    
-    // Debug: Log the mapped keys
-    if (dbResumeData) {
-      console.log('Mapped from UI to DB format:', {
-        fromKeys: Object.keys(completeResumeData),
-        toKeys: Object.keys(dbResumeData)
-      });
-      
-      // Use type assertion to help TypeScript understand we can use string indexing
-      const typedDbData = dbResumeData as Record<string, any>;
-      
-      // Ensure template_id is either a valid UUID or null (not an empty string)
-      if (!typedDbData.template_id || typedDbData.template_id === "") {
-        typedDbData.template_id = null;
-      }
-      
-      // If source_cv is empty, set it to null
-      if (typedDbData.source_cv === "") {
-        typedDbData.source_cv = null;
-      }
-      
-      // Ensure all UUID fields that might be empty strings are converted to null
-      const uuidFields = ['id', 'template_id', 'source_cv'];
-      for (const field of uuidFields) {
-        if (typedDbData[field] === "") {
-          typedDbData[field] = null;
-        }
-      }
+    // Remove id for new resumes
+    if (!isUpdate) {
+      delete dataToSave.id;
+      dataToSave.created_at = new Date().toISOString();
     }
     
-    // Insert into database
-    const { data, error } = await supabase
-      .from('resumes')
-      .insert(dbResumeData)
-      .select()
-      .single();
+    // Create or update resume
+    const { data, error } = isUpdate
+      ? await supabase
+          .from('resumes')
+          .update(dataToSave)
+          .eq('id', resumeData.id)
+          .eq('user_id', userId) // Ensure user owns the resume
+          .select()
+          .single()
+      : await supabase
+          .from('resumes')
+          .insert(dataToSave)
+          .select()
+          .single();
     
     if (error) {
-      console.error('Error creating resume:', error);
+      console.error('Resume save error:', error);
       return NextResponse.json(
-        { error: error.message || 'Failed to create resume' }, 
+        { error: 'Failed to save resume', details: error.message },
         { status: 500 }
       );
     }
     
-    return NextResponse.json(data);
-  } catch (error: any) {
-    console.error('Error in POST /api/resumes:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to create resume' },
-      { status: 500 }
-    );
-  }
+    return NextResponse.json({ 
+      success: true, 
+      data,
+      message: isUpdate ? 'Resume updated successfully' : 'Resume created successfully'
+    });
+  });
 }

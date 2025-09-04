@@ -128,7 +128,7 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
         
         {/* --- START OF FIX --- */}
         {/* Usage Stats section updated with optional chaining (?.) and nullish coalescing (??) */}
-        {usageStats && tier !== 'BUSINESS' && (
+        {usageStats && (tier as any) !== 'BUSINESS' && (
           <div className="space-y-3 mt-2">
             <h4 className="text-sm font-medium">Current Usage</h4>
             
@@ -186,7 +186,7 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
         )}
         {/* --- END OF FIX --- */}
         
-        {tier === 'BUSINESS' && (
+        {(tier as any) === 'BUSINESS' && (
           <div className="flex items-start p-3 bg-green-50 border border-green-200 rounded-md">
             <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
             <p className="text-sm">
@@ -210,7 +210,7 @@ export default function SubscriptionStatus({ subscription, usageStats }: Subscri
           </Button>
         )}
         
-        {tier !== 'BUSINESS' && (
+        {(tier as any) !== 'BUSINESS' && (
           <Button 
             size="sm" 
             className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"

@@ -1,5 +1,3 @@
-// File: app/api/cover-letters/fetch/route.ts
-
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
@@ -47,6 +45,37 @@ export async function GET(request: Request) {
 
         // If an ID is provided, fetch a single cover letter
         if (id) {
+            // Handle the special "new" case
+            if (id === 'new') {
+                // Return an empty cover letter template for creating a new one
+                const newCoverLetter: CoverLetter = {
+                    id: '',
+                    userId: session.user.id,
+                    templateId: undefined,
+                    jobDescription: '',
+                    content: '',
+                    tone: 'professional',
+                    created_at: null,
+                    jobTitle: '',
+                    companyName: '',
+                    data_source: 'none',
+                    sender: undefined,
+                    recipient: {
+                        company: undefined
+                    }
+                };
+                return NextResponse.json(newCoverLetter);
+            }
+
+            // Validate UUID format before querying
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(id)) {
+                return NextResponse.json(
+                    { error: 'Invalid cover letter ID format' },
+                    { status: 400 }
+                );
+            }
+
             const { data, error } = await supabase
                 .from('cover_letters')
                 .select('*')
@@ -136,6 +165,37 @@ export async function POST(request: Request) {
 
         if (!id) {
             return NextResponse.json({ error: 'Cover letter ID is required' }, { status: 400 });
+        }
+
+        // Handle the special "new" case
+        if (id === 'new') {
+            // Return an empty cover letter template for creating a new one
+            const newCoverLetter: CoverLetter = {
+                id: '',
+                userId: session.user.id,
+                templateId: undefined,
+                jobDescription: '',
+                content: '',
+                tone: 'professional',
+                created_at: null,
+                jobTitle: '',
+                companyName: '',
+                data_source: 'none',
+                sender: undefined,
+                recipient: {
+                    company: undefined
+                }
+            };
+            return NextResponse.json(newCoverLetter);
+        }
+
+        // Validate UUID format before querying
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(id)) {
+            return NextResponse.json(
+                { error: 'Invalid cover letter ID format' },
+                { status: 400 }
+            );
         }
 
         // Fetch the specific cover letter

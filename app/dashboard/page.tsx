@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useUsageTracking } from '@/hooks/useUsageTracking';
 import { createBrowserClient } from '@/lib/supabase';
+import { useProfile } from '@/lib/hooks/useProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,8 +36,9 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, profile } = useAuth();
-  const { subscription, isLoading: subscriptionLoading } = useSubscription();
+  const { user } = useAuth();
+  const { profile } = useProfile();
+  const { isPro, isLoading: subscriptionLoading } = useSubscription();
   const resumeUsage = useUsageTracking('resumes');
   const coverLetterUsage = useUsageTracking('cover_letters');
   const exportUsage = useUsageTracking('exports_per_month');
@@ -160,15 +162,11 @@ export default function DashboardPage() {
         
          {/* Subscription Badge */}
         <div className="flex items-center gap-4">
-          <Badge className={getTierBadgeColor(subscription.tier)}>
-            {/* FIX: Changed 'PREMIUM' to 'BUSINESS' */}
-            {subscription.tier === 'BUSINESS' && <Crown className="h-3 w-3 mr-1" />}
-            {/* FIX: Changed 'PROFESSIONAL' to 'PRO' */}
-            {subscription.tier === 'PRO' && <Sparkles className="h-3 w-3 mr-1" />}
-            {getTierDisplayName(subscription.tier)} Plan
+          <Badge className={getTierBadgeColor(isPro ? 'PRO' : 'FREE')}>
+            {isPro && <Crown className="h-3 w-3 mr-1" />}
+            {getTierDisplayName(isPro ? 'PRO' : 'FREE')} Plan
           </Badge>
-          {/* FIX: Changed 'PREMIUM' to 'BUSINESS' */}
-          {subscription.tier !== 'BUSINESS' && (
+          {!isPro && (
             <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
               <Zap className="h-4 w-4 mr-2" />
               Upgrade
@@ -186,7 +184,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalResumes}</div>
-            {subscription.tier === 'FREE' && resumeUsage.usage && (
+            {!isPro && resumeUsage.usage && (
               <Progress 
                 value={(resumeUsage.usage.used_count / resumeUsage.usage.limit_count) * 100} 
                 className="mt-2 h-2"
@@ -202,7 +200,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCoverLetters}</div>
-            {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+            {!isPro && coverLetterUsage.usage && (
               <Progress 
                 value={(coverLetterUsage.usage.used_count / coverLetterUsage.usage.limit_count) * 100} 
                 className="mt-2 h-2"
@@ -218,7 +216,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{exportUsage.usage?.used_count || 0}</div>
-            {subscription.tier === 'FREE' && exportUsage.usage && (
+            {!isPro && exportUsage.usage && (
               <Progress 
                 value={exportUsage.percentageUsed} 
                 className="mt-2 h-2"
@@ -229,7 +227,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Usage Limits for Free Users */}
-      {subscription.tier === 'FREE' && (
+      {!isPro && (
         <Card>
           <CardHeader>
             <CardTitle>Usage Limits</CardTitle>
@@ -238,18 +236,12 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             <UsageLimit
               feature="resumes"
-              current={resumeUsage.usage?.used_count || 0}
-              limit={resumeUsage.usage?.limit_count || 3}
             />
             <UsageLimit
               feature="cover_letters"
-              current={coverLetterUsage.usage?.used_count || 0}
-              limit={coverLetterUsage.usage?.limit_count || 5}
             />
             <UsageLimit
               feature="exports_per_month"
-              current={exportUsage.usage?.used_count || 0}
-              limit={exportUsage.usage?.limit_count || 10}
             />
             <div className="pt-4">
               <Button className="w-full" onClick={() => router.push('/dashboard/billing')}>
@@ -340,18 +332,18 @@ export default function DashboardPage() {
                     variant="outline" 
                     className="w-full justify-start"
                     onClick={() => router.push('/dashboard/resumes/ats-scanner')}
-                    disabled={!subscription.tier || subscription.tier === 'FREE'}
+                    disabled={!isPro}
                   >
-                    {subscription.tier === 'FREE' && <Shield className="h-4 w-4 mr-2" />}
+                    {!isPro && <Shield className="h-4 w-4 mr-2" />}
                     ATS Scanner
                   </Button>
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
                     onClick={() => router.push('/dashboard/interview-buddy')}
-                    disabled={subscription.tier !== 'BUSINESS'}
+                    disabled={!isPro}
                   >
-                    {subscription.tier !== 'BUSINESS' && <Crown className="h-4 w-4 mr-2" />}
+                    {!isPro && <Crown className="h-4 w-4 mr-2" />}
                     Interview Buddy
                   </Button>
                 </div>
@@ -410,7 +402,7 @@ export default function DashboardPage() {
       </Tabs>
 
       {/* Upgrade CTA for Free Users */}
-      {subscription.tier === 'FREE' && (
+      {!isPro && (
         <Card className="border-primary/50 bg-primary/5">
           <CardContent className="flex items-center justify-between p-6">
             <div className="space-y-1">
@@ -509,7 +501,7 @@ export default function DashboardPage() {
       )}
 
       {/* Premium Features Preview */}
-      {subscription.tier === 'FREE' && (
+      {!isPro && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Premium Features</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

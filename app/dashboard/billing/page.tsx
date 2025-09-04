@@ -180,7 +180,7 @@ export default function BillingPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {subscription && subscription.tier !== 'FREE' ? (
+                {subscription && (subscription.tier as any) !== 'FREE' ? (
                   <div className="space-y-4">
                     <div className="p-3 bg-gray-50 rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center">
@@ -222,7 +222,7 @@ export default function BillingPage() {
             </Card>
             
             {/* Billing Actions */}
-            {subscription && subscription.tier !== 'FREE' && (
+            {subscription && (subscription.tier as any) !== 'FREE' && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Billing Actions</CardTitle>

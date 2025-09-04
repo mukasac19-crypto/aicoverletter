@@ -1,5 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\cover-letters\page.tsx
-
 "use client";
 
 import Image from "next/image";
@@ -94,7 +92,7 @@ export default function CoverLetterGenerator() {
  const router = useRouter();
  const searchParams = useSearchParams();
  const { user } = useAuth();
- const { subscription, hasFeatureAccess } = useSubscription();
+ const { isPro, usage, canUseFeature } = useSubscription();
  const coverLetterUsage = useUsageTracking('cover_letters');
  const { toast } = useToast();
  const supabase = createBrowserClient();
@@ -127,7 +125,7 @@ export default function CoverLetterGenerator() {
  ]);
 
  // Check if user can create cover letters
- const canCreateCoverLetter = hasFeatureAccess('unlimited_cover_letters') || coverLetterUsage.canUseFeature;
+ const canCreateCoverLetter = canUseFeature('coverLetters');
 
  useEffect(() => {
    const tabParam = searchParams.get("tab");
@@ -312,7 +310,7 @@ export default function CoverLetterGenerator() {
      if (!canCreateCoverLetter) {
        toast({
          title: "Cover letter limit reached",
-         description: "Upgrade to create more cover letters",
+         description: "Upgrade to PRO for unlimited cover letters",
          variant: "destructive",
        });
        return;
@@ -320,20 +318,6 @@ export default function CoverLetterGenerator() {
      
      setGeneratingLetter(true);
      try {
-       // Check usage limits for free tier
-       if (subscription.tier === 'FREE') {
-         const canCreate = await coverLetterUsage.incrementUsage();
-         if (!canCreate) {
-           toast({
-             title: "Cover letter limit reached",
-             description: "Upgrade to create more cover letters",
-             variant: "destructive",
-           });
-           setGeneratingLetter(false);
-           return;
-         }
-       }
-
        const generationResult = await generateCoverLetter({
          jobDescription,
          tone: selectedTone,
@@ -376,7 +360,7 @@ export default function CoverLetterGenerator() {
        setGeneratingLetter(false);
      }
    },
-   [user, jobDescription, selectedTone, toast, selectedTemplate, canCreateCoverLetter, subscription.tier, coverLetterUsage]
+   [user, jobDescription, selectedTone, toast, selectedTemplate, canCreateCoverLetter]
  );
  
  const handleRegenerateCoverLetter = useCallback(async () => {
@@ -633,27 +617,26 @@ export default function CoverLetterGenerator() {
          
          {/* Subscription Status */}
          <div className="flex items-center gap-4">
-           <Badge className={getTierBadgeColor(subscription.tier)}>
-             {subscription.tier === 'BUSINESS' && <Crown className="h-3 w-3 mr-1" />}
-             {subscription.tier === 'PRO' && <Sparkles className="h-3 w-3 mr-1" />}
-             {getTierDisplayName(subscription.tier)} Plan
+           <Badge className={getTierBadgeColor(isPro ? 'PRO' : 'FREE')}>
+             {isPro && <Sparkles className="h-3 w-3 mr-1" />}
+             {getTierDisplayName(isPro ? 'PRO' : 'FREE')} Plan
            </Badge>
-           {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+           {!isPro && usage.coverLetters && (
              <div className="text-sm text-muted-foreground">
-               {coverLetterUsage.remainingUses} of {coverLetterUsage.usage.limit_count} remaining
+               {usage.coverLetters.limit - usage.coverLetters.used} of {usage.coverLetters.limit} remaining
              </div>
            )}
          </div>
        </div>
 
        {/* Usage limit warning for free users */}
-       {subscription.tier === 'FREE' && coverLetterUsage.usage && coverLetterUsage.remainingUses <= 2 && (
+       {!isPro && usage.coverLetters && (usage.coverLetters.limit - usage.coverLetters.used) <= 2 && (
          <Alert className="mt-4">
            <Lock className="h-4 w-4" />
            <AlertTitle>Limited Cover Letters Remaining</AlertTitle>
            <AlertDescription className="flex items-center justify-between">
              <span>
-               You have {coverLetterUsage.remainingUses} cover letter{coverLetterUsage.remainingUses !== 1 ? 's' : ''} remaining this month.
+               You have {usage.coverLetters.limit - usage.coverLetters.used} cover letter{(usage.coverLetters.limit - usage.coverLetters.used) !== 1 ? 's' : ''} remaining this month.
              </span>
              <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
                Upgrade Now
@@ -706,13 +689,9 @@ export default function CoverLetterGenerator() {
                </CardHeader>
                <CardContent>
                  {/* Usage limit display for free users */}
-                 {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+                 {!isPro && usage.coverLetters && (
                    <div className="mb-4">
-                     <UsageLimit
-                       feature="cover_letters"
-                       current={coverLetterUsage.usage.used_count}
-                       limit={coverLetterUsage.usage.limit_count}
-                     />
+                     <UsageLimit feature="coverLetters" />
                    </div>
                  )}
                  
@@ -823,12 +802,12 @@ export default function CoverLetterGenerator() {
                  </div>
                </CardHeader>
                <CardContent>
-                 {subscription.tier === 'FREE' && !canCreateCoverLetter && (
+                 {!isPro && !canCreateCoverLetter && (
                    <Alert className="mb-4 border-destructive">
                      <Lock className="h-4 w-4" />
                      <AlertTitle>Cover Letter Limit Reached</AlertTitle>
                      <AlertDescription>
-                       You've reached your monthly limit. Upgrade to create more cover letters.
+                       You&apos;ve reached your monthly limit. Upgrade to create more cover letters.
                      </AlertDescription>
                    </Alert>
                  )}
@@ -1014,7 +993,7 @@ export default function CoverLetterGenerator() {
      </Tabs>
 
      {/* Upgrade CTA for Free Users */}
-     {subscription.tier === 'FREE' && activeTab === 'create' && (
+     {!isPro && activeTab === 'create' && (
        <Card className="mt-8 border-primary/50 bg-primary/5">
          <CardContent className="p-6 flex items-center justify-between">
            <div className="space-y-1">

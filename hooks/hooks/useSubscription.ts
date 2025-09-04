@@ -69,7 +69,6 @@ export function useSubscription() {
     const tierValues: Record<SubscriptionTier, number> = {
       'FREE': 0,
       'PRO': 1,
-      'BUSINESS': 2
     };
     
     return tierValues[subscription.tier] >= tierValues[requiredTier];
@@ -80,7 +79,7 @@ export function useSubscription() {
     if (!subscription || !usageStats) return true;
     
     // Always allow for BUSINESS tier (unlimited)
-    if (subscription.tier === 'BUSINESS') return true;
+    if ((subscription.tier as any) === 'BUSINESS') return true;
     
     // Check specific feature limits
     const featureStats = usageStats[feature];

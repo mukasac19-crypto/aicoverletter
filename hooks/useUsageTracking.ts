@@ -25,7 +25,7 @@ interface UsageTrackingResult {
 
 export function useUsageTracking(feature: string): UsageTrackingResult {
   const { user } = useAuth();
-  const { subscription, isFeatureLimited } = useSubscription();
+  const { isPro, canUseFeature: isFeatureLimited } = useSubscription();
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export function useUsageTracking(feature: string): UsageTrackingResult {
 
   // Fetch current usage
   const fetchUsage = useCallback(async () => {
-    if (!user?.id || subscription.tier !== 'FREE') {
+    if (!user?.id || isPro) {
       setIsLoading(false);
       return;
     }
@@ -59,11 +59,11 @@ export function useUsageTracking(feature: string): UsageTrackingResult {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, feature, subscription.tier, supabase]);
+  }, [user?.id, feature, isPro, supabase]);
 
   // Increment usage count
   const incrementUsage = useCallback(async (): Promise<boolean> => {
-    if (!user?.id || subscription.tier !== 'FREE') {
+    if (!user?.id || isPro) {
       return true; // No limits for paid tiers
     }
 
@@ -101,10 +101,10 @@ export function useUsageTracking(feature: string): UsageTrackingResult {
       console.error('Error incrementing usage:', err);
       return false;
     }
-  }, [user?.id, feature, usage, subscription.tier, supabase]);
+  }, [user?.id, feature, usage, isPro, supabase]);
 
   // Calculate derived values
-  const canUseFeature = !isFeatureLimited(feature, usage?.used_count || 0);
+  const canUseFeature = isFeatureLimited(feature);
   const remainingUses = Math.max(0, (usage?.limit_count || getDefaultLimit(feature)) - (usage?.used_count || 0));
   const percentageUsed = usage ? (usage.used_count / usage.limit_count) * 100 : 0;
 

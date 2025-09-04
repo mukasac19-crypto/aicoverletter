@@ -18,7 +18,6 @@ import type { CoverLetter as CoverLetterType } from "@/types/cover-letter";
 import { Database } from "@/types/supabase";
 import type { CvFile as ImportedCvFile } from '@/lib/cv-helpers';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useUsageTracking } from '@/hooks/useUsageTracking';
 import { UsageLimit } from '@/components/FeatureGate';
 
 // --- Helper Component & Type Definitions ---
@@ -59,8 +58,7 @@ interface CreateCoverLetterTabProps {
 
 
 const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }: CreateCoverLetterTabProps) => {
-  const { subscription, hasFeatureAccess } = useSubscription();
-  const coverLetterUsage = useUsageTracking('cover_letters');
+  const { isPro, usage, canUseFeature } = useSubscription();
   
   const [step, setStep] = useState(1);
   
@@ -82,7 +80,7 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
   const [generatingLetter, setGeneratingLetter] = useState(false);
 
   // Check if user can create cover letters
-  const canCreateCoverLetter = hasFeatureAccess('unlimited_cover_letters') || coverLetterUsage.canUseFeature;
+  const canCreateCoverLetter = canUseFeature('coverLetters');
 
   const loadCvFiles = useCallback(async () => {
     // Mock implementation
@@ -118,7 +116,7 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     if (!canCreateCoverLetter) {
       toast({
         title: "Cover letter limit reached",
-        description: "Upgrade to create more cover letters",
+        description: "Upgrade to PRO for unlimited cover letters",
         variant: "destructive",
       });
       return;
@@ -129,20 +127,6 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     setGenerationProgress(0);
     
     try {
-      // Check usage limits for free tier
-      if (subscription.tier === 'FREE') {
-        const canCreate = await coverLetterUsage.incrementUsage();
-        if (!canCreate) {
-          toast({
-            title: "Cover letter limit reached",
-            description: "Upgrade to create more cover letters",
-            variant: "destructive",
-          });
-          setGeneratingLetter(false);
-          return;
-        }
-      }
-
       const result: GenerationResult = await generateCoverLetter({
         jobDescription,
         tone: "professional",
@@ -179,7 +163,7 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     } finally {
       setGeneratingLetter(false);
     }
-  }, [jobDescription, user, toast, canCreateCoverLetter, subscription.tier, coverLetterUsage]);
+  }, [jobDescription, user, toast, canCreateCoverLetter]);
   
   const handleRegenerateCoverLetter = useCallback(async (letter: CoverLetterType) => {
       if (!letter) return;
@@ -221,6 +205,9 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     });
   };
   
+  // Get cover letter usage stats
+  const coverLetterUsage = usage.coverLetters;
+  
   if (step === 1) {
     return (
       <Card className="max-w-5xl mx-auto">
@@ -230,22 +217,18 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
         </CardHeader>
         <CardContent>
           {/* Usage limit display for free users */}
-          {subscription.tier === 'FREE' && coverLetterUsage.usage && (
+          {!isPro && coverLetterUsage && (
             <div className="mb-6">
-              <UsageLimit
-                feature="cover_letters"
-                current={coverLetterUsage.usage.used_count}
-                limit={coverLetterUsage.usage.limit_count}
-              />
+              <UsageLimit feature="coverLetters" />
             </div>
           )}
           
-          {subscription.tier === 'FREE' && !canCreateCoverLetter && (
+          {!isPro && !canCreateCoverLetter && (
             <Alert className="mb-6 border-destructive">
               <Lock className="h-4 w-4" />
               <AlertTitle>Cover Letter Limit Reached</AlertTitle>
               <AlertDescription>
-                You&apos;ve reached your monthly limit. Upgrade to create more cover letters.
+                You've reached your monthly limit of {coverLetterUsage?.limit} cover letters. Upgrade to PRO for unlimited access.
               </AlertDescription>
             </Alert>
           )}

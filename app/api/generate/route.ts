@@ -1,4 +1,4 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\generate\route.ts
+// app/api/generate/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
@@ -6,9 +6,12 @@ import { QueueEvents, Job } from 'bullmq';
 import { openaiQueue } from '@/lib/queues/openaiQueue';
 import { Database } from '@/types/supabase';
 import redisConnection from '@/lib/redis';
+import { rateLimitApiRoute } from '@/lib/simple-rate-limiter';
+import { checkFeatureUsage } from '@/lib/api-helpers';
+
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies(); // Await cookies() here
+    const cookieStore = cookies();
     const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
     const {
       data: { session },
@@ -16,6 +19,58 @@ export async function POST(request: Request) {
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check rate limit
+    const rateLimitResult = await rateLimitApiRoute(
+      session.user.id,
+      '/api/generate'
+    );
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          error: "Too Many Requests",
+          message: rateLimitResult.error?.message,
+          retryAfter: rateLimitResult.headers['Retry-After']
+        },
+        { 
+          status: 429,
+          headers: rateLimitResult.headers 
+        }
+      );
+    }
+
+    // Check if user is PRO
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('status', 'active')
+      .maybeSingle();
+    
+    const isPro = !!subscription;
+
+    // Check feature usage for cover letters
+    const usageCheck = await checkFeatureUsage(
+      session.user.id,
+      'coverLetters',
+      isPro,
+      supabase
+    );
+
+    if (!usageCheck.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Usage Limit Exceeded',
+          message: usageCheck.error,
+          upgradeUrl: '/pricing'
+        },
+        { 
+          status: 403,
+          headers: rateLimitResult.headers 
+        }
+      );
     }
 
     const {
@@ -30,7 +85,10 @@ export async function POST(request: Request) {
     if (!jobDescription) {
       return NextResponse.json(
         { error: "Job description is required" },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: rateLimitResult.headers
+        }
       );
     }
 
@@ -43,7 +101,6 @@ export async function POST(request: Request) {
           name: "generate-cover-letter",
           data: {
             jobId,
-            // We no longer pass jobTitle and companyName here
             jobDescription,
             userProfile,
             tone,
@@ -55,6 +112,7 @@ export async function POST(request: Request) {
               regenerate,
               dataSource,
               timestamp: new Date().toISOString(),
+              isPro, // Include tier info for potential premium features
             },
           },
         },
@@ -67,14 +125,11 @@ export async function POST(request: Request) {
 
       const queueEvents = new QueueEvents("openai-requests", { connection: redisConnection });
 
-
       let result: any;
       try {
         result = await job.waitUntilFinished(queueEvents);
-        console.log("generated coverleter result", result);
+        console.log("generated cover letter result", result);
 
-        // --- *** MODIFIED PART *** ---
-        // Validate the new, richer response from the worker
         if (
           !result ||
           !result.success ||
@@ -85,79 +140,123 @@ export async function POST(request: Request) {
           const errorMessage =
             result?.error?.message ||
             "Failed to generate cover letter: Incomplete data received from worker.";
-          console.error(`Cover letter generation failed [${jobId}]:`, errorMessage);
-
-          await queueEvents.close();
+          
           return NextResponse.json(
-            {
-              error: "Cover letter generation failed",
-              details: errorMessage,
-              jobId,
-              coverLetterId,
+            { 
+              error: errorMessage,
+              jobId: job.id 
             },
-            { status: 500 }
+            { 
+              status: 500,
+              headers: rateLimitResult.headers
+            }
           );
         }
 
-       console.log(`Successfully generated cover letter [${jobId}]`);
+        const { content, jobTitle, companyName } = result.data;
 
-      // --- FIX ADDED HERE ---
-      // Sanitize the AI's response to remove awkward whitespace and newlines.
-      const rawContent = result.data.content;
-      const cleanedContent = rawContent
-        .trim() // Remove leading/trailing whitespace from the whole text
-        .replace(/\n\s*\n/g, '\n\n'); // Normalize multiple newlines into a single paragraph break
+        // Save to database
+        const { data: savedCoverLetter, error: dbError } = await supabase
+          .from("cover_letters")
+          .upsert([
+            {
+              id: coverLetterId,
+              user_id: session.user.id,
+              job_title: jobTitle,
+              company_name: companyName,
+              job_description: jobDescription,
+              content: content,
+              tone: tone,
+              is_pro: isPro, // Track if generated with PRO features
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ])
+          .select()
+          .single();
 
-      // Return the new object structure with the CLEANED data
-      return NextResponse.json({
-        success: true,
-        data: {
-          coverLetter: cleanedContent, // Use the cleaned version
-          jobTitle: result.data.jobTitle,
-          companyName: result.data.companyName,
-          jobId,
-          coverLetterId,
-          metadata: result.data.metadata,
-        },
-      });
-      } catch (err: any) {
-        const failedReason =
-          job.failedReason || err.message || "Unknown error occurred";
-        console.error(`Cover letter job failed [${jobId}]:`, failedReason);
+        if (dbError) {
+          console.error("Failed to save cover letter:", dbError);
+          return NextResponse.json(
+            { 
+              error: "Failed to save cover letter",
+              details: dbError.message 
+            },
+            { 
+              status: 500,
+              headers: rateLimitResult.headers
+            }
+          );
+        }
 
-        await queueEvents.close();
+        // Return successful response with rate limit headers
         return NextResponse.json(
           {
-            error: "Cover letter generation job failed",
-            details: failedReason,
-            jobId,
-            coverLetterId,
-            stack:
-              process.env.NODE_ENV === "development" ? err.stack : undefined,
+            success: true,
+            data: {
+              id: savedCoverLetter.id,
+              content: savedCoverLetter.content,
+              jobTitle: savedCoverLetter.job_title,
+              companyName: savedCoverLetter.company_name,
+              tone: savedCoverLetter.tone,
+              createdAt: savedCoverLetter.created_at,
+              isPro,
+            },
           },
-          { status: 500 }
+          { 
+            headers: rateLimitResult.headers
+          }
         );
-      } finally {
-        await queueEvents.close().catch(console.error);
+
+      } catch (jobError: any) {
+        console.error("Job processing error:", jobError);
+        
+        if (jobError.message?.includes("Job wait")) {
+          return NextResponse.json(
+            { 
+              error: "Job processing timeout. Please try again.",
+              jobId: job.id 
+            },
+            { 
+              status: 504,
+              headers: rateLimitResult.headers
+            }
+          );
+        }
+        
+        return NextResponse.json(
+          { 
+            error: "Failed to process job",
+            details: jobError.message,
+            jobId: job.id 
+          },
+          { 
+            status: 500,
+            headers: rateLimitResult.headers
+          }
+        );
       }
-    } catch (error: any) {
-      console.error("Error in cover letter generation:", error);
+
+    } catch (queueError: any) {
+      console.error("Queue error:", queueError);
       return NextResponse.json(
-        {
-          error: "Failed to generate cover letter",
-          details: error.message || "Unknown error occurred",
-          jobId,
-          coverLetterId,
+        { 
+          error: "Failed to queue job",
+          details: queueError.message 
         },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: rateLimitResult.headers
+        }
       );
     }
+
   } catch (error: any) {
-    console.error("Error in /api/generate [POST]:", error);
+    console.error("Unexpected error in generate route:", error);
     return NextResponse.json(
-      {
-        error: "Failed to process request",
-        details: error.message || "Unknown error occurred",
+      { 
+        error: "An unexpected error occurred",
+        details: error.message 
       },
       { status: 500 }
     );

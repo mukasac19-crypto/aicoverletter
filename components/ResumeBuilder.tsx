@@ -99,7 +99,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
   const [exportResult, setExportResult] = useState<ExportResult | null>(null);
 
   const { user, loading: authLoading } = useAuth();
-  const { subscription, hasFeatureAccess } = useSubscription();
+  const { isPro, canUseFeature } = useSubscription();
   const resumeUsage = useUsageTracking('resumes');
   const exportUsage = useUsageTracking('exports_per_month');
 
@@ -114,8 +114,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
   // Check if user can create or export
   const isNewResume = !resumeId;
-  const canCreateResume = hasFeatureAccess('unlimited_resumes') || resumeUsage.canUseFeature;
-  const canExport = hasFeatureAccess('bulk_export') || exportUsage.canUseFeature;
+  const canCreateResume = canUseFeature('unlimited_resumes') || resumeUsage.canUseFeature;
+  const canExport = canUseFeature('bulk_export') || exportUsage.canUseFeature;
 
   // *** FIX #1: SYNCHRONIZE WITH INCOMING DATA ***
   useEffect(() => {
@@ -261,8 +261,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       setError(null);
 
       // Check usage limits for new resumes (only for free tier)
-      if (!isUpdating && subscription.tier === 'FREE') {
-        const canCreate = await resumeUsage.incrementUsage();
+      if (!isUpdating && !isPro) {
+        const canCreate = canUseFeature('resumes');
         if (!canCreate) {
           toast({
             title: "Resume limit reached",
@@ -398,7 +398,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       setExportResult(null);
       
       // Check usage limits for exports (only for free tier)
-      if (subscription.tier === 'FREE') {
+      if (!isPro) {
         const canDoExport = await exportUsage.incrementUsage();
         if (!canDoExport) {
           toast({
@@ -587,15 +587,15 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   size="sm" 
                   onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)} 
                   className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white"
-                  disabled={!hasFeatureAccess('ats_scanner')}
-                  title={!hasFeatureAccess('ats_scanner') ? "Professional plan required" : ""}
+                  disabled={!canUseFeature('ats_scanner')}
+                  title={!canUseFeature('ats_scanner') ? "Professional plan required" : ""}
                 >
                   <ScanSearch className="h-3.5 w-3.5 mr-1" /> 
                   ATS Scan
-                  {!hasFeatureAccess('ats_scanner') && <Lock className="h-3 w-3 ml-1" />}
+                  {!canUseFeature('ats_scanner') && <Lock className="h-3 w-3 ml-1" />}
                 </Button>
               )}
-              {subscription.tier === 'FREE' && isNewResume && resumeUsage.usage && (
+              {!isPro && isNewResume && resumeUsage.usage && (
                 <span className="text-xs text-muted-foreground">
                   {resumeUsage.remainingUses} of {resumeUsage.usage.limit_count} resumes remaining
                 </span>
@@ -647,7 +647,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
               </div>
             )}
             {/* Show export limit warning */}
-            {subscription.tier === 'FREE' && exportUsage.usage && exportUsage.remainingUses <= 2 && (
+            {!isPro && exportUsage.usage && exportUsage.remainingUses <= 2 && (
               <span className="text-xs text-destructive">
                 {exportUsage.remainingUses} export{exportUsage.remainingUses !== 1 ? 's' : ''} remaining
               </span>
@@ -674,7 +674,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       )}
 
       {/* Usage limit alerts for free users */}
-      {subscription.tier === 'FREE' && isNewResume && !canCreateResume && (
+      {!isPro && isNewResume && !canCreateResume && (
         <div className="container mx-auto px-4 mt-4">
           <Alert className="border-destructive">
             <Lock className="h-4 w-4" />
@@ -689,7 +689,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         </div>
       )}
 
-      {subscription.tier === 'FREE' && exportUsage.usage && exportUsage.remainingUses === 0 && (
+      {!isPro && exportUsage.usage && exportUsage.remainingUses === 0 && (
         <div className="container mx-auto px-4 mt-4">
           <Alert className="border-destructive">
             <Lock className="h-4 w-4" />

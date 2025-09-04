@@ -12,12 +12,12 @@ const SUBSCRIPTION_COOKIE = {
   maxAge: 300, // 5 minutes in seconds
 };
 
-// Free tier route limits
+// PRO-only routes (removed BUSINESS tier)
 const ROUTE_LIMITS = {
-  '/dashboard/resumes/ats-scanner': ['PROFESSIONAL', 'PREMIUM'],
-  '/dashboard/interview-buddy': ['PREMIUM'],
-  '/dashboard/templates/premium': ['PROFESSIONAL', 'PREMIUM'],
-  '/api/export/bulk': ['PROFESSIONAL', 'PREMIUM'],
+  '/dashboard/resumes/ats-scanner': ['PRO'],
+  '/dashboard/interview-buddy': ['PRO'], // Changed from BUSINESS to PRO
+  '/dashboard/templates/premium': ['PRO'],
+  '/api/export/bulk': ['PRO'],
 };
 
 export async function middleware(request: NextRequest) {
@@ -119,8 +119,9 @@ export async function middleware(request: NextRequest) {
             .single();
           
           if (subscription) {
-            // Map plan_id to tier
-            userTier = subscription.plan_id.toUpperCase();
+            // Map plan_id to tier (simplified for FREE/PRO only)
+            // If they have ANY active subscription, they're PRO
+            userTier = 'PRO';
             
             // Set cookie for future requests
             response.cookies.set(SUBSCRIPTION_COOKIE.name, JSON.stringify({

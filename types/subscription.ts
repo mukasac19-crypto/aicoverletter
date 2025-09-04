@@ -1,8 +1,8 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\types\subscription.ts
+// types/subscription.ts
 
-export type SubscriptionTier = 'FREE' | 'PRO' | 'BUSINESS';
+export type SubscriptionTier = 'FREE' | 'PRO';
 export type SubscriptionInterval = 'monthly' | 'quarterly' | 'annually';
-export type TemplateAccess = 'none' | 'basic' | 'all' | 'premium';
+export type TemplateAccess = 'none' | 'basic' | 'all';
 
 export interface SubscriptionLimits {
   coverLetters: number; // -1 for unlimited

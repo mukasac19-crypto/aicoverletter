@@ -1,5 +1,4 @@
-﻿//project\types\supabase.ts
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -1289,6 +1288,47 @@ export type Database = {
           },
         ]
       }
+      usage_stats: {
+        Row: {
+          count: number
+          created_at: string
+          feature: string
+          id: string
+          period_month: number
+          period_year: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          feature: string
+          id?: string
+          period_month: number
+          period_year: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          feature?: string
+          id?: string
+          period_month?: number
+          period_year?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_data_sources"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       user_cvs: {
         Row: {
           cv_text: string | null
@@ -1377,6 +1417,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_increment_usage: {
+        Args: { p_feature: string; p_limit: number; p_user_id: string }
+        Returns: Json
+      }
       cleanup_old_usage_limits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1446,6 +1490,15 @@ export type Database = {
           average_length: number
           this_month_letters: number
           total_letters: number
+        }[]
+      }
+      get_user_usage: {
+        Args: { p_user_id: string }
+        Returns: {
+          feature: string
+          month: number
+          used: number
+          year: number
         }[]
       }
       update_cover_letter_without_logs: {
