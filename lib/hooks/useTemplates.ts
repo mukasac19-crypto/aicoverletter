@@ -26,15 +26,20 @@ export function useTemplates() {
         throw new Error('Failed to fetch templates');
       }
       
-      const data = await response.json();
-      setTemplates(data);
+      // Parse the response properly
+      const result = await response.json();
+      
+      // Extract the data array from the response object
+      const templatesData = result.data || [];
+      
+      setTemplates(templatesData);
       
       // Set first template as default if none selected
-      if (data.length > 0 && !selectedTemplate) {
-        setSelectedTemplate(data[0]);
+      if (templatesData.length > 0 && !selectedTemplate) {
+        setSelectedTemplate(templatesData[0]);
       }
       
-      return data;
+      return templatesData;
     } catch (err: any) {
       console.error('Error fetching templates:', err);
       setError(err.message || 'Failed to load templates');

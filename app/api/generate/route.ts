@@ -167,7 +167,6 @@ export async function POST(request: Request) {
               job_description: jobDescription,
               content: content,
               tone: tone,
-              is_pro: isPro, // Track if generated with PRO features
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             },

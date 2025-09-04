@@ -1,4 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\lib\coverLetterGenerator.ts
 import { Database } from '@/types/supabase';
 import { LinkedInCoverLetterData } from '@/lib/linkedInCoverLetterTransformer';
 import type { SenderInfo, RecipientInfo } from '@/types/cover-letter';
@@ -51,7 +50,7 @@ interface UserProfilePayload {
   keyAttributes?: any;
 }
 
-// --- Helper functions (Unchanged) ---
+// --- Helper functions ---
 function calculateYearsFromResume(experience: any[]): number {
   if (!Array.isArray(experience) || experience.length === 0) return 0;
   let totalMonths = 0;
@@ -97,26 +96,113 @@ export function prepareUserProfilePayload(
   sourceData: DbResume | CvFile | LinkedInCoverLetterData | null,
   dataSource: 'cv' | 'linkedin' | 'both' | 'none'
 ): UserProfilePayload {
-    // This function's internal logic remains unchanged
     const payload: UserProfilePayload = {};
     if (!sourceData) return payload;
 
     if ((dataSource === 'cv' || dataSource === 'both') && 'personal_info' in sourceData) {
-        // ... (original logic)
+        const resume = sourceData as DbResume;
+        const personalInfo = resume.personal_info as ResumePersonalInfo;
+        
+        if (personalInfo?.firstName || personalInfo?.lastName) {
+            payload.name = `${personalInfo.firstName || ''} ${personalInfo.lastName || ''}`.trim();
+        }
+        payload.title = personalInfo?.title || undefined;
+        payload.summary = personalInfo?.summary || undefined;
+        
+        // Fix: Use 'work_experience' instead of 'experience'
+        const experience = resume.work_experience as ExperienceObject[];
+        if (Array.isArray(experience) && experience.length > 0) {
+            const currentJob = experience.find(job => job.isOngoing) || experience[0];
+            if (currentJob) {
+                payload.currentRole = currentJob.title;
+                payload.currentCompany = currentJob.company;
+            }
+            
+            payload.yearsOfExperience = calculateYearsFromResume(experience);
+            payload.accomplishments = extractTopAccomplishmentsFromResume(experience);
+            
+            payload.experience = experience.slice(0, 3).map(job => ({
+                role: job.title || '',
+                company: job.company || '',
+                highlights: Array.isArray(job.achievements) ? job.achievements.slice(0, 3) : []
+            }));
+        }
+        
+        const skills = resume.skills as SkillObject[];
+        if (Array.isArray(skills)) {
+            payload.skills = skills
+                .filter(skill => skill.name && skill.name.trim() !== '')
+                .map(skill => skill.name as string)
+                .slice(0, 10);
+        }
+        
+        const education = resume.education as EducationObject[];
+        if (Array.isArray(education)) {
+            payload.education = education.slice(0, 2).map(edu => ({
+                degree: edu.degree || edu.studyType || '',
+                school: edu.institution || '',
+                fieldOfStudy: edu.degree || ''
+            }));
+        }
+        
+        payload.id = resume.id;
+        payload.resume = resume;
     } else if ((dataSource === 'cv' || dataSource === 'both') && 'name' in sourceData && 'size' in sourceData) {
-        // ... (original logic)
+        const cvFile = sourceData as CvFile;
+        payload.cvFilename = cvFile.name;
+        payload.cv = cvFile;
     } else if ((dataSource === 'linkedin' || dataSource === 'both') && 'profileUrl' in sourceData) {
-        // ... (original logic)
+        const linkedInData = sourceData as any; // Use 'any' for LinkedIn data since the structure varies
+        
+        // Handle various LinkedIn data structures
+        payload.name = linkedInData.name || linkedInData.fullName || 
+                      (linkedInData.firstName && linkedInData.lastName ? 
+                       `${linkedInData.firstName} ${linkedInData.lastName}`.trim() : undefined);
+        payload.title = linkedInData.title || linkedInData.headline || undefined;
+        payload.summary = linkedInData.summary || undefined;
+        payload.linkedInProfileUrl = linkedInData.profileUrl;
+        
+        // Check various possible property names for experience
+        const experiences = linkedInData.experiences || linkedInData.experience || 
+                          linkedInData.workExperience || linkedInData.positions || [];
+        
+        if (Array.isArray(experiences) && experiences.length > 0) {
+            const currentJob = experiences[0];
+            payload.currentRole = currentJob.title;
+            payload.currentCompany = currentJob.company || currentJob.companyName;
+            payload.yearsOfExperience = linkedInData.yearsOfExperience;
+        }
+        
+        // Check various possible property names for skills
+        payload.skills = (linkedInData.skills || linkedInData.extractedSkills || [])
+                        ?.slice(0, 10)
+                        ?.map((skill: any) => typeof skill === 'string' ? skill : skill.name)
+                        ?.filter(Boolean) || [];
+        
+        payload.accomplishments = linkedInData.accomplishments?.slice(0, 5) || [];
+        
+        payload.experience = experiences?.slice(0, 3).map((exp: any) => ({
+            role: exp.title,
+            company: exp.company || exp.companyName,
+            highlights: exp.description ? [exp.description] : []
+        })) || [];
+        
+        // Check various possible property names for education
+        const educations = linkedInData.educations || linkedInData.education || [];
+        payload.education = educations?.slice(0, 2).map((edu: any) => ({
+            degree: edu.degree || '',
+            school: edu.school || edu.schoolName || edu.institution || '',
+            fieldOfStudy: edu.fieldOfStudy || edu.field || ''
+        })) || [];
+        
+        payload.linkedin = linkedInData as LinkedInCoverLetterData;
     }
 
     console.log("Prepared user profile payload:", payload);
     return payload;
 }
 
-
-// --- *** MODIFIED FUNCTION *** ---
-
-// 1. Define the shape of the expected response object
+// Define the shape of the expected response object
 export interface GenerationResult {
   coverLetter: string;
   jobTitle: string;
@@ -145,8 +231,6 @@ export async function generateCoverLetter(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jobDescription: params.jobDescription,
-        // We NO LONGER send jobTitle or companyName from the client.
-        // The AI will extract them.
         tone: params.tone,
         userProfile: userProfilePayload,
         dataSource: params.dataSource,
@@ -161,13 +245,20 @@ export async function generateCoverLetter(
     if (!response.ok) {
       throw new Error(data.error || `Generation API failed (Status: ${response.status})`);
     }
-    if (!data.data || !data.data.coverLetter || !data.data.jobTitle || !data.data.companyName) {
-      throw new Error("Generation API returned incomplete data. It must include coverLetter, jobTitle, and companyName.");
+    
+    // Fix: Check for 'content' instead of 'coverLetter' in the API response
+    if (!data.data || !data.data.content || !data.data.jobTitle || !data.data.companyName) {
+      throw new Error("Generation API returned incomplete data. It must include content, jobTitle, and companyName.");
     }
 
     console.log("generateCoverLetter: Success.");
-    // 2. Return the entire data object from the API
-    return data.data;
+    
+    // Fix: Map 'content' to 'coverLetter' in the return object
+    return {
+      coverLetter: data.data.content,
+      jobTitle: data.data.jobTitle,
+      companyName: data.data.companyName
+    };
   } catch (error) {
     console.error("Error calling /api/generate:", error);
     throw error;
@@ -191,7 +282,6 @@ export async function saveCoverLetter(params: {
   template_id?: string;
   id?: string;
 }): Promise<string> {
-  // This function's internal logic remains unchanged
   console.log("Calling API to save cover letter...", params);
 
   try {

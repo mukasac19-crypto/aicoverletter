@@ -302,7 +302,7 @@ export default function DashboardPage() {
               <CardContent>
                 <Button 
                   className="w-full" 
-                  onClick={() => router.push('/dashboard/cover-letters/new')}
+onClick={() => router.push('/dashboard/cover-letters?tab=create')}
                   disabled={!coverLetterUsage.canUseFeature}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -331,7 +331,7 @@ export default function DashboardPage() {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
-                    onClick={() => router.push('/dashboard/resumes/ats-scanner')}
+onClick={() => router.push('/dashboard/ats-scanner')}
                     disabled={!isPro}
                   >
                     {!isPro && <Shield className="h-4 w-4 mr-2" />}
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                   <Button 
                     variant="link" 
                     className="p-0 h-auto mt-1" 
-                    onClick={() => router.push('/dashboard/cover-letters/new')}
+onClick={() => router.push('/dashboard/cover-letters?tab=create')}
                   >
                     Create cover letter →
                   </Button>

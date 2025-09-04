@@ -1,3 +1,5 @@
+//project\app\dashboard\cover-letters\components\CoverLetterPreview.tsx
+
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";

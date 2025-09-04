@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Sparkles, FileText, Linkedin, Loader2, Lock } from "lucide-react";
@@ -19,6 +19,7 @@ import { Database } from "@/types/supabase";
 import type { CvFile as ImportedCvFile } from '@/lib/cv-helpers';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { UsageLimit } from '@/components/FeatureGate';
+import { useTemplates } from "@/lib/hooks/useTemplates";
 
 // --- Helper Component & Type Definitions ---
 
@@ -51,19 +52,18 @@ interface ToastArgs {
 interface CreateCoverLetterTabProps {
   user: { id: string; [key: string]: any } | null;
   supabase: SupabaseClient;
-  templates: Template[];
+  templates?: Template[]; // Make optional since we'll use hook
   toast: (args: ToastArgs) => void;
   onTabChange: (tab: string) => void;
 }
 
-
-const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }: CreateCoverLetterTabProps) => {
+const CreateCoverLetterTab = ({ user, supabase, toast, onTabChange }: CreateCoverLetterTabProps) => {
   const { isPro, usage, canUseFeature } = useSubscription();
+  const { fetchTemplates, templates, isLoading: templatesLoading } = useTemplates();
   
   const [step, setStep] = useState(1);
   
   const [isDataSourcesOpen, setIsDataSourcesOpen] = useState(false);
-  // Use the imported, more complete CvFile type for the main state
   const [cvFiles, setCvFiles] = useState<ImportedCvFile[]>([]); 
   const [linkedInProfile, setLinkedInProfile] = useState<Database['public']['Tables']['linkedin_profiles']['Row'] | null>(null);
   const [dataSource, setDataSource] = useState<'none' | 'cv' | 'linkedin' | 'both'>('none');
@@ -82,13 +82,66 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
   // Check if user can create cover letters
   const canCreateCoverLetter = canUseFeature('coverLetters');
 
+  // Fetch templates on component mount
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
+
+  // Set default template when templates are loaded
+  useEffect(() => {
+    if (templates.length > 0 && !selectedTemplate) {
+      setSelectedTemplate(templates[0].id);
+    }
+  }, [templates, selectedTemplate]);
+
   const loadCvFiles = useCallback(async () => {
-    // Mock implementation
-  }, []);
+    // Mock implementation - replace with actual implementation
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from("user_cvs")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("uploaded_at", { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data) {
+        const formattedCvs: ImportedCvFile[] = data.map((cv: any) => ({
+          id: cv.id,
+          name: cv.filename,
+          size: cv.filesize,
+          type: cv.filetype,
+          uploadDate: cv.uploaded_at,
+          isSelected: cv.is_selected || false,
+        }));
+        setCvFiles(formattedCvs);
+      }
+    } catch (error) {
+      console.error("Error loading CV files:", error);
+    }
+  }, [user, supabase]);
   
   const loadLinkedInProfile = useCallback(async () => {
-    // Mock implementation
-  }, []);
+    // Mock implementation - replace with actual implementation
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from("linkedin_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "connected")
+        .single();
+      
+      if (error && error.code !== "PGRST116") throw error;
+      
+      if (data) {
+        setLinkedInProfile(data);
+      }
+    } catch (error) {
+      console.error("Error loading LinkedIn profile:", error);
+    }
+  }, [user, supabase]);
   
   useEffect(() => {
     if (user) {
@@ -118,6 +171,15 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
         title: "Cover letter limit reached",
         description: "Upgrade to PRO for unlimited cover letters",
         variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!selectedTemplate) {
+      toast({ 
+        title: "Templates still loading", 
+        description: "Please wait a moment for templates to load and try again.", 
+        variant: "destructive" 
       });
       return;
     }
@@ -163,7 +225,7 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
     } finally {
       setGeneratingLetter(false);
     }
-  }, [jobDescription, user, toast, canCreateCoverLetter]);
+  }, [jobDescription, user, toast, canCreateCoverLetter, selectedTemplate]);
   
   const handleRegenerateCoverLetter = useCallback(async (letter: CoverLetterType) => {
       if (!letter) return;
@@ -328,9 +390,21 @@ const CreateCoverLetterTab = ({ user, supabase, templates, toast, onTabChange }:
                 }
               }
             }}
-            disabled={dataSource === 'none' || !resumeData || generatingLetter || !canCreateCoverLetter}
+            disabled={
+              dataSource === 'none' || 
+              !resumeData || 
+              generatingLetter || 
+              !canCreateCoverLetter ||
+              templatesLoading || // Check if templates are loading
+              templates.length === 0 // Check if no templates available
+            }
           >
-            {generatingLetter ? (
+            {templatesLoading ? (
+              <>
+                <LoadingSpinner className="mr-2"/> 
+                Loading templates...
+              </>
+            ) : generatingLetter ? (
               <>
                 <LoadingSpinner className="mr-2"/> 
                 Generating...
