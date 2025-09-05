@@ -1,3 +1,5 @@
+
+
 // app/layout.tsx
 import './globals.css';
 import type { Metadata } from 'next';
@@ -5,6 +7,7 @@ import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthContextProvider } from '@/contexts/AuthContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
+import MainLayout from '@/components/MainLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +22,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -28,7 +33,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthContextProvider>
           <SubscriptionProvider>
-            {children}
+            
+             <MainLayout>
+               {children}
+             </MainLayout>
             <Toaster />
             
           </SubscriptionProvider>
