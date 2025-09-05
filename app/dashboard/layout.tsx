@@ -26,6 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import withAuth from "@/components/withAuth";
+import AuthLayout from "@/components/AuthLayout";
 
 
 interface DashboardLayoutProps {
@@ -99,7 +100,8 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-teal-50/20">
       {/* Mobile Header - Always visible on mobile and small screens */}
-      <header className="border-b sticky top-0 z-40 bg-white shadow-sm lg:hidden">
+
+      {/* <header className="border-b sticky top-0 z-40 bg-white shadow-sm lg:hidden">
         <div className="flex h-16 items-center px-4 justify-between">
           <div className="flex items-center">
             <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
@@ -150,14 +152,16 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             <FileText className="h-6 w-6 text-teal-600 mr-2" />
             <h1 className="text-xl font-bold text-gray-800">Resume Mate AI</h1>
           </div>
-          <div className="w-10"></div> {/* Placeholder for alignment */}
+          <div className="w-10"></div> 
         </div>
-      </header>
+      </header> */}
+
 
       {/* Desktop Layout */}
+      <AuthLayout>
       <div className="flex-1 flex">
         {/* Sidebar Navigation - Desktop Only (Hidden on mobile/small screens) */}
-        <aside 
+        {/* <aside 
           className={cn(
             "hidden lg:flex h-screen flex-col border-r fixed transition-all duration-300 ease-in-out bg-white shadow-sm",
             isCollapsed ? "w-16" : "w-52"
@@ -238,10 +242,10 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
               </TooltipProvider>
             </ul>
           </nav>
-        </aside>
+        </aside> */}
 
         {/* Toggle button for collapsed sidebar - visible on hover (desktop only) */}
-        {isCollapsed && (
+        {/* {isCollapsed && (
           <div className="hidden lg:block fixed left-16 top-16 z-50">
             <Button 
               variant="secondary" 
@@ -252,28 +256,14 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-        )}
+        )} */}
 
         {/* Main Content - with thin teal-gray margins */}
-        <main className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          isCollapsed ? "lg:pl-16" : "lg:pl-52"
-        )}>
-          {/* Content wrapper with thin teal-gray colored margins */}
-          <div className="w-full flex">
-            {/* Thin margin left - teal-gray color */}
-            <div className="w-1 bg-teal-100/30"></div>
-            
-            {/* Main content area */}
-            <div className="flex-1 bg-white">
-              {children}
-            </div>
-            
-            {/* Thin margin right - teal-gray color */}
-            <div className="w-1 bg-teal-100/30"></div>
-          </div>
-        </main>
+        <div className="w-full h-full">
+          {children}
+        </div>
       </div>
+      </AuthLayout>
     </div>
   );
 }
