@@ -1,3 +1,4 @@
+//project\lib\resume-template-renderer.ts
 import { ResumeData, Skill } from "@/types/resume";
 import { enhanceTemplateCss } from "@/lib/resume-template-wrapper";
 
