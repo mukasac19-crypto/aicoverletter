@@ -135,7 +135,7 @@ export default function ATSScannerPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <ScanSearch className="h-8 w-8 text-teal-600" />
+          <ScanSearch className="h-8 w-8 text-orange-600" />
           ATS Scanner
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -155,10 +155,10 @@ export default function ATSScannerPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
-          <Card className="border-2 border-teal-100">
-            <CardHeader className="border-b bg-teal-50/50">
-              <CardTitle className="flex items-center text-teal-800">
-                <FileSpreadsheet className="h-5 w-5 mr-2 text-teal-600" />
+          <Card className="border-2 border-orange-100">
+            <CardHeader className="border-b bg-orange-50/50">
+              <CardTitle className="flex items-center text-orange-800">
+                <FileSpreadsheet className="h-5 w-5 mr-2 text-orange-600" />
                 Your Resumes
               </CardTitle>
               <CardDescription>
@@ -182,7 +182,7 @@ export default function ATSScannerPage() {
               ) : (
                 <div className="space-y-4">
                   {resumes.slice(0, 5).map((resume) => (
-                    <div key={resume.id} className="flex items-center justify-between border rounded-lg p-4 hover:border-teal-200 hover:bg-teal-50/30 transition-colors">
+                    <div key={resume.id} className="flex items-center justify-between border rounded-lg p-4 hover:border-orange-200 hover:bg-orange-50/30 transition-colors">
                       <div>
                         <h3 className="font-medium">{resume.title}</h3>
                         <p className="text-sm text-muted-foreground">

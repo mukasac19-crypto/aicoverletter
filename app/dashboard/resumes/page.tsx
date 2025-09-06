@@ -1,8 +1,6 @@
-// File: app/dashboard/resumes/page.tsx
-
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react'; // Added useCallback
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,13 +39,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistance } from 'date-fns';
-// Import necessary mappers and types
 import {
   mapDatabaseToResumeData,
-  ensureDualFormatFields // Added import
-} from '@/types/resume'; // Assuming ensureDualFormatFields is now here
+  ensureDualFormatFields
+} from '@/types/resume';
 import type { CvFile } from '@/lib/cv-helpers';
-import { Json, type TablesInsert } from '@/types/supabase'; // Added TablesInsert
+import { Json, type TablesInsert } from '@/types/supabase';
 import { ResumeData, DatabaseResumeData, WorkExperience } from '@/types/resume';
 
 export default function ResumeDashboardPage() {
@@ -67,7 +64,7 @@ export default function ResumeDashboardPage() {
   const supabase = createBrowserClient();
   const { getLinkedCV } = useCVResumeIntegration();
   const [fileToSave, setFileToSave] = useState<File | null>(null);
-  const [importSourceCV, setImportSourceCV] = useState<string | null | undefined>(null)
+  const [importSourceCV, setImportSourceCV] = useState<string | null | undefined>(null);
 
   // Load resumes from database
   useEffect(() => {
@@ -139,12 +136,8 @@ export default function ResumeDashboardPage() {
         templateId: resumeToDuplicate.templateId === null ? undefined : resumeToDuplicate.templateId,
         created_at: undefined,
         updated_at: undefined,
-        userId: undefined, // userId should be user_id for DB if not mapped by API
+        userId: undefined,
       };
-      // It's better if the API handles setting user_id from the authenticated user.
-      // delete newResumeData.created_at; // already undefined
-      // delete newResumeData.updated_at; // already undefined
-
 
       console.log("Duplicating resume via API. Data for POST:", newResumeData);
 
@@ -181,20 +174,20 @@ export default function ResumeDashboardPage() {
       console.error('Error getting default resume template:', error);
       return null;
     }
-  }, [supabase]); // Added supabase to dependency array
+  }, [supabase]);
 
   useEffect(() => {
     const saveFileToResume = async () => {
       try {
         console.log('file', fileToSave, 'cv', importSourceCV)
-        if (!fileToSave || !user) return; // Added user check for safety, though parent effect might handle
+        if (!fileToSave || !user) return;
 
-        setImportLoading(true); // Moved here to show loading for this specific async operation
+        setImportLoading(true);
 
         const formData = new FormData();
         formData.append('file', fileToSave);
 
-        if (importSourceCV) { // Check if importSourceCV has a value
+        if (importSourceCV) {
           formData.append('sourceType', 'resume_import');
           formData.append('cvId', importSourceCV);
         }
@@ -217,7 +210,6 @@ export default function ResumeDashboardPage() {
         const defaultTemplateId = await getDefaultTemplateId();
 
         const newResumePayload: Partial<ResumeData> = {
-          // Use fileToSave here as 'file' is not in this scope
           title: parsedData.title || `Imported - ${fileToSave!.name.split('.')[0] || 'Resume'}`,
           personalInfo: parsedData.personalInfo || parsedData.personal_info || { firstName: '', lastName: '', title: '', summary: '', contact: { email: ''} },
           workExperience: parsedData.workExperience || parsedData.work_experience || [],
@@ -231,27 +223,22 @@ export default function ResumeDashboardPage() {
           references: parsedData.references || [],
           referenceText: parsedData.referenceText,
           customSections: parsedData.customSections || [],
-          templateId: defaultTemplateId === null ? '' : defaultTemplateId, // ResumeData expects string, ensure '' if null
+          templateId: defaultTemplateId === null ? '' : defaultTemplateId,
           isPublic: false,
-          is_imported: true, // Align with ResumeData's is_imported field
-          sourceCV: importSourceCV || parsedData.sourceCV || undefined, // Changed source_cv to sourceCV, ensure undefined if null
-          // Removed duplicate personalInfo and workExperience that were here
+          is_imported: true,
+          sourceCV: importSourceCV || parsedData.sourceCV || undefined,
         };
 
-        const finalResumeData = ensureDualFormatFields(newResumePayload); // Corrected variable name
+        const finalResumeData = ensureDualFormatFields(newResumePayload);
 
         if (!finalResumeData.template_id || finalResumeData.template_id === '') {
-          finalResumeData.template_id = null; // Supabase expects null for empty foreign keys
+          finalResumeData.template_id = null;
         }
         
         console.log("Prepared resume data for database insertion:", finalResumeData);
 
-        // Prepare object for DB insertion, mapping to snake_case where necessary
-        // This part heavily relies on finalResumeData having all necessary snake_case fields from ensureDualFormatFields
-        // A cleaner way would be to use mapResumeToDatabase(newResumePayload as ResumeData) if newResumePayload was complete
-        const resumeForDb: TablesInsert<'resumes'> = { // Use TablesInsert for stricter typing
-          // id is generated by DB
-          user_id: user.id, // Ensure user.id is available and correct
+        const resumeForDb: TablesInsert<'resumes'> = {
+          user_id: user.id,
           title: finalResumeData.title,
           personal_info: finalResumeData.personal_info || finalResumeData.personalInfo,
           work_experience: finalResumeData.work_experience || finalResumeData.workExperience,
@@ -263,23 +250,22 @@ export default function ResumeDashboardPage() {
           interests: finalResumeData.interests || null,
           references: finalResumeData.references || null,
           custom_sections: finalResumeData.custom_sections || finalResumeData.customSections || null,
-          template_id: finalResumeData.template_id || null, // Ensure null if empty for DB
+          template_id: finalResumeData.template_id || null,
           is_public: finalResumeData.is_public ?? false,
           is_imported: finalResumeData.is_imported ?? finalResumeData.isImported ?? null,
           source_cv: finalResumeData.source_cv || finalResumeData.sourceCV || null,
           reference_text: finalResumeData.reference_text || finalResumeData.referenceText || null,
-          // created_at and updated_at are handled by DB
         };
 
         const { data, error } = await supabase
           .from('resumes')
-          .insert(resumeForDb as any) // Using 'as any' if strict typing with ensureDualFormatFields is complex
+          .insert(resumeForDb as any)
           .select()
-          .single(); // Expecting a single record back
+          .single();
 
         if (error) throw error;
 
-        if (data && importSourceCV) { // data here is an object, not data[0] after .single()
+        if (data && importSourceCV) {
           try {
             await supabase
               .from('user_cvs')
@@ -292,11 +278,11 @@ export default function ResumeDashboardPage() {
           }
         }
 
-        if (data) { // data is the single inserted object
-            const newDbResume = data as unknown as DatabaseResumeData; // Cast to your DB type
-            const newUIRecord = mapDatabaseToResumeData(newDbResume); // Use your mapper
+        if (data) {
+            const newDbResume = data as unknown as DatabaseResumeData;
+            const newUIRecord = mapDatabaseToResumeData(newDbResume);
             if (newUIRecord) {
-                setResumes(prevResumes => [newUIRecord, ...prevResumes]); // Prepend to keep order
+                setResumes(prevResumes => [newUIRecord, ...prevResumes]);
                 setImportedResumeId(newUIRecord.id);
                 setShowImportGuide(true);
             } else {
@@ -323,29 +309,25 @@ export default function ResumeDashboardPage() {
         });
       } finally {
         setImportLoading(false);
-        setFileToSave(null); // Reset fileToSave after processing
-        setImportSourceCV(null); // Reset importSourceCV
+        setFileToSave(null);
+        setImportSourceCV(null);
       }
     }
 
-    if (fileToSave && user) { // ensure user is also checked before calling
+    if (fileToSave && user) {
         saveFileToResume();
     }
 
-  }, [importSourceCV, fileToSave, getDefaultTemplateId, user, supabase, toast, router]); // Removed 'resumes' from dep array to avoid loop if setResumes causes re-trigger, add back if logic requires it and is safe. Usually adding to list doesn't require it as a dep.
+  }, [importSourceCV, fileToSave, getDefaultTemplateId, user, supabase, toast, router]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0 || !user) return; // Added user check
+    if (!files || files.length === 0 || !user) return;
 
-    const file = files[0]; // file is correctly defined here for local use
-    setImportLoading(true); // Set loading early
+    const file = files[0];
+    setImportLoading(true);
 
     try {
-      // Set fileToSave to trigger the useEffect, or call parts of saveFileToResume directly
-      // For this flow, we need to create CV record first to get importSourceCV
-      // Then setFileToSave to trigger the main parsing and resume creation effect.
-
       if (user) {
         const uploadResult = await uploadFile({
           file,
@@ -358,7 +340,7 @@ export default function ResumeDashboardPage() {
           throw new Error(uploadResult.error || 'Upload failed');
         }
 
-        const cvDataToInsert: TablesInsert<'user_cvs'> = { // Using TablesInsert
+        const cvDataToInsert: TablesInsert<'user_cvs'> = {
           user_id: user.id,
           filename: file.name,
           filesize: file.size,
@@ -377,14 +359,12 @@ export default function ResumeDashboardPage() {
 
         if (cvError) {
           console.error('Error creating CV record:', cvError);
-          // Decide if you want to proceed without CV link or show error
-          // For now, proceeding and setting importSourceCV to null if error
           setImportSourceCV(null);
         } else if (cvRecord) {
           setImportSourceCV(cvRecord.id);
         }
       }
-      setFileToSave(file); // This will trigger the useEffect to process the file
+      setFileToSave(file);
 
     } catch (err: any) {
       console.error('Error during file selection/upload stage:', err);
@@ -393,23 +373,21 @@ export default function ResumeDashboardPage() {
         description: err.message || "Failed to upload file. Please try again.",
         variant: "destructive",
       });
-      setImportLoading(false); // Reset loading on error
-      if (importFileRef.current) { // Reset file input
+      setImportLoading(false);
+      if (importFileRef.current) {
         importFileRef.current.value = '';
       }
     }
-    // Do not call setImportLoading(false) here if setFileToSave triggers an effect that handles it.
-    // The useEffect for saveFileToResume will setImportLoading(false) in its finally block.
   };
 
   const handleImportGuideClose = () => setShowImportGuide(false);
 
   const handleViewSourceCV = async (resumeId: string) => {
     try {
-      const resume = resumes.find(r => r.id === resumeId); // Get resume from local state
+      const resume = resumes.find(r => r.id === resumeId);
       if (!resume || !resume.sourceCV) throw new Error('Source CV ID not found for this resume.');
 
-      const cv = await getLinkedCV(resume.sourceCV); // Pass CV ID
+      const cv = await getLinkedCV(resume.sourceCV);
       if (!cv || !cv.fileUrl) throw new Error('Source CV not found or URL missing');
       window.open(cv.fileUrl, '_blank');
     } catch (error: any) {
@@ -433,26 +411,64 @@ export default function ResumeDashboardPage() {
     return matchesSearch;
   });
 
-  if (isLoading) { return ( <div className="container py-4 px-4 sm:py-8 sm:px-6"><div className="flex justify-center py-12"><LoadingSpinner /></div></div> ); }
-  if (!user) { return ( <div className="container py-4 px-4 sm:py-8 sm:px-6"><Alert><AlertDescription>You need to be logged in.</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild className="bg-teal-600 hover:bg-teal-700"><Link href="/auth/login">Log In</Link></Button></div></div> ); }
+  if (isLoading) { 
+    return ( 
+      <div className="container py-4 px-4 sm:py-8 sm:px-6">
+        <div className="flex justify-center py-12">
+          <LoadingSpinner />
+        </div>
+      </div> 
+    ); 
+  }
+  if (!user) { 
+    return ( 
+      <div className="container py-4 px-4 sm:py-8 sm:px-6">
+        <Alert>
+          <AlertDescription>You need to be logged in.</AlertDescription>
+        </Alert>
+        <div className="flex justify-center mt-6">
+          <Button asChild className="bg-orange-600 hover:bg-orange-700">
+            <Link href="/auth/login">Log In</Link>
+          </Button>
+        </div>
+      </div> 
+    ); 
+  }
 
   return (
     <div className="container py-4 px-4 sm:py-8 sm:px-6 space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="w-full sm:w-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold">My Resumes</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">My Resumes</h1>
         </div>
-        {/* Conditional rendering of buttons based on whether resumes exist or not */}
-        {(resumes.length > 0 || !isLoading) && ( // Show buttons if not loading OR if resumes exist
-            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                <Button onClick={() => router.push('/dashboard/resumes/new')} className="flex-1 sm:flex-none text-xs sm:text-sm bg-teal-600 hover:bg-teal-700" size="sm">
-                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume
-                </Button>
-                <Button variant="outline" onClick={() => importFileRef.current?.click()} disabled={importLoading} className="flex-1 sm:flex-none text-xs sm:text-sm border-teal-200 text-teal-700 hover:bg-teal-50" size="sm">
-                    {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
-                </Button>
-            </div>
+        {(resumes.length > 0 || !isLoading) && (
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <Button 
+              onClick={() => router.push('/dashboard/resumes/new')} 
+              className="flex-1 sm:flex-none text-xs sm:text-sm bg-orange-600 hover:bg-orange-700 text-white" 
+              size="sm"
+            >
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => importFileRef.current?.click()} 
+              disabled={importLoading} 
+              className="flex-1 sm:flex-none text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50" 
+              size="sm"
+            >
+              {importLoading ? (
+                <>
+                  <LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume
+                </>
+              )}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -460,24 +476,48 @@ export default function ResumeDashboardPage() {
       <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-4">
         <div className="w-full xs:w-auto overflow-x-auto pb-1">
           <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-            <TabsList className="w-full xs:w-auto grid grid-cols-2 xs:inline-flex bg-teal-100">
-              <TabsTrigger value="all" className="text-xs sm:text-sm data-[state=active]:bg-teal-600 data-[state=active]:text-white">All Resumes</TabsTrigger>
-              <TabsTrigger value="recent" className="text-xs sm:text-sm data-[state=active]:bg-teal-600 data-[state=active]:text-white">Recent</TabsTrigger>
+            <TabsList 
+              className="mb-6 w-full flex flex-nowrap bg-muted/50 rounded-lg p-1 gap-2"
+            >
+              <TabsTrigger 
+                value="all" 
+                className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                All Resumes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recent" 
+                className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                Recent
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
         <div className="w-full xs:w-auto relative">
           <Search className="absolute left-2 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search resumes..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-7 sm:pl-8 w-full xs:w-[200px] sm:w-[250px] h-9 text-sm focus-visible:ring-teal-500" />
+          <Input 
+            placeholder="Search resumes..." 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            className="pl-7 sm:pl-8 w-full xs:w-[200px] sm:w-[250px] h-9 text-sm focus-visible:ring-orange-500" 
+          />
         </div>
       </div>
 
-      {error && ( <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert> )}
+      {error && ( 
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert> 
+      )}
 
       {filteredResumes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
           {filteredResumes.map((resume) => (
-            <Card key={resume.id} className={`overflow-hidden hover:border-teal-300 transition-colors ${resume.id === importedResumeId ? 'border-teal-500 shadow-md ring-1 ring-teal-500' : ''}`}>
+            <Card 
+              key={resume.id} 
+              className={`overflow-hidden hover:border-orange-300 transition-colors ${resume.id === importedResumeId ? 'border-orange-500 shadow-md ring-1 ring-orange-500' : ''}`}
+            >
               <CardHeader className="p-4 pb-2">
                 <div className="flex justify-between items-start">
                   <div className="max-w-[calc(100%-40px)]">
@@ -490,22 +530,43 @@ export default function ResumeDashboardPage() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-teal-50"> <MoreVertical className="h-4 w-4" /> </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 hover:bg-orange-50"
+                      > 
+                        <MoreVertical className="h-4 w-4" /> 
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}> <Edit className="h-4 w-4 mr-2 text-teal-600" /> Edit </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}> <Target className="h-4 w-4 mr-2 text-teal-600" /> Tailor for Job </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}> <FileText className="h-4 w-4 mr-2 text-teal-600" /> Preview </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/ats-scanner`)}> <FileSearch className="h-4 w-4 mr-2 text-teal-600" /> ATS Scanner </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(resume.id)}> <Copy className="h-4 w-4 mr-2 text-teal-600" /> Duplicate </DropdownMenuItem>
-                      {resume.sourceCV && ( // Check camelCase sourceCV from ResumeData
+                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}> 
+                        <Edit className="h-4 w-4 mr-2 text-orange-600" /> Edit 
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}> 
+                        <Target className="h-4 w-4 mr-2 text-orange-600" /> Tailor for Job 
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}> 
+                        <FileText className="h-4 w-4 mr-2 text-orange-600" /> Preview 
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/dashboard/resumes/${resume.id}/ats-scanner`)}> 
+                        <FileSearch className="h-4 w-4 mr-2 text-orange-600" /> ATS Scanner 
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDuplicate(resume.id)}> 
+                        <Copy className="h-4 w-4 mr-2 text-orange-600" /> Duplicate 
+                      </DropdownMenuItem>
+                      {resume.sourceCV && (
                         <DropdownMenuItem onClick={() => handleViewSourceCV(resume.id)}>
-                          <FileText className="h-4 w-4 mr-2 text-teal-600" /> View Original CV
+                          <FileText className="h-4 w-4 mr-2 text-orange-600" /> View Original CV
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(resume.id)}> <Trash2 className="h-4 w-4 mr-2" /> Delete </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="text-destructive focus:text-destructive" 
+                        onClick={() => handleDelete(resume.id)}
+                      > 
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete 
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -524,30 +585,76 @@ export default function ResumeDashboardPage() {
                 </div>
               </CardContent>
               <CardFooter className="p-4 pt-2 flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 border-teal-200 text-teal-700 hover:bg-teal-50" onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}> <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Edit </Button>
-                <Button variant="outline" size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 border-teal-200 text-teal-700 hover:bg-teal-50" onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}> <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Tailor </Button>
-                <Button size="sm" className="flex-1 text-xs h-8 px-2 sm:px-3 bg-teal-600 hover:bg-teal-700" onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}> <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Preview </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1 text-xs h-8 px-2 sm:px-3 border-orange-200 text-orange-700 hover:bg-orange-50" 
+                  onClick={() => router.push(`/dashboard/resumes/${resume.id}`)}
+                > 
+                  <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Edit 
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1 text-xs h-8 px-2 sm:px-3 border-orange-200 text-orange-700 hover:bg-orange-50" 
+                  onClick={() => router.push(`/dashboard/resumes/${resume.id}/tailor`)}
+                > 
+                  <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Tailor 
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="flex-1 text-xs h-8 px-2 sm:px-3 bg-orange-600 hover:bg-orange-700" 
+                  onClick={() => router.push(`/dashboard/resumes/${resume.id}/preview`)}
+                > 
+                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Preview 
+                </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       ) : (
-        <div>
-          <Card className="text-center p-4 sm:p-8">
-            <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-teal-400 mx-auto mb-4" />
+        <div className='w-full h-full min-h-[60vh] flex justify-center items-center'>
+          <Card className="w-[60%] text-center p-4 sm:p-8">
+            <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-orange-400 mx-auto mb-4" />
             {searchTerm || activeFilter !== 'all' ? (
               <>
                 <h3 className="text-base sm:text-lg font-medium mb-2">No matching resumes found</h3>
                 <p className="text-sm text-muted-foreground mb-4 sm:mb-6"> Try adjusting your search or filters. </p>
-                <Button variant="outline" onClick={() => { setSearchTerm(''); setActiveFilter('all'); }} className="border-teal-200 text-teal-700 hover:bg-teal-50"> Clear search & filters </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => { setSearchTerm(''); setActiveFilter('all'); }} 
+                  className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                > 
+                  Clear search & filters 
+                </Button>
               </>
             ) : (
               <>
                 <h3 className="text-base sm:text-lg font-medium mb-2">You do not have any resumes yet</h3>
                 <div className="flex flex-col xs:flex-row gap-3 justify-center">
-                  <Button onClick={() => router.push('/dashboard/resumes/new')} className="text-xs sm:text-sm bg-teal-600 hover:bg-teal-700" size="sm"> <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume </Button>
-                  <Button variant="outline" onClick={() => importFileRef.current?.click()} disabled={importLoading} className="text-xs sm:text-sm border-teal-200 text-teal-700 hover:bg-teal-50" size="sm">
-                    {importLoading ? <><LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...</> : <><Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume</>}
+                  <Button 
+                    onClick={() => router.push('/dashboard/resumes/new')} 
+                    className="text-xs sm:text-sm bg-orange-600 hover:bg-orange-700" 
+                    size="sm"
+                  > 
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Create New Resume 
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => importFileRef.current?.click()} 
+                    disabled={importLoading} 
+                    className="text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50" 
+                    size="sm"
+                  >
+                    {importLoading ? (
+                      <>
+                        <LoadingSpinner className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Importing...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> Import Resume
+                      </>
+                    )}
                   </Button>
                 </div>
               </>
@@ -556,9 +663,21 @@ export default function ResumeDashboardPage() {
         </div>
       )}
 
-      <input ref={importFileRef} type="file" accept=".pdf,.docx,.txt,.xlsx,.xls" className="hidden" onChange={handleFileSelect} />
+      <input 
+        ref={importFileRef} 
+        type="file" 
+        accept=".pdf,.docx,.txt,.xlsx,.xls" 
+        className="hidden" 
+        onChange={handleFileSelect} 
+      />
 
-      {importedResumeId && ( <ImportGuide resumeId={importedResumeId} isOpen={showImportGuide} onClose={handleImportGuideClose} /> )}
+      {importedResumeId && ( 
+        <ImportGuide 
+          resumeId={importedResumeId} 
+          isOpen={showImportGuide} 
+          onClose={handleImportGuideClose} 
+        /> 
+      )}
     </div>
   );
 }

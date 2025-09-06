@@ -11,6 +11,29 @@ import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 
 import DocumentExamples from "@/components/DocumentExamples"
 import { useState } from "react"
+import Image from "next/image"
+
+
+// Company logos data with actual image paths matching your files
+const companyLogos = [
+  { name: "Apple", logo: "/logos/Apple-Logo.png" },
+  { name: "Tesla", logo: "/logos/teslalogo.png" },
+  { name: "Google", logo: "/logos/googlelogo.png" },
+  { name: "Meta", logo: "/logos/metalogo.png" },
+  { name: "Netflix", logo: "/logos/netflixlogo.png" },
+  { name: "Spotify", logo: "/logos/spotifylogo.png" },
+  { name: "Salesforce", logo: "/logos/salesforcelogo.png" },
+  { name: "Amazon", logo: "/logos/amazonlogo.png" },
+  { name: "Apple", logo: "/logos/Apple-Logo.png" },
+  { name: "Tesla", logo: "/logos/teslalogo.png" },
+  { name: "Google", logo: "/logos/googlelogo.png" },
+  { name: "Meta", logo: "/logos/metalogo.png" },
+  { name: "Netflix", logo: "/logos/netflixlogo.png" },
+  { name: "Spotify", logo: "/logos/spotifylogo.png" },
+  { name: "Salesforce", logo: "/logos/salesforcelogo.png" },
+  { name: "Amazon", logo: "/logos/amazonlogo.png" },
+]
+
 
 // FAQ data structure
 const faqData = [
@@ -49,49 +72,6 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-teal-50/20">
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-50 border-b border-teal-100 bg-white shadow-sm backdrop_blur supports-[backdrop-filter]:bg-white/90">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center">
-            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-teal-600 mr-1 sm:mr-2" />
-            <h1 className="text-lg sm:text-xl font-bold text-gray-800">Resume Mate AI </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Navigation links */}
-            <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">
-              Pricing
-            </Link>
-            <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">
-              Features
-            </Link>
-
-            {user ? (
-              <Link href="/dashboard">
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
-                  Go to Dashboard
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/auth/login" className="hidden sm:block">
-                  <Button
-                    variant="outline"
-                    className="border-teal-200 text-gray-700 hover:text-teal-700 hover:bg-teal-50 hover:border-teal-300"
-                  >
-                    Log In
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button className="bg-teal-600 hover:bg-teal-700 text-white">Sign Up</Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
      {/* Enhanced Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 bg-gradient-to-b from-slate-50 via-white to-orange-50/20">
         {/* Background decorations */}
@@ -166,7 +146,7 @@ export default function LandingPage() {
           <div className="relative overflow-hidden">
             <div className="flex items-center gap-4 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {/* Duplicate logos for seamless scrolling */}
-              {/* {[...companyLogos, ...companyLogos].map((company, index) => (
+              {[...companyLogos, ...companyLogos].map((company, index) => (
                 <div key={index} className="h-[80px] min-w-[80px] flex items-center justify-center px-1 py-1 rounded-lg">
                   <Image
                     src={`${company.logo}`}
@@ -180,7 +160,7 @@ export default function LandingPage() {
                     }}
                   />
                 </div>
-              ))} */}
+              ))}
             </div>
             {/* Gradient overlays for fade effect */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
