@@ -359,7 +359,8 @@ const AuthLayout=({children}:{children:React.ReactNode})=>{
           {/* Content wrapper with thin teal-gray colored margins */}
           <div className="w-full flex">
             {/* Thin margin left - teal-gray color */}
-            <div className="w-1 bg-teal-100/30"></div>
+            <div className="w-1 bg-teal-100/30">
+            </div>
             
             {/* Main content area */}
             <div className="flex-1 bg-white px-10">
@@ -367,7 +368,9 @@ const AuthLayout=({children}:{children:React.ReactNode})=>{
             </div>
             
             {/* Thin margin right - teal-gray color */}
-            <div className="w-1 bg-teal-100/30"></div>
+            <div className="w-1 bg-teal-100/30">
+              
+            </div>
           </div>
         </main>
 
