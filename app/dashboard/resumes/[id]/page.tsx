@@ -1,4 +1,3 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\dashboard\resumes\[id]\page.tsx
 
 "use client";
 
@@ -13,32 +12,19 @@ import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import Link from 'next/link';
 import { mapDatabaseToResumeData } from '@/lib/resume-mappers';
-import { Badge } from '@/components/ui/badge';
 import {
   Edit,
   ArrowLeft,
   ScanSearch,
-  Download,
-  Share2,
-  Trash2,
   FileSpreadsheet,
-  MoreVertical,
   Sparkles
 } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function EditResumePage() {
   const [resume, setResume] = useState<any | null>(null);
@@ -55,8 +41,6 @@ export default function EditResumePage() {
   const resumeId = params.id as string;
 
   useEffect(() => {
-    // We only fetch the data once when the user is available.
-    // The `ResumeBuilder` will handle its own state internally after this initial load.
     if (user) {
       const fetchResume = async () => {
         try {
@@ -105,9 +89,9 @@ export default function EditResumePage() {
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center w-full">
-        <div className="text-center">
-          <LoadingSpinner className="h-8 w-8 mb-4" />
-          <p className="text-muted-foreground">Loading Resume...</p>
+        <div className="text-center space-y-2">
+          <LoadingSpinner className="h-8 w-8 mx-auto text-orange-600" />
+          <p className="text-sm text-gray-600">Loading Resume...</p>
         </div>
       </div>
     );
@@ -115,12 +99,17 @@ export default function EditResumePage() {
 
   if (error) {
     return (
-      <div className="w-full mx-auto py-8 px-2">
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Alert variant="destructive" className="border-red-200">
+          <AlertDescription className="text-sm text-red-700">{error}</AlertDescription>
         </Alert>
         <div className="flex justify-center mt-6">
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            className="h-10 px-4 border-gray-300 text-gray-700 hover:bg-gray-50"
+            aria-label="Return to resumes list"
+          >
             <Link href="/dashboard/resumes">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Resumes
@@ -132,74 +121,99 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="space-y-6 w-full m-0 p-0">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Skip to Content Link for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:bg-orange-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
+      >
+        Skip to main content
+      </a>
+
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10 w-full">
-        <div className="w-full py-4 px-0">
+      <header className="bg-white border-b sticky top-0 z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4">
-              <Button variant="ghost" asChild className="mb-2 sm:mb-0 -ml-2 h-8">
+
+            {/* title shown on small screens */}
+            <h1 className="md:hidden text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2 truncate max-w-[60%] sm:max-w-[70%]">
+                <FileSpreadsheet className="h-5 w-5 text-orange-600 flex-shrink-0" />
+                {resume?.title || 'Resume'}
+            </h1>
+
+            <div className="flex items-center gap-3 w-full">
+              <Button
+                variant="ghost"
+                asChild
+                className="h-10 px-4 min-w-[44px] text-gray-700 hover:bg-gray-50"
+                aria-label="Return to resumes list"
+              >
                 <Link href="/dashboard/resumes">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
+                  <span className="text-sm font-medium">Back</span>
                 </Link>
               </Button>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  <FileSpreadsheet className="h-5 w-5 text-orange-600" />
-                  {resume?.title || 'Resume'}
-                </h1>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)}
-                  className="ml-auto sm:ml-0 h-7 bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 hover:from-violet-600 hover:to-purple-700 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105"
-                >
-                  <ScanSearch className="h-3.5 w-3.5 mr-1.5" />
-                  <span className="text-xs font-medium">ATS Scan</span>
-                </Button>
-              </div>
+              <h1 className="hidden text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 md:flex items-center gap-2 truncate max-w-[60%] sm:max-w-[70%]">
+                <FileSpreadsheet className="h-5 w-5 text-orange-600 flex-shrink-0" />
+                {resume?.title || 'Resume'}
+              </h1>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)}
+                className="ml-auto h-10 px-4 min-w-[120px] bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 hover:from-violet-600 hover:to-purple-700 shadow-sm hover:shadow-md transition-all duration-200 sm:hover:scale-105 disabled:sm:hover:scale-100"
+                aria-label="Scan resume for ATS compatibility"
+              >
+                <ScanSearch className="h-4 w-4 mr-2" />
+                <span className="text-sm font-medium">ATS Scan</span>
+              </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Content Section - Full Width */}
-      <div className="w-full px-0">
-        <Card className="border-2 border-orange-100 mb-6 w-full">
-          <CardHeader className="border-b bg-orange-50/50 py-2">
-            <CardTitle className="text-lg text-orange-800">Resume Actions</CardTitle>
+      {/* Main Content */}
+      <main id="main-content" className=" mx-auto">
+        <Card className="border-2 border-orange-100 mb-6">
+          <CardHeader className="border-b bg-orange-50/50 py-3 sm:py-4">
+            <CardTitle className="text-sm sm:text-base md:text-lg text-orange-800">Resume Actions</CardTitle>
           </CardHeader>
-          <CardContent className="p-2">
-            <div className="grid grid-cols-2 gap-3">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Button
                 variant={activeTab === 'edit' ? 'default' : 'outline'}
-                className="h-12 flex items-center justify-start px-4 bg-orange-600 hover:bg-orange-700"
+                className={`
+                  h-12 px-4 flex items-center justify-start
+                  ${activeTab === 'edit' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'border-2 border-orange-200 text-orange-700 hover:bg-orange-50'}
+                  min-w-[120px] text-sm font-semibold transition-all duration-200
+                `}
                 onClick={() => setActiveTab('edit')}
+                aria-current={activeTab === 'edit' ? 'true' : 'false'}
+                aria-label="Edit resume content"
               >
                 <Edit className="h-4 w-4 mr-3 flex-shrink-0" />
-                <div className="font-semibold text-sm">Edit</div>
+                Edit
               </Button>
-
               <Button
                 variant="outline"
                 onClick={() => router.push(`/dashboard/resumes/${resumeId}/tailor`)}
-                className="h-12 flex items-center justify-start px-4 border-2 hover:bg-orange-50"
+                className="h-12 px-4 flex items-center justify-start border-2 border-orange-200 text-orange-700 hover:bg-orange-50 min-w-[120px] text-sm font-semibold transition-all duration-200"
+                aria-label="Tailor resume to a specific job"
               >
                 <Sparkles className="h-4 w-4 mr-3 flex-shrink-0 text-orange-600" />
-                <div className="font-semibold text-sm">Tailor to Job</div>
+                Tailor to Job
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {activeTab === 'edit' && resume && (
-          <div className="bg-white w-full m-0 p-0">
-            {/* The ResumeBuilder is now only rendered when 'resume' data is available */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 w-full">
+            {/* ResumeBuilder is assumed to be responsive; constrained here to prevent overflow */}
             <ResumeBuilder initialData={resume} resumeId={resumeId} />
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

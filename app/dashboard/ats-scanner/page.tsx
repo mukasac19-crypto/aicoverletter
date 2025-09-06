@@ -132,7 +132,7 @@ export default function ATSScannerPage() {
   }
   
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
           <ScanSearch className="h-8 w-8 text-orange-600" />

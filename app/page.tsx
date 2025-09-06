@@ -11,7 +11,6 @@ import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 
 import DocumentExamples from "@/components/DocumentExamples"
 import { useState } from "react"
-import Image from "next/image"
 import LogoCarousel from "@/components/LogoCarousel"
 
 
@@ -62,9 +61,7 @@ const faqData = [
 
 
 export default function LandingPage() {
-  const { user } = useAuth()
 
-    const [scrollPosition, setScrollPosition] = useState(0)
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
   const toggleFAQ = (index: number) => {
@@ -105,19 +102,15 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              {/* <Link href="/auth/register"> */}
+              <Link href="/auth/register">
                 <Button 
-                onClick={() => {
-                  // toggleAuthModal(true);
-                  // toggleShowLoginContent(false); // show sign up form
-                }}
                 size="lg" 
                 className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8"
                 >
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free - No Card Required
                 </Button>
-              {/* </Link> */}
+              </Link>
             </div>
             
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
