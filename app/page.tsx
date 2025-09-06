@@ -12,6 +12,7 @@ import { SUBSCRIPTION_PLANS } from "@/lib/subscription-client"
 import DocumentExamples from "@/components/DocumentExamples"
 import { useState } from "react"
 import Image from "next/image"
+import LogoCarousel from "@/components/LogoCarousel"
 
 
 // Company logos data with actual image paths matching your files
@@ -144,23 +145,8 @@ export default function LandingPage() {
             OVER 100,000 USERS LANDED JOBS AT LEADING COMPANIES
           </p>
           <div className="relative overflow-hidden">
-            <div className="flex items-center gap-4 animate-scroll" style={{ transform: `translateX(-${scrollPosition}px)` }}>
-              {/* Duplicate logos for seamless scrolling */}
-              {[...companyLogos, ...companyLogos].map((company, index) => (
-                <div key={index} className="h-[80px] min-w-[80px] flex items-center justify-center px-1 py-1 rounded-lg">
-                  <Image
-                    src={`${company.logo}`}
-                    alt={`${company.name} logo`}
-                    width={100}
-                    height={80}
-                    className='w-full h-full object-contain'
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      e.currentTarget.src = `https://via.placeholder.com/120x40/CCCCCC/666666?text=${company.name}`;
-                    }}
-                  />
-                </div>
-              ))}
+            <div className="flex items-center gap-4 animate-scroll">
+              <LogoCarousel companyLogos={companyLogos} />
             </div>
             {/* Gradient overlays for fade effect */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
@@ -301,17 +287,14 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center mt-12">
-            {/* <Link href="/auth/register"> */}
+            <Link href="/auth/register">
               <Button
-              onClick={() => {
-                // toggleAuthModal(true);
-                // toggleShowLoginContent(false); // show sign up form
-              }} 
+              
               size="lg" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white shadow-xl shadow-orange-500/25 px-8">
                 Try It Now - Free Forever Plan
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            {/* </Link> */}
+            </Link>
           </div>
         </div>
       </section>
@@ -473,12 +456,8 @@ export default function LandingPage() {
                       ))}
                     </ul>
 
-                    {/* <Link href="/auth/register" className="block"> */}
+                    <Link href="/auth/register" className="block">
                       <Button
-                        onClick={() => {
-                          // toggleAuthModal(true);
-                          // toggleShowLoginContent(false); // show sign up form
-                        }}
                         className={`w-full py-6 text-base font-semibold ${
                           tier === "FREE"
                             ? "bg-gray-900 hover:bg-gray-800"
@@ -489,7 +468,7 @@ export default function LandingPage() {
                       >
                         {tier === "FREE" ? "Start Free" : tier === "PRO" ? "Get Pro Access" : "Contact Sales"}
                       </Button>
-                    {/* </Link> */}
+                    </Link>
                   </div>
                 </Card>
               </div>
@@ -590,17 +569,13 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              {/* <Link href="/auth/register"> */}
+              <Link href="/auth/register">
                 <Button 
-                onClick={() => {
-                  // toggleAuthModal(true);
-                  // toggleShowLoginContent(false); // show sign up form
-                }}
                 size="lg" className="bg-white text-orange-700 hover:bg-gray-100 shadow-2xl px-8 py-6 text-lg font-semibold">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free Trial Now
                 </Button>
-              {/* </Link> */}
+              </Link>
             </div>
             
             <div className="flex items-center justify-center gap-6 text-sm">
@@ -641,39 +616,6 @@ export default function LandingPage() {
           background-image: url("data:image/svg+xml,%3csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3e%3cg fill='none' fill-rule='evenodd'%3e%3cg fill='%23ffffff' fill-opacity='0.1'%3e%3cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e");
         }
       `}</style>
-
-
-      {/* Footer with updated design */}
-      <footer className="border-t border-teal-100 bg-white">
-        <div className="container mx-auto px-4 py-6 sm:py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
-              <FileText className="h-5 w-5 text-teal-600 mr-2" />
-              <span className="font-semibold text-gray-800">Resume Mate AI</span>
-            </div>
-            <div className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-8 text-sm text-gray-600">
-              <Link href="#" className="hover:text-teal-600 transition">
-                Terms of Service
-              </Link>
-              <Link href="#" className="hover:text-teal-600 transition">
-                Privacy Policy
-              </Link>
-              <Link href="/pricing" className="hover:text-teal-600 transition">
-                Pricing
-              </Link>
-              <Link href="/features" className="hover:text-teal-600 transition">
-                Features
-              </Link>
-              <Link href="#" className="hover:text-teal-600 transition">
-                Contact Us
-              </Link>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-xs text-gray-500">
-            © {new Date().getFullYear()} Resume Mate AI. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </main>
   )
 }
