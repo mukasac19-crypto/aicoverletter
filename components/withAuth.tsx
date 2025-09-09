@@ -32,3 +32,5 @@ export default function withAuth<P extends object>(
 function getDisplayName(WrappedComponent: React.ComponentType<any>) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
+
+

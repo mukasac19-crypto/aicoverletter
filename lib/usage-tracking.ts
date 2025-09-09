@@ -68,7 +68,7 @@ export async function trackUsage(
     
     // Get or create usage record
     const { data: existingUsage, error: fetchError } = await supabase
-      .from('usage_limits')
+      .from('usage_tracking')
       .select('*')
       .eq('user_id', userId)
       .eq('feature', feature)
@@ -80,7 +80,7 @@ export async function trackUsage(
       throw fetchError;
     }
     
-    let currentUsage = existingUsage?.used_count || 0;
+    let currentUsage = existingUsage?.count || 0;
     const newUsage = currentUsage + increment;
     
     // Check if limit exceeded
@@ -95,9 +95,9 @@ export async function trackUsage(
     // Update or create usage record
     if (existingUsage) {
       const { error: updateError } = await supabase
-        .from('usage_limits')
+        .from('usage_tracking')
         .update({
-          used_count: newUsage,
+          count: newUsage,
           updated_at: new Date().toISOString(),
         })
         .eq('id', existingUsage.id);
@@ -105,12 +105,11 @@ export async function trackUsage(
       if (updateError) throw updateError;
     } else {
       const { error: insertError } = await supabase
-        .from('usage_limits')
+        .from('usage_tracking')
         .insert({
           user_id: userId,
           feature,
-          used_count: increment,
-          limit_count: limit,
+          count: increment,
           period_start: start.toISOString(),
           period_end: end.toISOString(),
         });
@@ -157,7 +156,7 @@ export async function getUsageStats(
     
     // Get all usage records for current period
     const { data: usageRecords, error } = await supabase
-      .from('usage_limits')
+      .from('usage_tracking')
       .select('*')
       .eq('user_id', userId)
       .gte('period_start', start.toISOString())
@@ -172,7 +171,7 @@ export async function getUsageStats(
     for (const feature of features) {
       const usage = usageRecords?.find((r: any) => r.feature === feature);
       const limit = getFeatureLimit(plan, feature);
-      const used = usage?.used_count || 0;
+      const used = usage?.count || 0;
       
       stats[feature] = {
         feature,
