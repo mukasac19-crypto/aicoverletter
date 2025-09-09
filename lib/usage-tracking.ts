@@ -8,7 +8,8 @@ export interface UsageRecord {
   id: string;
   user_id: string;
   feature: string;
-  count: number;
+  used_count: number;
+  limit_count: number;
   period_start: string;
   period_end: string;
   created_at: string;
@@ -66,9 +67,9 @@ export async function trackUsage(
       return { success: true, remaining: -1 };
     }
     
-    // Get or create usage record
+    // Get or create usage record using usage_limits table
     const { data: existingUsage, error: fetchError } = await supabase
-      .from('usage_tracking')
+      .from('usage_limits')
       .select('*')
       .eq('user_id', userId)
       .eq('feature', feature)
@@ -80,7 +81,7 @@ export async function trackUsage(
       throw fetchError;
     }
     
-    let currentUsage = existingUsage?.count || 0;
+    let currentUsage = existingUsage?.used_count || 0;
     const newUsage = currentUsage + increment;
     
     // Check if limit exceeded
@@ -95,9 +96,9 @@ export async function trackUsage(
     // Update or create usage record
     if (existingUsage) {
       const { error: updateError } = await supabase
-        .from('usage_tracking')
+        .from('usage_limits')
         .update({
-          count: newUsage,
+          used_count: newUsage,
           updated_at: new Date().toISOString(),
         })
         .eq('id', existingUsage.id);
@@ -105,11 +106,12 @@ export async function trackUsage(
       if (updateError) throw updateError;
     } else {
       const { error: insertError } = await supabase
-        .from('usage_tracking')
+        .from('usage_limits')
         .insert({
           user_id: userId,
           feature,
-          count: increment,
+          used_count: increment,
+          limit_count: limit,
           period_start: start.toISOString(),
           period_end: end.toISOString(),
         });
@@ -154,9 +156,9 @@ export async function getUsageStats(
     
     const plan = SUBSCRIPTION_PLANS[tier];
     
-    // Get all usage records for current period
+    // Get all usage records for current period from usage_limits
     const { data: usageRecords, error } = await supabase
-      .from('usage_tracking')
+      .from('usage_limits')
       .select('*')
       .eq('user_id', userId)
       .gte('period_start', start.toISOString())
@@ -171,7 +173,7 @@ export async function getUsageStats(
     for (const feature of features) {
       const usage = usageRecords?.find((r: any) => r.feature === feature);
       const limit = getFeatureLimit(plan, feature);
-      const used = usage?.count || 0;
+      const used = usage?.used_count || 0;
       
       stats[feature] = {
         feature,
