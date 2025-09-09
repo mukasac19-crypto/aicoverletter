@@ -522,25 +522,25 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
       <div className="fixed bottom-6 right-6 z-50">
         <DropdownMenu open={showMobileActions} onOpenChange={setShowMobileActions}>
           <DropdownMenuTrigger asChild>
-            <Button className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-teal-500 to-gray-700 text-white hover:from-teal-600 hover:to-gray-800 transition-all" aria-label="Resume Actions">
+            <Button className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-orange-500 to-gray-700 text-white hover:from-orange-600 hover:to-gray-800 transition-all" aria-label="Resume Actions">
               <FileText className="h-6 w-6" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-2 bg-white rounded-md shadow-xl border border-teal-100 mb-2">
-            <DropdownMenuItem onClick={toggleMobilePreview} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Eye className="h-5 w-5 mr-3 text-teal-600" /> <span>Preview</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setShowTemplateModal(true)} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> <Palette className="h-5 w-5 mr-3 text-teal-600" /> <span>Template</span> </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName || (isNewResume && !canCreateResume)} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
-              <Save className="h-5 w-5 mr-3 text-teal-600" /> 
+          <DropdownMenuContent align="end" className="w-56 p-2 bg-white rounded-md shadow-xl border border-orange-100 mb-2">
+            <DropdownMenuItem onClick={toggleMobilePreview} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Eye className="h-5 w-5 mr-3 text-orange-600" /> <span>Preview</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowTemplateModal(true)} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> <Palette className="h-5 w-5 mr-3 text-orange-600" /> <span>Template</span> </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSaveClick} disabled={isSaving || !resumeData?.personalInfo?.firstName || (isNewResume && !canCreateResume)} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> 
+              <Save className="h-5 w-5 mr-3 text-orange-600" /> 
               <span>Save</span> 
               {isNewResume && !canCreateResume && <Lock className="h-3 w-3 ml-1" />}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
-              <Download className="h-5 w-5 mr-3 text-teal-600" /> 
+            <DropdownMenuItem onClick={() => handleExportOption('pdf')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> 
+              <Download className="h-5 w-5 mr-3 text-orange-600" /> 
               <span>Export PDF</span> 
               {!canExport && <Lock className="h-3 w-3 ml-1" />}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-teal-50 rounded-md"> 
-              <Download className="h-5 w-5 mr-3 text-teal-600" /> 
+            <DropdownMenuItem onClick={() => handleExportOption('docx')} disabled={isExporting || !canExport} className="flex items-center p-3 cursor-pointer hover:bg-orange-50 rounded-md"> 
+              <Download className="h-5 w-5 mr-3 text-orange-600" /> 
               <span>Export DOCX</span> 
               {!canExport && <Lock className="h-3 w-3 ml-1" />}
             </DropdownMenuItem>
@@ -550,13 +550,13 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
     );
   };
 
-  if (isLoading) { return (<div className="min-h-[80vh] flex items-center justify-center w-full"><div className="text-center"><LoadingSpinner className="h-8 w-8 mb-4 text-teal-600" /><p className="text-muted-foreground">Loading Resume Editor...</p></div></div>); }
+  if (isLoading) { return (<div className="min-h-[80vh] flex items-center justify-center w-full"><div className="text-center"><LoadingSpinner className="h-8 w-8 mb-4 text-orange-600" /><p className="text-muted-foreground">Loading Resume Editor...</p></div></div>); }
   if (error) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert variant="destructive"><AlertTriangle className="h-4 w-4" /><AlertTitle>Error Loading Resume</AlertTitle><AlertDescription>{error}</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
   if (!resumeData) { return (<div className="w-full max-w-4xl mx-auto py-8 px-4"><Alert><AlertDescription>Resume data could not be loaded or created.</AlertDescription></Alert><div className="flex justify-center mt-6"><Button asChild variant="outline"><Link href="/dashboard/resumes"><ArrowLeft className="h-4 w-4 mr-2" /> Back to Resumes</Link></Button></div></div>); }
 
   return (
-    <div className="w-full m-0 p-0">
-      <TemplateSelectionModal
+    <div className="w-full m-0 p-0 max-w-screen-lg mx-auto px-2 sm:px-4 lg:px-8 overflow-x-auto">
+      {/* <TemplateSelectionModal
         resume={resumeData}
         templates={availableTemplates}
         selectedTemplate={selectedTemplate}
@@ -565,19 +565,19 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         onSelectTemplate={handleSaveWithTemplate}
         onSaveWithTemplate={handleSaveWithTemplate}
         isPreviewMode={!saveInitiated}
-      />
+      /> */}
 
-      <div className="bg-white border-b sticky top-0 z-40 w-full">
-        <div className="container mx-auto py-3 px-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild className="-ml-2 h-8 text-gray-600 hover:bg-gray-100">
+      <div className="bg-white border-b sticky top-0 z-40 w-full shadow-sm overflow-x-auto">
+        <div className="py-3 px-2 sm:px-4 lg:px-8 overflow-x-auto">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-between items-start sm:items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <Button variant="ghost" size="sm" asChild className="-ml-2 h-10 min-w-[44px] text-gray-600 hover:bg-gray-100 px-4">
                 <Link href="/dashboard/resumes">
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Link>
               </Button>
               <Separator orientation="vertical" className="h-6" />
-              <h1 className="text-lg font-semibold text-gray-800 truncate pr-2">
+              <h1 className="text-base sm:text-lg font-semibold text-gray-800 truncate pr-2 break-words">
                 {resumeData.title || 'Untitled Resume'}
               </h1>
               {resumeId && (
@@ -585,7 +585,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                   variant="outline" 
                   size="sm" 
                   onClick={() => router.push(`/dashboard/resumes/${resumeId}/ats-scanner`)} 
-                  className="h-7 px-2 text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white"
+                  className="h-9 px-2 min-w-[44px] text-xs bg-gradient-to-r from-violet-50 to-purple-50 text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-white"
                   disabled={!canUseFeature('ats_scanner')}
                   title={!canUseFeature('ats_scanner') ? "Professional plan required" : ""}
                 >
@@ -602,7 +602,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
             </div>
             {!isMobileView && (
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowTemplateModal(true)} className="h-9 bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button variant="outline" size="sm" onClick={() => setShowTemplateModal(true)} className="h-10 min-w-[44px] bg-white border-gray-300 text-gray-700 hover:bg-gray-50 px-4">
                   <Palette className="h-4 w-4 mr-2" /> {selectedTemplate ? selectedTemplate.name : "Choose Template"}
                 </Button>
                 <div ref={dropdownRef} className="relative">
@@ -610,7 +610,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     <Button 
                       onClick={handleSaveClick} 
                       disabled={isSaving || !resumeData?.personalInfo?.firstName || (isNewResume && !canCreateResume)} 
-                      className="rounded-r-none border-r-0 bg-teal-600 hover:bg-teal-700 text-white h-9 px-4"
+                      className="rounded-r-none border-r-0 bg-orange-600 hover:bg-orange-700 text-white h-10 px-4 min-w-[44px]"
                       title={isNewResume && !canCreateResume ? "Upgrade to create more resumes" : ""}
                     >
                       {isSaving ? <LoadingSpinner className="mr-2" /> : <Save className="h-4 w-4 mr-2" />} 
@@ -619,7 +619,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     </Button>
                     <DropdownMenu open={showExportOptions} onOpenChange={setShowExportOptions}>
                       <DropdownMenuTrigger asChild>
-                        <Button className="rounded-l-none bg-teal-600 hover:bg-teal-700 text-white px-2 h-9" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate || !canExport} aria-label="Export options">
+                        <Button className="rounded-l-none bg-orange-600 hover:bg-orange-700 text-white px-2 h-10 min-w-[44px]" disabled={!resumeData?.personalInfo?.firstName || !selectedTemplate || !canExport} aria-label="Export options">
                           <ChevronDown className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -657,13 +657,13 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
 
       {showImportAlert && importedSections.length > 0 && (
         <div className="container mx-auto px-4 mt-4">
-          <Alert className="bg-teal-50 border-teal-200 text-teal-800">
-            <CheckCircle2 className="h-5 w-5 text-teal-500" />
-            <AlertTitle className="text-teal-800 font-medium">Resume Imported Successfully!</AlertTitle>
-            <AlertDescription className="text-teal-700">
+          <Alert className="bg-orange-50 border-orange-200 text-orange-800">
+            <CheckCircle2 className="h-5 w-5 text-orange-500" />
+            <AlertTitle className="text-orange-800 font-medium">Resume Imported Successfully!</AlertTitle>
+            <AlertDescription className="text-orange-700">
               <p className="mt-1 text-sm">Review imported sections and save your changes.</p>
               <div className="mt-3">
-                <Button onClick={() => setShowImportAlert(false)} variant="ghost" size="sm" className="text-teal-700 hover:bg-teal-100 h-7 px-2">
+                <Button onClick={() => setShowImportAlert(false)} variant="ghost" size="sm" className="text-orange-700 hover:bg-orange-100 h-7 px-2">
                   <X className="h-4 w-4 mr-1" /> Dismiss
                 </Button>
               </div>
@@ -720,17 +720,17 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         </div>
       )}
 
-      <div className={`container mx-auto px-4 py-6 ${isMobileView ? '' : `grid grid-cols-1 ${expandedPreview ? 'lg:grid-cols-5' : 'lg:grid-cols-12'} gap-6`}`}>
+      <div className={`w-full mx-auto py-6 overflow-x-auto ${isMobileView ? '' : `grid grid-cols-1 ${expandedPreview ? 'lg:grid-cols-5' : 'lg:grid-cols-12'} gap-6`}`}>
         {/* Mobile Layout */}
         {isMobileView && (
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-x-auto">
             {/* Mobile Tabs */}
             <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
               <Button
                 variant={!showMobilePreview ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setShowMobilePreview(false)}
-                className="flex-1"
+                className="flex-1 min-w-0"
               >
                 Edit
               </Button>
@@ -738,7 +738,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 variant={showMobilePreview ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setShowMobilePreview(true)}
-                className="flex-1"
+                className="flex-1 min-w-0"
               >
                 Preview
               </Button>
@@ -746,11 +746,11 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
             
             {/* Mobile Content */}
             {!showMobilePreview ? (
-              <Card className="border shadow-sm">
+              <Card className="border shadow-sm w-full overflow-x-auto">
                 <CardHeader className="bg-gray-50 border-b p-4">
-                  <CardTitle className="text-base font-semibold text-gray-700">Resume Content</CardTitle>
+                  <CardTitle className="text-base font-semibold text-gray-700 break-words">Resume Content</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 overflow-x-auto">
                   <Accordion type="single" collapsible value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <AccordionItem value="personal-info" className="border-b">
                       <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Personal Info</AccordionTrigger>
@@ -828,7 +828,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                 </CardContent>
               </Card>
             ) : (
-              <div className="bg-white rounded-lg shadow-sm">
+              <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <EnhancedResumePreview
                   resume={resumeData}
                   template={selectedTemplate}
@@ -848,12 +848,12 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
         {!isMobileView && (
           <>
             {/* Content Section */}
-            <div className={`${expandedPreview ? 'lg:col-span-2 lg:order-2' : 'lg:col-span-5 lg:order-1'}`}>
-              <Card className="border shadow-sm">
+            <div className={`${expandedPreview ? 'lg:col-span-2 lg:order-2' : 'lg:col-span-5 lg:order-1'} min-w-0 overflow-x-auto`}>
+              <Card className="border shadow-sm w-full overflow-x-auto">
                 <CardHeader className="bg-gray-50 border-b p-4">
-                  <CardTitle className="text-base font-semibold text-gray-700">Resume Content</CardTitle>
+                  <CardTitle className="text-base font-semibold text-gray-700 break-words">Resume Content</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 overflow-x-auto">
                   <Accordion type="single" collapsible value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <AccordionItem value="personal-info" className="border-b">
                       <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 hover:no-underline text-sm font-medium">Personal Info</AccordionTrigger>
@@ -933,10 +933,10 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
             </div>
 
             {/* Preview Section */}
-            <div className={`${expandedPreview ? 'lg:col-span-3 lg:order-1' : 'lg:col-span-7 lg:order-2'}`}>
-              <div className="h-full">
+            <div className={`${expandedPreview ? 'lg:col-span-3 lg:order-1' : 'lg:col-span-7 lg:order-2'} min-w-0 overflow-x-auto`}>
+              <div className="h-full overflow-x-auto">
                 <div className="bg-gray-100 border border-gray-200 rounded-t-md flex flex-row justify-between items-center py-2 px-4">
-                  <div className="text-gray-800 text-base font-medium">Resume Preview</div>
+                  <div className="text-gray-800 text-base font-medium break-words">Resume Preview</div>
                   <div className="flex space-x-2">
                     <Button 
                       variant="outline" 
@@ -948,7 +948,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ initialData, resumeId: in
                     </Button>
                   </div>
                 </div>
-                <div className="bg-gray-100 border-l border-r border-b border-gray-200 rounded-b-md overflow-hidden">
+                <div className="bg-gray-100 border-l border-r border-b border-gray-200 rounded-b-md overflow-x-auto">
                   <EnhancedResumePreview
                     resume={resumeData}
                     template={selectedTemplate}

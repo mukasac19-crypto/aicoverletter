@@ -363,7 +363,7 @@ const AuthLayout=({children}:{children:React.ReactNode})=>{
             </div>
             
             {/* Main content area */}
-            <div className="flex-1 bg-white px-10">
+            <div className="flex-1 bg-white">
               {children}
             </div>
             

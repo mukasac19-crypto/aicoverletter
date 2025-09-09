@@ -472,6 +472,8 @@ export default function ResumeDashboardPage() {
         )}
       </div>
 
+      
+
       {/* Filters */}
       <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-4">
         <div className="w-full xs:w-auto overflow-x-auto pb-1">

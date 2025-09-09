@@ -607,7 +607,7 @@ export default function CoverLetterGenerator() {
  );
 
  return (
-   <div>
+   <div className="w-full px-4 py-4">
      <header className="mb-8">
        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
          <div>
@@ -648,21 +648,33 @@ export default function CoverLetterGenerator() {
        )}
      </header>
 
+
+     
+
      <Tabs
        value={activeTab}
        onValueChange={handleTabChange}
        className="w-full"
      >
        <TabsList className="mb-6">
-         <TabsTrigger value="create">
+         <TabsTrigger 
+         value="create"
+         className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+         >
            <Sparkles className="h-4 w-4 mr-2" />
            Create New
          </TabsTrigger>
-         <TabsTrigger value="recent">
+         <TabsTrigger 
+         value="recent"
+         className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+         >
            <History className="h-4 w-4 mr-2" />
            Recent
          </TabsTrigger>
-         <TabsTrigger value="follow-up">
+         <TabsTrigger 
+         value="follow-up"
+         className="flex-1 flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow data-[state=inactive]:text-orange-900 data-[state=inactive]:bg-muted/50 focus-visible:ring-2 focus-visible:ring-orange-400"
+         >
            <MailCheck className="h-4 w-4 mr-2" />
            Follow-Up
          </TabsTrigger>
