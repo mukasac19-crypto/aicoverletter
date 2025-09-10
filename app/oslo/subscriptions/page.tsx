@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { 
   RefreshCw, 
   Filter, 
@@ -110,7 +110,7 @@ export default function SubscriptionsPage() {
   });
   
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Fetch subscription data from Supabase
   const fetchSubscriptions = useCallback(async () => {
@@ -584,7 +584,7 @@ export default function SubscriptionsPage() {
                             subscription.plan_id === 'business' ? 'outline' : 'secondary'
                           }
                           className={
-                            subscription.plan_id === 'pro' ? 'bg-teal-500' :
+                            subscription.plan_id === 'pro' ? 'bg-orange-500' :
                             subscription.plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                           }
                         >

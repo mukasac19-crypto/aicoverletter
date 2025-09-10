@@ -313,7 +313,7 @@ export default function SubscriptionDetailPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-xl">
-            <CreditCard className="h-5 w-5 mr-2 text-teal-600" />
+            <CreditCard className="h-5 w-5 mr-2 text-orange-600" />
             Subscription Details
           </CardTitle>
           <CardDescription>
@@ -324,7 +324,7 @@ export default function SubscriptionDetailPage() {
           {/* User Information */}
           <div className="bg-muted p-4 rounded-md">
             <div className="flex items-start gap-4">
-              <div className="h-10 w-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-medium text-lg">
+              <div className="h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 font-medium text-lg">
                 {subscription.user?.first_name?.charAt(0) || subscription.user?.email?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
@@ -366,7 +366,7 @@ export default function SubscriptionDetailPage() {
                   <Badge
                     variant={subscription.plan_id === 'pro' ? 'default' : 'outline'}
                     className={
-                      subscription.plan_id === 'pro' ? 'bg-teal-500' :
+                      subscription.plan_id === 'pro' ? 'bg-orange-500' :
                       subscription.plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
                     }
                   >

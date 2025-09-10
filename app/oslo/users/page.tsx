@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/lib/supabase";
+import { createClient } from '@/utils/client-side-client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -91,9 +91,13 @@ export default function UsersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
   const [userSubscriptions, setUserSubscriptions] = useState<Record<string, Subscription>>({});
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [onboardingFilter, setOnboardingFilter] = useState<string>("all");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   
   // Apply filters to users
   const applyFilters = useCallback(() => {
@@ -120,9 +124,15 @@ export default function UsersPage() {
         filtered = filtered.filter(user => !userSubscriptions[user.id]);
       } else {
         filtered = filtered.filter(user => 
-          userSubscriptions[user.id] && userSubscriptions[user.id].plan_id === subscriptionFilter
+          userSubscriptions[user.id] && userSubscriptions[user.id].status === subscriptionFilter
         );
       }
+    }
+
+    // Apply onboarding filter
+    if (onboardingFilter !== 'all') {
+      const hasCompleted = onboardingFilter === 'completed';
+      filtered = filtered.filter(user => user.onboarding_completed === hasCompleted);
     }
     
     // Update pagination
@@ -135,7 +145,7 @@ export default function UsersPage() {
     }
     
     setFilteredUsers(filtered);
-  }, [currentPage, itemsPerPage, searchTerm, statusFilter, subscriptionFilter, userSubscriptions, users]);
+  }, [currentPage, itemsPerPage, searchTerm, statusFilter, subscriptionFilter, userSubscriptions, users, onboardingFilter]);
   
   // Fetch user data from Supabase
   const fetchUsers = useCallback(async () => {
@@ -225,7 +235,23 @@ export default function UsersPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  
+
+  const handleSelectUser = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId) 
+        : [...prev, userId]
+    );
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedUsers(paginatedUsers.map(user => user.id));
+    } else {
+      setSelectedUsers([]);
+    }
+  };
+
   // Handle user view
   const handleViewUser = (userId: string) => {
     router.push(`/oslo/users/${userId}`);
@@ -296,6 +322,80 @@ export default function UsersPage() {
     }
   };
   
+  // Handle billing management
+  const handleManageBilling = async (customerId: string) => {
+    try {
+      const response = await fetch('/api/oslo/users/stripe-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId }),
+      });
+
+      const { url } = await response.json();
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        throw new Error('Could not open Stripe billing portal');
+      }
+    } catch (err: any) {
+      console.error('Error opening Stripe portal:', err);
+      setError(err.message || 'Could not open Stripe billing portal');
+    }
+  };
+
+  // Handle user impersonation
+  const handleImpersonateUser = async (userId: string) => {
+    setIsImpersonating(true);
+    try {
+      const response = await fetch('/api/oslo/users/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to impersonate user');
+      }
+
+      const data = await response.json();
+      // Redirect to the impersonation page with the token
+      router.push(`/oslo/auth/impersonate?token=${data.token}`);
+
+    } catch (err: any) {
+      console.error('Error impersonating user:', err);
+      setError(err.message || 'Failed to impersonate user');
+    } finally {
+      setIsImpersonating(false);
+    }
+  };
+
+  const handleBulkAction = async (action: 'suspend' | 'reactivate' | 'delete') => {
+    setIsBulkProcessing(true);
+    try {
+      const response = await fetch('/api/oslo/users/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userIds: selectedUsers, action }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to ${action} users`);
+      }
+
+      // Refresh users and clear selection
+      await fetchUsers();
+      setSelectedUsers([]);
+
+    } catch (err: any) {
+      console.error(`Error performing bulk ${action}:`, err);
+      setError(err.message || `Failed to ${action} users`);
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 flex justify-center items-center min-h-[60vh]">
@@ -388,10 +488,55 @@ export default function UsersPage() {
               <SelectItem value="free">Free</SelectItem>
               <SelectItem value="pro">Pro</SelectItem>
               <SelectItem value="business">Business</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="trialing">Trialing</SelectItem>
+              <SelectItem value="canceled">Canceled</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={onboardingFilter}
+            onValueChange={setOnboardingFilter}
+          >
+            <SelectTrigger className="w-[150px] h-9">
+              <SelectValue placeholder="Onboarding" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="not_completed">Not Completed</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
+
+      {selectedUsers.length > 0 && (
+        <div className="p-4 bg-gray-100 rounded-lg flex items-center justify-between">
+          <p className="text-sm font-medium">{selectedUsers.length} users selected</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" disabled={isBulkProcessing}>
+                {isBulkProcessing ? 'Processing...' : 'Bulk Actions'}
+                <MoreVertical className="h-4 w-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleBulkAction('suspend')}>Suspend</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleBulkAction('reactivate')}>Reactivate</DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-red-600"
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`)) {
+                    handleBulkAction('delete');
+                  }
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       
       {/* User Table */}
       <Card>
@@ -408,6 +553,13 @@ export default function UsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
+                  <th className="p-3">
+                    <input
+                      type="checkbox"
+                      onChange={handleSelectAll}
+                      checked={selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0}
+                    />
+                  </th>
                   <th className="text-left p-3 font-medium text-sm">User</th>
                   <th className="text-left p-3 font-medium text-sm">Status</th>
                   <th className="text-left p-3 font-medium text-sm">Subscription</th>
@@ -419,6 +571,13 @@ export default function UsersPage() {
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((user) => (
                     <tr key={user.id} className="border-b hover:bg-muted/30">
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user.id)}
+                          onChange={() => handleSelectUser(user.id)}
+                        />
+                      </td>
                       <td className="p-3">
                         <div className="flex items-center">
                           <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center mr-3 text-muted-foreground">
@@ -446,15 +605,15 @@ export default function UsersPage() {
                         {userSubscriptions[user.id] ? (
                           <Badge 
                             variant={
-                              userSubscriptions[user.id].plan_id === 'pro' ? 'default' :
-                              userSubscriptions[user.id].plan_id === 'business' ? 'outline' : 'secondary'
+                              userSubscriptions[user.id].status === 'active' ? 'default' :
+                              userSubscriptions[user.id].status === 'trialing' ? 'outline' : 'secondary'
                             }
                             className={
-                              userSubscriptions[user.id].plan_id === 'pro' ? 'bg-teal-500' :
-                              userSubscriptions[user.id].plan_id === 'business' ? 'border-purple-500 text-purple-500' : ''
+                              userSubscriptions[user.id].status === 'active' ? 'bg-green-500' :
+                              userSubscriptions[user.id].status === 'trialing' ? 'border-blue-500 text-blue-500' : ''
                             }
                           >
-                            {userSubscriptions[user.id].plan_id.toUpperCase()}
+                            {userSubscriptions[user.id].status.toUpperCase()}
                           </Badge>
                         ) : (
                           <Badge variant="secondary">FREE</Badge>
@@ -483,6 +642,17 @@ export default function UsersPage() {
                               <DropdownMenuItem onClick={() => handleEditUser(user.id)}>
                                 <Edit className="h-4 w-4 mr-2 text-amber-500" />
                                 Edit User
+                              </DropdownMenuItem>
+                              {user.stripe_customer_id && (
+                                <DropdownMenuItem onClick={() => handleManageBilling(user.stripe_customer_id!)}>
+                                  <CreditCard className="h-4 w-4 mr-2 text-orange-500" />
+                                  Manage Billing
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => handleImpersonateUser(user.id)} disabled={isImpersonating}>
+                                <User className="h-4 w-4 mr-2 text-cyan-500" />
+                                Login as User
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {user.status === 'active' ? (

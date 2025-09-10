@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Shield, AtSign, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,12 +42,12 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 bg-teal-700 text-white rounded-t-lg">
+        <CardHeader className="space-y-1 bg-orange-700 text-white rounded-t-lg">
           <div className="flex items-center justify-center mb-2">
             <Shield className="h-10 w-10" />
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
-          <CardDescription className="text-teal-100 text-center">
+          <CardDescription className="text-orange-100 text-center">
             Enter your credentials to access the admin portal
           </CardDescription>
         </CardHeader>
@@ -78,6 +79,12 @@ export default function AdminLoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
+                <Link 
+                  href="/oslo/auth/forgot-password" 
+                  className="text-sm text-orange-600 hover:text-orange-700"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div className="relative">
                 <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -95,7 +102,7 @@ export default function AdminLoginPage() {
             
             <Button 
               type="submit" 
-              className="w-full bg-teal-600 hover:bg-teal-700" 
+              className="w-full bg-orange-600 hover:bg-orange-700" 
               disabled={isLoading}
             >
               {isLoading ? (
