@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from '@/utils/client-side-client';
+import { createBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -97,7 +97,7 @@ export default function UsersPage() {
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   
   // Apply filters to users
   const applyFilters = useCallback(() => {

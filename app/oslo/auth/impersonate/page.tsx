@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { createClient } from '@/utils/client-side-client';
+import { createBrowserClient } from '@/lib/supabase';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export default function ImpersonatePage() {
@@ -11,7 +11,7 @@ export default function ImpersonatePage() {
   const token = searchParams.get('token');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = createBrowserClient();
 
   useEffect(() => {
     if (!token) {

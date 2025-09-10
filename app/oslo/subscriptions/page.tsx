@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from '@/utils/client-side-client';
+import { createBrowserClient } from "@/lib/supabase";
 import { 
   RefreshCw, 
   Filter, 
@@ -110,7 +110,7 @@ export default function SubscriptionsPage() {
   });
   
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   
   // Fetch subscription data from Supabase
   const fetchSubscriptions = useCallback(async () => {
