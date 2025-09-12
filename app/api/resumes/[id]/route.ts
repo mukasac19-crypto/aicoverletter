@@ -155,7 +155,7 @@ export async function PUT(
   }
 }
 
-// --- DELETE Handler ---
+// --- DELETE Handler - PRODUCTION READY ---
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -186,8 +186,80 @@ export async function DELETE(
        return NextResponse.json({ error: message }, { status });
      }
 
+    // HANDLE ALL FOREIGN KEY CONSTRAINTS IN ORDER
+    // Based on your schema, these tables have foreign keys to resumes:
+    
+    // 1. Clear resume_id reference in user_cvs (set to null, don't delete the CV)
+    const { error: cvUpdateError } = await supabase
+      .from('user_cvs')
+      .update({ resume_id: null })
+      .eq('resume_id', resumeId);
 
-    // Delete the resume
+    if (cvUpdateError && cvUpdateError.code !== 'PGRST116') {
+      console.error(`Error updating user_cvs for resume ${resumeId}:`, cvUpdateError);
+    }
+
+    // 2. Delete resume_exports
+    const { error: exportsDeleteError } = await supabase
+      .from('resume_exports')
+      .delete()
+      .eq('resume_id', resumeId);
+
+    if (exportsDeleteError && exportsDeleteError.code !== 'PGRST116') {
+      console.error(`Error deleting resume_exports for resume ${resumeId}:`, exportsDeleteError);
+    }
+
+    // 3. Delete resume_ats_analyses
+    const { error: atsDeleteError } = await supabase
+      .from('resume_ats_analyses')
+      .delete()
+      .eq('resume_id', resumeId);
+
+    if (atsDeleteError && atsDeleteError.code !== 'PGRST116') {
+      console.error(`Error deleting resume_ats_analyses for resume ${resumeId}:`, atsDeleteError);
+    }
+
+    // 4. Delete interview_sessions
+    const { error: interviewDeleteError } = await supabase
+      .from('interview_sessions')
+      .delete()
+      .eq('resume_id', resumeId);
+
+    if (interviewDeleteError && interviewDeleteError.code !== 'PGRST116') {
+      console.error(`Error deleting interview_sessions for resume ${resumeId}:`, interviewDeleteError);
+    }
+
+    // 5. Delete resume_shares
+    const { error: sharesDeleteError } = await supabase
+      .from('resume_shares')
+      .delete()
+      .eq('resume_id', resumeId);
+
+    if (sharesDeleteError && sharesDeleteError.code !== 'PGRST116') {
+      console.error(`Error deleting resume_shares for resume ${resumeId}:`, sharesDeleteError);
+    }
+
+    // 6. Clear resume_id in cover_letters (set to null, don't delete)
+    const { error: coverLetterUpdateError } = await supabase
+      .from('cover_letters')
+      .update({ resume_id: null })
+      .eq('resume_id', resumeId);
+
+    if (coverLetterUpdateError && coverLetterUpdateError.code !== 'PGRST116') {
+      console.error(`Error updating cover_letters for resume ${resumeId}:`, coverLetterUpdateError);
+    }
+
+    // 7. Clear resume_id in resume_tailoring_logs (set to null)
+    const { error: tailoringUpdateError } = await supabase
+      .from('resume_tailoring_logs')
+      .update({ resume_id: null })
+      .eq('resume_id', resumeId);
+
+    if (tailoringUpdateError && tailoringUpdateError.code !== 'PGRST116') {
+      console.error(`Error updating resume_tailoring_logs for resume ${resumeId}:`, tailoringUpdateError);
+    }
+
+    // Finally, delete the resume itself
     const { error: deleteError } = await supabase
       .from('resumes')
       .delete()
@@ -196,14 +268,21 @@ export async function DELETE(
 
     if (deleteError) {
       console.error(`Error deleting resume ${resumeId}:`, deleteError);
-       // Handle potential FK issues if resumes are referenced elsewhere (unlikely based on schema)
+       // Handle any remaining FK issues
        if (deleteError.code === '23503') {
-           return NextResponse.json({ error: `Cannot delete resume: ${deleteError.message}` }, { status: 409 }); // Conflict
+           // If we still get a foreign key error, it means we missed a table
+           return NextResponse.json({ 
+             error: `Cannot delete resume: ${deleteError.message}. Please contact support.`,
+             details: deleteError.details
+           }, { status: 409 }); // Conflict
        }
       throw deleteError;
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      success: true,
+      message: 'Resume and all related data deleted successfully'
+    });
   } catch (error: any) {
     console.error('Error deleting resume:', error);
     return NextResponse.json(

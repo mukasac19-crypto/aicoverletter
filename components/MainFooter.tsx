@@ -56,7 +56,6 @@ const MainFooter = () => {
             <h3 className="text-white font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/blog" className="hover:text-orange-400 transition-colors">Blog</Link></li>
-              <li><Link href="/help" className="hover:text-orange-400 transition-colors">Help Center</Link></li>
             </ul>
           </div>
 

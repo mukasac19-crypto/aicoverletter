@@ -1,3 +1,4 @@
+//C:\Users\mukas\OneDrive\Desktop\Coverletter\aicoverletter\hooks\useOsloAuth.ts
 "use client";
 
 import { useState, useEffect } from 'react';

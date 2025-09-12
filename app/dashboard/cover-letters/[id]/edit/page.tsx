@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -11,13 +11,10 @@ import type { CoverLetter } from "@/types/cover-letter";
 import { createBrowserClient } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
 
-export default function EditCoverLetterPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function EditCoverLetterPage() {
   const supabase = createBrowserClient();
-  const resolvedParams = use(params);
+  // Use useParams hook instead of props for client components
+  const params = useParams<{ id: string }>();
   const router = useRouter();
 
   // Add a proper loading state
@@ -41,13 +38,19 @@ export default function EditCoverLetterPage({
   // Fetch existing cover letter data
   useEffect(() => {
     async function fetchCoverLetter() {
+      // Ensure params.id exists
+      if (!params?.id) {
+        setError("No cover letter ID provided");
+        return;
+      }
+
       try {
         setIsLoading(true); // Set loading to true when starting fetch
         setError(null); // Clear any previous errors
 
         // Use the new API route for fetching a single cover letter
         const response = await fetch(
-          `/api/cover-letters/fetch?id=${resolvedParams.id}`,
+          `/api/cover-letters/fetch?id=${params.id}`,
           {
             method: "GET",
             headers: {
@@ -81,7 +84,7 @@ export default function EditCoverLetterPage({
     }
 
     fetchCoverLetter();
-  }, [resolvedParams.id]);
+  }, [params?.id]);
 
 
 
@@ -122,7 +125,7 @@ export default function EditCoverLetterPage({
   }
 
   // Show not found state
-  if (!coverLetterData) {
+  if (!coverLetterData && !isLoading) {
     return (
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">Edit Cover Letter</h1>

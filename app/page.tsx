@@ -530,9 +530,9 @@ export default function LandingPage() {
 
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-4">Still have questions?</p>
-            <Link href="/support">
+            <Link href="/contact-us">
               <Button variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50">
-                Contact Support Team
+                Visit Help Center
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

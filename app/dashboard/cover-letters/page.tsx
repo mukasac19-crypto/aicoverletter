@@ -1,5 +1,3 @@
-//project\app\dashboard\cover-letters\page.tsx
-
 "use client";
 
 import Image from "next/image";
@@ -36,14 +34,12 @@ import {
  CheckCircle2,
  LayoutTemplate,
  Info,
- Linkedin,
  Loader2,
  MailCheck,
  Lock,
  Crown,
 } from "lucide-react";
 import { CVManager } from "@/components/CVManager";
-import { LinkedInManager } from "@/components/LinkedInManager";
 import JobDescriptionInput from "@/components/JobDescriptionInput";
 import { FollowUpEmailGenerator } from "@/components/FollowUpEmailGenerator";
 import Link from "next/link";
@@ -71,10 +67,6 @@ export interface CvFile {
  isSelected: boolean | undefined;
 }
 
-type LinkedInProfile =
- | Database["public"]["Tables"]["linkedin_profiles"]["Row"]
- | null;
-
 type SelectedResumeDataType = any;
 
 export interface RecentLetter {
@@ -88,7 +80,7 @@ export interface RecentLetter {
 }
 
 // Extend the CoverLetter type to include dataSource for compatibility with CoverLetterEditor
-type ExtendedCoverLetter = CoverLetter & { dataSource: "cv" | "linkedin" | "both" | "none" };
+type ExtendedCoverLetter = CoverLetter & { dataSource: "cv" | "none" };
 
 export default function CoverLetterGenerator() {
  const router = useRouter();
@@ -113,8 +105,7 @@ export default function CoverLetterGenerator() {
  const [showTemplateSelection, setShowTemplateSelection] = useState(false);
 
  const [cvFiles, setCvFiles] = useState<CvFile[]>([]);
- const [linkedInProfile, setLinkedInProfile] = useState<LinkedInProfile>(null);
- const [dataSource, setDataSource] = useState<"cv" | "linkedin" | "both" | "none">("none");
+ const [dataSource, setDataSource] = useState<"cv" | "none">("none");
  const [resumeData, setResumeData] = useState<SelectedResumeDataType | null>(null);
  const [activeCoverLetter, setActiveCoverLetter] = useState<ExtendedCoverLetter | null>(null);
  const [recentFollowUpEmails, setRecentFollowupEmails] = useState<any[]>([]);
@@ -156,8 +147,8 @@ export default function CoverLetterGenerator() {
              companyName: data.company_name,
              jobDescription: data.job_description || "",
              tone: data.tone || "professional",
-             data_source: (data.data_source || "none") as "cv" | "linkedin" | "both" | "none",
-             dataSource: (data.data_source || "none") as "cv" | "linkedin" | "both" | "none", // For compatibility
+             data_source: (data.data_source === "cv" ? "cv" : "none") as "cv" | "none",
+             dataSource: (data.data_source === "cv" ? "cv" : "none") as "cv" | "none", // For compatibility
              sender: data.sender as SenderInfo || {},
              recipient: (data.recipient as RecipientInfo) || {},
              content: data.content || "",
@@ -169,7 +160,7 @@ export default function CoverLetterGenerator() {
            setActiveCoverLetter(coverLetter);
            setJobDescription(data.job_description || "");
            setSelectedTone(data.tone || "professional");
-           setDataSource((data.data_source || "none") as "cv" | "linkedin" | "both" | "none");
+           setDataSource((data.data_source === "cv" ? "cv" : "none") as "cv" | "none");
            setSelectedTemplate(data.template_id || null);
            setActiveTab("create");
            setStep(3); // Go directly to editor
@@ -264,23 +255,9 @@ export default function CoverLetterGenerator() {
    }
  }, [user, supabase]);
 
- const loadLinkedInProfile = useCallback(async () => {
-   if (!user) return;
-   try {
-     const { data, error } = await supabase.from("linkedin_profiles").select("*").eq("user_id", user.id).eq("status", "connected").single();
-     if (error && error.code !== "PGRST116") throw error;
-     if (data) {
-       setLinkedInProfile(data as LinkedInProfile);
-     }
-   } catch (error) {
-     console.error("Error loading LinkedIn profile:", error);
-   }
- }, [user, supabase]);
-
  useEffect(() => {
    loadCvFiles();
-   loadLinkedInProfile();
- }, [user, loadCvFiles, loadLinkedInProfile]);
+ }, [user, loadCvFiles]);
 
  const handleTabChange = (value: string) => {
    setActiveTab(value);
@@ -293,12 +270,12 @@ export default function CoverLetterGenerator() {
    setStep(2);
  };
 
- const handleDataSourceChange = (source: "cv" | "linkedin" | "both" | "none") => {
+ const handleDataSourceChange = (source: "cv" | "none") => {
    setDataSource(source);
  };
  
  const handleGenerateAndProceed = useCallback(
-   async (selectedData: SelectedResumeDataType | CvFile | null, selectedDataSource: "cv" | "linkedin" | "both" | "none") => {
+   async (selectedData: SelectedResumeDataType | CvFile | null, selectedDataSource: "cv" | "none") => {
      if (!user || !selectedData || selectedDataSource === "none") {
        toast({ title: "Data Source Error", description: "Please log in and select a data source.", variant: "destructive" });
        return;
@@ -419,7 +396,7 @@ export default function CoverLetterGenerator() {
    toast,
  ]);
 
- const handleDataSourceSelected = useCallback((sourceType: "cv" | "linkedin" | "both" | "none", data: SelectedResumeDataType | CvFile | null) => {
+ const handleDataSourceSelected = useCallback((sourceType: "cv" | "none", data: SelectedResumeDataType | CvFile | null) => {
    console.log("Data source selected in parent:", sourceType, data);
    setDataSource(sourceType);
    setResumeData(data);
@@ -484,7 +461,6 @@ export default function CoverLetterGenerator() {
  }, [generatingLetter, activeCoverLetter]);
 
  const hasCV = cvFiles.some((cv) => cv.isSelected);
- const hasLinkedIn = linkedInProfile?.status === "connected";
 
  const LoadingSpinner = ({ className }: { className?: string }) => (
    <Loader2 className={`h-4 w-4 animate-spin ${className || ""}`} />
@@ -597,11 +573,7 @@ export default function CoverLetterGenerator() {
          : "Generating your cover letter..."}
      </div>
      <p className="text-sm text-muted-foreground text-center max-w-md">
-       {dataSource === "both"
-         ? "Analyzing job description and matching with your CV and LinkedIn profile"
-         : dataSource === "cv"
-         ? "Analyzing job description and matching with your CV"
-         : "Analyzing job description and matching with your LinkedIn profile"}
+       Analyzing job description and matching with your CV
      </p>
    </div>
  );
@@ -737,44 +709,7 @@ export default function CoverLetterGenerator() {
                          </p>
                        ) : (
                          <p className="text-xs text-blue-600 font-medium hover:underline">
-                           Connect
-                         </p>
-                       )}
-                     </div>
-                   </div>
-
-                   <div
-                     className={`flex items-center rounded-md border p-3 ${
-                       hasLinkedIn
-                         ? "border-green-500/50 bg-green-500/10"
-                         : "border-muted bg-muted/50"
-                     } cursor-pointer`}
-                     onClick={() => setIsDataSourcesOpen(true)}
-                   >
-                     <div
-                       className={`mr-3 rounded-full p-1 ${
-                         hasLinkedIn ? "bg-green-500/20" : "bg-muted"
-                       }`}
-                     >
-                       <Linkedin
-                         className={`h-4 w-4 ${
-                           hasLinkedIn
-                             ? "text-green-500"
-                             : "text-muted-foreground"
-                         }`}
-                       />
-                     </div>
-                     <div>
-                       <p className="text-sm font-medium">LinkedIn</p>
-                       {hasLinkedIn && linkedInProfile?.name ? (
-                         <p className="text-xs text-green-600">
-                           {linkedInProfile.name.length > 15
-                             ? linkedInProfile.name.substring(0, 15) + "..."
-                             : linkedInProfile.name}
-                         </p>
-                       ) : (
-                         <p className="text-xs text-blue-600 font-medium hover:underline">
-                           Connect
+                           Upload CV
                          </p>
                        )}
                      </div>
@@ -784,10 +719,7 @@ export default function CoverLetterGenerator() {
                  <Collapsible open={isDataSourcesOpen}>
                    <CollapsibleContent>
                      <div className="pt-4 border-t">
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <CVManager />
-                         <LinkedInManager />
-                       </div>
+                       <CVManager />
                      </div>
                    </CollapsibleContent>
                  </Collapsible>
@@ -808,10 +740,6 @@ export default function CoverLetterGenerator() {
                        <FileText className="h-3 w-3 mr-1" />
                       <span>CV {hasCV ? "✓" : ""}</span>
                      </div>
-                     <div className={`flex items-center rounded-full px-2 py-1 ${ hasLinkedIn ? "bg-green-500/10 text-green-600" : "bg-muted" }`} >
-                       <Linkedin className="h-3 w-3 mr-1" />
-                       <span>LinkedIn {hasLinkedIn ? "✓" : ""}</span>
-                     </div>
                    </div>
                  </div>
                </CardHeader>
@@ -830,7 +758,7 @@ export default function CoverLetterGenerator() {
                    <JobDescriptionInput
                      onSubmit={handleJobDescriptionSubmit}
                      cvUploaded={hasCV}
-                     linkedInConnected={hasLinkedIn}
+                     linkedInConnected={false}
                      disabled={!canCreateCoverLetter}
                    />
                  </div>
@@ -850,11 +778,58 @@ export default function CoverLetterGenerator() {
                Back to Job Description
              </Button>
 
-             <ResumeSourceSelector
-               cvFiles={cvFiles}
-               linkedInProfile={linkedInProfile}
-               onDataSourceSelected={handleDataSourceSelected}
-             />
+             <Card>
+               <CardHeader>
+                 <CardTitle>Select Your Resume/CV</CardTitle>
+                 <CardDescription>Choose which CV to use for this cover letter</CardDescription>
+               </CardHeader>
+               <CardContent>
+                 {cvFiles.length === 0 ? (
+                   <Alert>
+                     <FileText className="h-4 w-4" />
+                     <AlertTitle>No CV Uploaded</AlertTitle>
+                     <AlertDescription>
+                       Please upload a CV first to continue.
+                     </AlertDescription>
+                   </Alert>
+                 ) : (
+                   <div className="space-y-3">
+                     {cvFiles.map((cv) => (
+                       <div
+                         key={cv.id}
+                         className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                           cv.isSelected
+                             ? "border-primary bg-primary/5"
+                             : "border-gray-200 hover:border-gray-300"
+                         }`}
+                         onClick={() => {
+                           handleDataSourceSelected("cv", cv);
+                           // Update the selected state
+                           setCvFiles(files => 
+                             files.map(f => ({ ...f, isSelected: f.id === cv.id }))
+                           );
+                         }}
+                       >
+                         <div className="flex items-center justify-between">
+                           <div className="flex items-center space-x-3">
+                             <FileText className="h-5 w-5 text-gray-500" />
+                             <div>
+                               <p className="font-medium">{cv.name}</p>
+                               <p className="text-sm text-muted-foreground">
+                                 Uploaded on {new Date(cv.uploadDate).toLocaleDateString()}
+                               </p>
+                             </div>
+                           </div>
+                           {cv.isSelected && (
+                             <CheckCircle2 className="h-5 w-5 text-primary" />
+                           )}
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 )}
+               </CardContent>
+             </Card>
 
              <div className="mt-6 flex justify-end">
                <Button
@@ -863,7 +838,7 @@ export default function CoverLetterGenerator() {
                      handleGenerateAndProceed(resumeData, dataSource);
                    } else {
                      toast({
-                       title: "Please select a data source",
+                       title: "Please select a CV",
                        variant: "destructive",
                      });
                    }

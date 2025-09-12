@@ -1031,6 +1031,7 @@ export type Database = {
           interests: string[] | null
           internships: Json | null
           is_imported: boolean | null
+          is_pro: boolean | null
           is_public: boolean | null
           languages: Json | null
           personal_info: Json
@@ -1058,6 +1059,7 @@ export type Database = {
           interests?: string[] | null
           internships?: Json | null
           is_imported?: boolean | null
+          is_pro?: boolean | null
           is_public?: boolean | null
           languages?: Json | null
           personal_info: Json
@@ -1085,6 +1087,7 @@ export type Database = {
           interests?: string[] | null
           internships?: Json | null
           is_imported?: boolean | null
+          is_pro?: boolean | null
           is_public?: boolean | null
           languages?: Json | null
           personal_info?: Json
