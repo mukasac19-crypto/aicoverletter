@@ -80,3 +80,47 @@ export async function GET(
     );
   }
 }
+
+// Add this DELETE handler
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createRouteHandlerClient({ cookies });
+
+    // Optional: Check if user is authenticated/authorized
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Delete the blog post
+    const { error } = await supabase
+      .from('blogs')
+      .delete()
+      .eq('id', params.id);
+
+    if (error) {
+      console.error('Error deleting blog:', error);
+      return NextResponse.json(
+        { error: 'Failed to delete blog' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'Blog deleted successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Error in DELETE handler:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

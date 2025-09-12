@@ -60,9 +60,7 @@ const MainHeader = () => {
                 Log In
               </Button>
               </Link>
-              <Link href="/auth/register">
-                  <Button className="bg-orange-600 hover:bg-orange-700 text-white">Sign Up</Button>
-             </Link>
+              
              </>
             )}
 

@@ -21,7 +21,7 @@ export default function EditBlogPage() {
       
       if (!response.ok) throw new Error(data.error);
       
-      setBlog(data);
+      setBlog(data.blog);
     } catch (error) {
       console.error("Error fetching blog:", error);
     } finally {
