@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
         .single();
       
       if (fetchError || !resumeData) {
+        console.error('Resume fetch error:', fetchError);
         return NextResponse.json(
           { error: 'Resume not found or access denied' },
           { status: 404 }
@@ -61,15 +62,11 @@ Analyze the resume against the job description and provide:
 
 Return as JSON with structure:
 {
-  "score": number,
-  "keywordAnalysis": {
-    "matched": string[],
-    "missing": string[],
-    "matchPercentage": number
-  },
-  "formattingIssues": string[],
-  "recommendations": string[],
-  "summary": string
+  "overall": { "score": number (0.0-1.0), "summary": string },
+  "keywords": { "found": string[], "missing": string[], "recommended": string[] },
+  "formatting": { "issues": string[], "suggestions": string[] },
+  "sections": { "missing": string[], "suggestions": string[] },
+  "improvements": string[]
 }`;
 
       const completion = await openai.chat.completions.create({
@@ -88,43 +85,24 @@ Return as JSON with structure:
       const analysis = JSON.parse(completion.choices[0].message?.content || '{}');
       
       // Save analysis to database
-      const { data: savedAnalysis, error: saveError } = await supabase
-        .from('ats_analyses')
+      const { error: saveError } = await supabase
+        .from('resume_ats_analyses')
         .insert({
           user_id: userId,
           resume_id: resumeId,
           job_description: jobDescription,
-          score: analysis.score,
-          analysis: analysis,
-          created_at: new Date().toISOString()
-        })
-        .select()
-        .single();
+          analysis_result: analysis 
+        });
       
       if (saveError) {
         console.error('Error saving ATS analysis:', saveError);
+        // Non-critical, so we don't block the user
       }
       
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: savedAnalysis?.id,
-          ...analysis,
-          resumeId,
-          analyzedAt: new Date().toISOString()
-        }
-      });
+      return NextResponse.json({ analysis });
       
     } catch (error: any) {
       console.error('ATS Scanner error:', error);
-      
-      if (error.status === 429) {
-        return NextResponse.json(
-          { error: 'Analysis service is busy. Please try again in a few minutes.' },
-          { status: 429 }
-        );
-      }
-      
       return NextResponse.json(
         { error: 'Failed to analyze resume', details: error.message },
         { status: 500 }

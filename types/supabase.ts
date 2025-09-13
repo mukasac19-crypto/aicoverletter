@@ -1,4 +1,6 @@
-﻿export type Json =
+﻿//types\supabase.ts
+
+export type Json =
   | string
   | number
   | boolean

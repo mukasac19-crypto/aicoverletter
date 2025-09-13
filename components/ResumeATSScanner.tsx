@@ -22,13 +22,15 @@ Download,
 BarChart2, 
 Info,
 Plus,
-RefreshCw
+RefreshCw,
+Sparkles
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 interface ResumeATSScannerProps {
 resumeId: string;
@@ -40,11 +42,14 @@ const [jobDescription, setJobDescription] = useState<string>(initialJobDescripti
 const [isScanning, setIsScanning] = useState<boolean>(false);
 const [error, setError] = useState<string | null>(null);
 const [analysis, setAnalysis] = useState<any | null>(null);
+const [isModifying, setIsModifying] = useState<boolean>(false);
+const [modificationSuccess, setModificationSuccess] = useState<boolean>(false);
 const [charCount, setCharCount] = useState<number>(0);
 const [previousAnalyses, setPreviousAnalyses] = useState<any[]>([]);
 const [loadingPrevious, setLoadingPrevious] = useState<boolean>(true);
 
 const { toast } = useToast();
+const router = useRouter();
 
 // Load previous analyses for this resume
 useEffect(() => {
@@ -211,6 +216,60 @@ const handleScan = async () => {
   
   // Start the scan process
   attemptScan();
+};
+
+// Call the AI modifier API to improve the resume
+const handleAutoImprove = async () => {
+  if (!analysis) {
+    toast({
+      title: "No Analysis Found",
+      description: "Please scan your resume first before using the AI modifier.",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    setIsModifying(true);
+    setError(null);
+
+    const response = await fetch('/api/resumes/ai-modifier', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeId,
+        analysis,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to modify resume.');
+    }
+
+    toast({
+      title: "Resume Updated!",
+      description: "The AI has successfully improved your resume based on the ATS analysis.",
+      variant: "default",
+    });
+
+    // Optionally, you can refresh the page or parent component's data here
+    // For now, we can clear the analysis to prompt a new scan to see the new score
+    setAnalysis(null);
+    setModificationSuccess(true);
+
+  } catch (err: any) {
+    console.error('Error modifying resume:', err);
+    setError(err.message || 'An unexpected error occurred.');
+    toast({
+      title: "Modification Failed",
+      description: err.message || 'Could not modify the resume. Please try again.',
+      variant: "destructive",
+    });
+  } finally {
+    setIsModifying(false);
+  }
 };
 
 // Handle retry with a simplified job description
@@ -404,12 +463,12 @@ return (
           onChange={(e) => setJobDescription(e.target.value)}
           placeholder="Paste the job description here..."
           className="min-h-[150px]"
-          disabled={isScanning}
+          disabled={isScanning || isModifying}
         />
         
         <Button 
           onClick={handleScan} 
-          disabled={isScanning || !jobDescription.trim() || jobDescription.length < 50 || jobDescription.length > 10000}
+          disabled={isScanning || isModifying || !jobDescription.trim() || jobDescription.length < 50 || jobDescription.length > 10000}
           className="w-full"
         >
           {isScanning ? (
@@ -465,6 +524,24 @@ return (
         </div>
       )}
       
+      {modificationSuccess && (
+          <Alert variant="default" className="bg-green-500/10 border-green-500/30 text-green-700">
+              <CheckCircle2 className="h-4 w-4" />
+              <AlertTitle>Resume Successfully Updated!</AlertTitle>
+              <AlertDescription className="flex items-center justify-between">
+                  <span>Your resume has been improved by our AI. You can scan it again to see the new score or view the changes.</span>
+                  <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => router.push(`/dashboard/resumes/${resumeId}`)}
+                      className="ml-4 bg-white text-green-700 border-green-700 hover:bg-green-50"
+                  >
+                      View Updated Resume
+                  </Button>
+              </AlertDescription>
+          </Alert>
+      )}
+
       {analysis && (
         <div className="space-y-6 pt-4">
           <div className="space-y-2">
@@ -650,6 +727,24 @@ return (
         >
           <Download className="h-4 w-4 mr-2" />
           Download Analysis
+        </Button>
+
+        <Button 
+          onClick={handleAutoImprove}
+          disabled={isModifying || isScanning}
+          className="ml-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:from-purple-600 hover:to-indigo-700"
+        >
+          {isModifying ? (
+            <>
+              <LoadingSpinner className="mr-2" />
+              Improving...
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Auto-Improve With AI
+            </>
+          )}
         </Button>
       </CardFooter>
     )}

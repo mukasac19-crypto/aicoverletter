@@ -77,3 +77,4 @@ CREATE POLICY "Admins can delete their own post images" ON storage.objects
     FOR DELETE USING (
         (SELECT role FROM public.profiles WHERE user_id = auth.uid()) = 'admin'
     );
+
