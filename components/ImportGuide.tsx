@@ -91,6 +91,26 @@ export default function ImportGuide({
               )}
             </AlertDescription>
           </Alert>
+          <Card className="border-primary/50 shadow-lg">
+             <CardHeader>
+               <CardTitle className="text-base flex items-center">
+                 <Edit className="h-4 w-4 mr-2 text-purple-500" />
+                 Your Next Step: Perfect Your Resume
+               </CardTitle>
+             </CardHeader>
+             <CardContent>
+               <p className="text-xs sm:text-sm text-muted-foreground">
+                 Review the imported data, then use our AI Editor to tailor your content, match it to specific job descriptions, and create a job-winning resume.
+               </p>
+             </CardContent>
+             <CardFooter>
+               <Button asChild className="w-full text-sm font-bold">
+                 <Link href={`/dashboard/resumes/builder/${resumeId}`}>
+                   Enhance My Resume
+                 </Link>
+               </Button>
+             </CardFooter>
+          </Card>
 
           {/* === "ENTICING WORDS" SECTION - UPDATED COPY === */}
           <Card className="bg-muted/30">
@@ -115,26 +135,7 @@ export default function ImportGuide({
           </Card>
           
           {/* === FOCUSED CTA - UPDATED COPY === */}
-          <Card className="border-primary/50 shadow-lg">
-             <CardHeader>
-               <CardTitle className="text-base flex items-center">
-                 <Edit className="h-4 w-4 mr-2 text-purple-500" />
-                 Your Next Step: Perfect Your Resume
-               </CardTitle>
-             </CardHeader>
-             <CardContent>
-               <p className="text-xs sm:text-sm text-muted-foreground">
-                 Review the imported data, then use our AI Editor to tailor your content, match it to specific job descriptions, and create a job-winning resume.
-               </p>
-             </CardContent>
-             <CardFooter>
-               <Button asChild className="w-full text-sm font-bold">
-                 <Link href={`/dashboard/resumes/${resumeId}`}>
-                   Enhance My Resume
-                 </Link>
-               </Button>
-             </CardFooter>
-          </Card>
+         
         </div>
 
         <DialogFooter className="mt-6">

@@ -1,6 +1,4 @@
-﻿//types\supabase.ts
-
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -1142,9 +1140,10 @@ export type Database = {
           is_in_trial: boolean | null
           metadata: Json | null
           plan_id: string
+          purchase_type: string
           status: string
           stripe_customer_id: string
-          stripe_subscription_id: string
+          stripe_subscription_id: string | null
           trial_end: string | null
           trial_start: string | null
           updated_at: string
@@ -1160,9 +1159,10 @@ export type Database = {
           is_in_trial?: boolean | null
           metadata?: Json | null
           plan_id: string
+          purchase_type?: string
           status: string
           stripe_customer_id: string
-          stripe_subscription_id: string
+          stripe_subscription_id?: string | null
           trial_end?: string | null
           trial_start?: string | null
           updated_at?: string
@@ -1178,9 +1178,10 @@ export type Database = {
           is_in_trial?: boolean | null
           metadata?: Json | null
           plan_id?: string
+          purchase_type?: string
           status?: string
           stripe_customer_id?: string
-          stripe_subscription_id?: string
+          stripe_subscription_id?: string | null
           trial_end?: string | null
           trial_start?: string | null
           updated_at?: string
