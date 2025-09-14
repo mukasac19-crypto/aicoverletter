@@ -166,7 +166,7 @@ export default function DashboardPage() {
             {getTierDisplayName(isPro ? 'PRO' : 'FREE')} Plan
           </Badge>
           {!isPro && (
-            <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/billing')}>
+            <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/pricing')}>
               <Zap className="h-4 w-4 mr-2" />
               Upgrade
             </Button>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
               feature="exports_per_month"
             />
             <div className="pt-4">
-              <Button className="w-full" onClick={() => router.push('/dashboard/billing')}>
+              <Button className="w-full" onClick={() => router.push('/dashboard/pricing')}>
                 <Sparkles className="h-4 w-4 mr-2" />
                 Upgrade for Unlimited Access
               </Button>
