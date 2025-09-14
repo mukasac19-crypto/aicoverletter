@@ -76,9 +76,33 @@ export async function GET(request: NextRequest) {
       await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', session.user.id);
     }
 
-    const origin = request.headers.get('origin') || request.nextUrl.origin;
+    // FIX: Properly determine the origin URL
+    let origin = request.headers.get('origin') || request.nextUrl.origin;
+    
+    // Use environment variable if available (recommended approach)
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      origin = process.env.NEXT_PUBLIC_APP_URL;
+    } 
+    // Fallback: In production, force the correct domain
+    else if (process.env.NODE_ENV === 'production') {
+      origin = 'https://careerthings.co';
+    }
+    
+    // Additional safety check: never use localhost in production
+    if (process.env.NODE_ENV === 'production' && origin.includes('localhost')) {
+      origin = 'https://careerthings.co';
+    }
+
     const successUrl = `${origin}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}${redirect}`;
+
+    // Debug logging (remove in production)
+    console.log('Checkout URLs:', {
+      origin,
+      successUrl,
+      cancelUrl,
+      environment: process.env.NODE_ENV
+    });
 
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
