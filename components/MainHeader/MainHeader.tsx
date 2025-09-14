@@ -60,8 +60,8 @@ const MainHeader = () => {
                 Log In
               </Button>
               </Link>
-              
-             </>
+                            
+            </>
             )}
 
             {/* Mobile menu button */}
@@ -88,6 +88,19 @@ const MainHeader = () => {
             <Link href="/blog" className="block py-2 text-sm font-medium text-gray-600 hover:text-orange-600">
               Resources
             </Link>
+            {/* Add login link for mobile when user is not logged in */}
+            {!user && (
+              <>
+                <div className="border-t border-gray-100 my-2"></div>
+                <Link 
+                  href="/auth/login" 
+                  className="block py-2 text-sm font-medium text-orange-600 hover:text-orange-700"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Log In
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}
