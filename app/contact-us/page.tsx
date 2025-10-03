@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 const ContactUsPage: NextPage = () => {
   const [isCopied, setIsCopied] = useState(false);
-  const supportEmail = "support@careerthings.ai";
+  const supportEmail = "support@careerthings.co";
 
   // Logic for the copy-to-clipboard button
   const handleCopy = () => {
