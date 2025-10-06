@@ -1,9 +1,8 @@
 // components/PricingPlans.tsx
-
-import React, { useState, useEffect } from 'react'; // Added useEffect
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, CreditCard } from "lucide-react";
 import { SubscriptionInterval, SubscriptionTier } from "@/types/subscription";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from '@/lib/utils';
@@ -11,7 +10,7 @@ import { cn } from '@/lib/utils';
 interface PricingPlansProps {
   currentPlan?: SubscriptionTier;
   onSelectPlan?: (tier: SubscriptionTier, interval: SubscriptionInterval) => void;
-  defaultInterval?: SubscriptionInterval | null; // <-- CHANGE 1: Accept defaultInterval instead of defaultTier
+  defaultInterval?: SubscriptionInterval | null;
 }
 
 const PLAN_FEATURES = {
@@ -21,16 +20,14 @@ const PLAN_FEATURES = {
     'Basic templates only',
     '2 ATS scans per month',
     '1 Interview session',
-    'Basic AI cover letter enhancement',
-    'Standard email support',
+    'Basic AI enhancement',
   ],
   PRO: [
-    'Unlimited cover letters',
-    'Unlimited resumes',
-    'All templates',
+    'Unlimited cover letters & resumes',
+    'All premium templates',
     'Unlimited ATS scans',
     'Unlimited interview sessions',
-    'Advanced AI cover letter enhancement',
+    'Advanced AI feedback & rewriting',
     'Priority email support',
   ],
 };
@@ -38,200 +35,115 @@ const PLAN_FEATURES = {
 export default function PricingPlans({ currentPlan, onSelectPlan, defaultInterval }: PricingPlansProps) {
   const [selectedInterval, setSelectedInterval] = useState<SubscriptionInterval>('monthly');
   const { user } = useAuth();
-  
-  // <-- CHANGE 2: Use the new prop to set the state when the component loads
+
   useEffect(() => {
-    if (defaultInterval) {
-      setSelectedInterval(defaultInterval);
-    }
+    if (defaultInterval) setSelectedInterval(defaultInterval);
   }, [defaultInterval]);
 
-  const getSavings = (): number => {
-    return 58;
-  };
-  
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: price % 1 === 0 ? 0 : 2,
-    }).format(price);
+  const getPrice = (tier: SubscriptionTier) => {
+    if (tier === 'FREE') return 0;
+    return selectedInterval === 'annually' ? 100 : 20;
   };
 
-  const getPrice = (tier: SubscriptionTier): number => {
-    if (tier === 'FREE') return 0;
-    
-    if (selectedInterval === 'annually') {
-      return 100;
-    } else {
-      return 20;
-    }
-  };
-  
   const handleSelectPlan = (tier: SubscriptionTier) => {
-    if (onSelectPlan) {
-      onSelectPlan(tier, selectedInterval);
-    } else if (user) {
-      window.location.href = `/api/stripe/create-checkout?tier=${tier}&interval=${selectedInterval}`;
-    }
+    if (onSelectPlan) onSelectPlan(tier, selectedInterval);
+    else if (user) window.location.href = `/api/stripe/create-checkout?tier=${tier}&interval=${selectedInterval}`;
   };
-  
+
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 md:px-6">
-      {/* Interval Toggle */}
-      <div className="flex justify-center mb-8">
+    <div className="w-full max-w-6xl mx-auto px-4">
+      {/* Toggle */}
+      <div className="flex justify-center mb-10">
         <div className="inline-flex p-1 bg-gray-100 rounded-lg">
-          <Button
-            variant={selectedInterval === 'monthly' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setSelectedInterval('monthly')}
-            className={cn(
-              "text-sm rounded-md",
-              selectedInterval === 'monthly' 
-                ? "bg-orange-600 text-white hover:bg-orange-700" 
-                : "text-gray-700 hover:text-orange-700"
-            )}
-          >
-            Monthly
-          </Button>
-          <Button
-            variant={selectedInterval === 'annually' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setSelectedInterval('annually')}
-            className={cn(
-              "text-sm rounded-md",
-              selectedInterval === 'annually' 
-                ? "bg-orange-600 text-white hover:bg-orange-700" 
-                : "text-gray-700 hover:text-orange-700"
-            )}
-          >
-            Annually
-            {getSavings() > 0 && (
-              <span className="ml-2 text-xs px-1.5 py-0.5 bg-orange-700 text-white rounded-full">
-                Save {getSavings()}%
-              </span>
-            )}
-          </Button>
+          {['monthly', 'annually'].map((interval) => (
+            <Button
+              key={interval}
+              size="sm"
+              onClick={() => setSelectedInterval(interval as SubscriptionInterval)}
+              className={cn(
+                "text-sm rounded-md transition-all",
+                selectedInterval === interval
+                  ? "bg-orange-600 text-white hover:bg-orange-700"
+                  : "text-gray-700 hover:text-orange-700"
+              )}
+            >
+              {interval === 'annually' ? 'Annually (Save 58%)' : 'Monthly'}
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
-        {/* FREE Plan */}
-        <Card className={cn(
-          "relative overflow-hidden transition-all duration-200 border-gray-200",
-          currentPlan === 'FREE' && "ring-2 ring-gray-400"
-        )}>
-          <CardHeader className="pb-6">
-            <CardTitle className="text-xl font-bold text-gray-800">
-              Free
-            </CardTitle>
-            <CardDescription className="text-sm mt-2">
-              Basic access to the platform
-            </CardDescription>
-            <div className="mt-4">
-              <span className="text-3xl font-bold">
-                {formatPrice(0)}
-              </span>
-              <span className="text-sm text-muted-foreground ml-2">
-                forever
-              </span>
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {/* FREE */}
+        <Card className="border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-gray-800">Free</CardTitle>
+            <CardDescription className="mt-2 text-sm">Try essential tools for free</CardDescription>
+            <div className="mt-4 text-3xl font-bold text-gray-900">
+              $0 <span className="text-sm text-muted-foreground ml-1">forever</span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3">
-              {PLAN_FEATURES.FREE.map((feature, index) => (
-                <li key={index} className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">{feature}</span>
+          <CardContent>
+            <ul className="space-y-2">
+              {PLAN_FEATURES.FREE.map((feature, i) => (
+                <li key={i} className="flex items-start text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
+                  {feature}
                 </li>
               ))}
             </ul>
           </CardContent>
           <CardFooter>
-            {currentPlan === 'FREE' ? (
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                disabled
-              >
-                Current Plan
-              </Button>
-            ) : (
-              <Button 
-                className="w-full bg-gray-800 hover:bg-gray-700"
-                onClick={() => handleSelectPlan('FREE')}
-              >
-                Get Started
-              </Button>
-            )}
+            <Button variant="outline" className="w-full" disabled>
+              Current Plan
+            </Button>
           </CardFooter>
         </Card>
 
-        {/* PRO Plan */}
-        <Card className={cn(
-          "relative overflow-hidden transition-all duration-200 border-orange-500 shadow-md",
-          currentPlan === 'PRO' && "ring-2 ring-orange-500"
-        )}>
-          <div className="absolute top-0 left-0 right-0 bg-orange-500 text-white text-xs text-center py-1">
+        {/* PRO */}
+        <Card className="border-orange-500 shadow-lg ring-2 ring-orange-400 relative">
+          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-600 to-orange-500 text-white text-xs text-center py-1 font-semibold">
             MOST POPULAR
           </div>
-          <CardHeader className="pt-7 pb-6">
-            <CardTitle className="text-xl font-bold text-orange-600">
-              Pro
-            </CardTitle>
-            <CardDescription className="text-sm mt-2">
-              Premium features for job seekers
-            </CardDescription>
+          <CardHeader className="pt-7">
+            <CardTitle className="text-xl font-bold text-orange-600">Pro</CardTitle>
+            <CardDescription className="mt-2 text-sm">Everything you need to land your next job</CardDescription>
             <div className="mt-4">
               <span className="text-3xl font-bold">
-                {formatPrice(getPrice('PRO'))}
+                ${getPrice('PRO')}
               </span>
-              <span className="text-sm text-muted-foreground ml-2">
-                /{selectedInterval === 'monthly' ? 'mo' : 'year'}
+              <span className="text-sm text-muted-foreground ml-1">
+                /{selectedInterval === 'monthly' ? 'mo' : 'yr'}
               </span>
               {selectedInterval === 'annually' && (
-                <div className="mt-1 text-sm text-orange-600 font-medium">
-                  Save {getSavings()}% vs monthly
-                </div>
+                <div className="text-sm text-orange-600 font-medium">Save 58% vs monthly</div>
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3">
-              {PLAN_FEATURES.PRO.map((feature, index) => (
-                <li key={index} className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">{feature}</span>
+          <CardContent>
+            <ul className="space-y-2">
+              {PLAN_FEATURES.PRO.map((feature, i) => (
+                <li key={i} className="flex items-start text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-orange-500 mr-2 mt-0.5" />
+                  {feature}
                 </li>
               ))}
             </ul>
           </CardContent>
-          <CardFooter>
-            {currentPlan === 'PRO' ? (
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                disabled
-              >
-                Current Plan
-              </Button>
-            ) : (
-              <Button 
-                className="w-full bg-orange-600 hover:bg-orange-700"
-                onClick={() => handleSelectPlan('PRO')}
-              >
-                Upgrade to Pro
-              </Button>
-            )}
+          <CardFooter className="flex flex-col gap-2">
+            <Button
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white text-lg py-5"
+              onClick={() => handleSelectPlan('PRO')}
+            >
+              <CreditCard className="mr-2 h-5 w-5" /> Unlock Unlimited Cover Letters
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Try Pro risk-free • 7-day money-back guarantee
+            </p>
           </CardFooter>
         </Card>
       </div>
-      
-      {/* Disclaimer */}
-      <p className="text-center text-sm text-muted-foreground mt-8">
-        All plans include a 7-day money-back guarantee. No questions asked.
-      </p>
     </div>
   );
 }

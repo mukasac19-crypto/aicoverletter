@@ -1,5 +1,3 @@
-// app/pricing/PricingClient.tsx
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -7,34 +5,29 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import PricingPlans from "@/components/PricingPlans";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { SubscriptionTier, SubscriptionInterval } from '@/types/subscription'; // Make sure SubscriptionInterval is imported
+import { SubscriptionTier, SubscriptionInterval } from '@/types/subscription';
 
 export default function PricingClient() {
   const { user, loading } = useAuth();
   const [currentPlan, setCurrentPlan] = useState<SubscriptionTier>('FREE');
   const [isLoadingPlan, setIsLoadingPlan] = useState(true);
+  const [redirecting, setRedirecting] = useState(false); // NEW STATE
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  // CHANGE 1: Read 'interval' from the URL, not 'tier'
+
   const defaultInterval = searchParams.get('interval') as SubscriptionInterval | null;
-  
-  // Fetch the user's current subscription tier
+
+  // --- Fetch user's subscription tier ---
   useEffect(() => {
     const fetchSubscriptionTier = async () => {
-      // If there's no user, we don't need to fetch a plan. Stop loading.
       if (!user) {
         setIsLoadingPlan(false);
         return;
       }
-      
+
       try {
         const response = await fetch('/api/user/subscription');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch subscription status');
-        }
-        
+        if (!response.ok) throw new Error('Failed to fetch subscription status');
         const data = await response.json();
         setCurrentPlan(data.tier);
       } catch (error) {
@@ -43,31 +36,32 @@ export default function PricingClient() {
         setIsLoadingPlan(false);
       }
     };
-    
-    // Only run the fetch logic if the initial auth loading is complete
+
     if (!loading) {
       fetchSubscriptionTier();
     }
   }, [user, loading]);
-  
-  const handleSelectPlan = (tier: SubscriptionTier, interval: string) => {
+
+  // --- Handle Plan Selection ---
+  const handleSelectPlan = async (tier: SubscriptionTier, interval: string) => {
     if (!user) {
       // Redirect to login if not logged in
-      router.push(`/auth/login?redirect=/pricing&interval=${interval}`);
+      router.push(`/auth/login?redirect=/pricing&msg=Login to unlock unlimited features`);
       return;
     }
-    
-    // If user is already on this tier, redirect to billing
+
+    // If already on this tier, redirect to billing
     if (tier === currentPlan) {
       router.push('/dashboard/billing');
       return;
     }
-    
-    // Create checkout session
+
+    // Trigger redirect feedback
+    setRedirecting(true);
     router.push(`/api/stripe/create-checkout?tier=${tier}&interval=${interval}`);
   };
-  
-  // Show a loading spinner while fetching the user's auth status or their current plan
+
+  // --- Loading states ---
   if (loading || isLoadingPlan) {
     return (
       <div className="flex justify-center my-8">
@@ -75,12 +69,27 @@ export default function PricingClient() {
       </div>
     );
   }
-  
+
+  // --- Redirecting feedback state ---
+  if (redirecting) {
+    return (
+      <div className="flex flex-col items-center justify-center my-16 text-center">
+        <LoadingSpinner className="h-10 w-10 mb-3 text-orange-600" />
+        <p className="text-sm text-muted-foreground">
+          Redirecting to secure checkout...
+        </p>
+        <p className="text-xs text-gray-400 mt-1">
+          Please don’t refresh this page.
+        </p>
+      </div>
+    );
+  }
+
+  // --- Render Pricing Plans ---
   return (
-    <PricingPlans 
-      currentPlan={currentPlan} 
-      onSelectPlan={handleSelectPlan} 
-      // CHANGE 2: Pass the correct 'defaultInterval' prop
+    <PricingPlans
+      currentPlan={currentPlan}
+      onSelectPlan={handleSelectPlan}
       defaultInterval={defaultInterval}
     />
   );
