@@ -22,7 +22,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const FeaturesPage = () => {
  
-   const { user } = useAuth();
+    const { user } = useAuth();
 
   const features = [
     {
@@ -146,8 +146,11 @@ const FeaturesPage = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
-                    {feature.buttonText}
+                  {/*// CHANGED: Wrapped button in a Link and added asChild prop */}
+                  <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
+                    <Link href={feature.path}>
+                      {feature.buttonText}
+                    </Link>
                   </Button>
                 </div>
               </Card>
@@ -173,8 +176,11 @@ const FeaturesPage = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button  className={`w-full text-white ${feature.buttonColor}`}>
-                    {feature.buttonText}
+                   {/*// CHANGED: Wrapped button in a Link and added asChild prop */}
+                  <Button asChild className={`w-full text-white ${feature.buttonColor}`}>
+                    <Link href={feature.path}>
+                      {feature.buttonText}
+                    </Link>
                   </Button>
                 </div>
               </Card>
@@ -303,9 +309,12 @@ const FeaturesPage = () => {
             </div>
 
             <div className="mt-12 text-center">
-              <Button size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
-                Explore All Features
-                <ArrowRight className="ml-2 h-5 w-5" />
+              {/*// CHANGED: Wrapped button in a Link and added asChild prop */}
+              <Button asChild size="lg" className="bg-white text-orange-700 hover:bg-orange-50">
+                <Link href="#features">
+                  Explore All Features
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
             </div>
           </div>
