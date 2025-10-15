@@ -1,5 +1,3 @@
-// contexts/AuthContext.tsx
-
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
@@ -7,6 +5,7 @@ import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { getBrowserClient } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { getSiteURL } from '@/lib/utils'; // CHANGED: Import the new utility function
 
 interface AuthContextType {
   user: User | null;
@@ -30,6 +29,7 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { toast } = useToast();
   const [supabase] = useState(() => getBrowserClient());
+  const siteURL = getSiteURL(); // CHANGED: Get the site URL once
 
   useEffect(() => {
     // Get initial session
@@ -88,8 +88,8 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          // Redirect directly to dashboard after successful OAuth
-          redirectTo: options?.redirectTo || `${window.location.origin}/dashboard`,
+          // CHANGED: Use the siteURL variable instead of window.location.origin
+          redirectTo: options?.redirectTo || `${siteURL}/dashboard`,
         }
       });
       
@@ -98,7 +98,7 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       console.error(`Error signing in with ${provider}:`, error);
       return { data: null, error };
     }
-  }, [supabase]);
+  }, [supabase, siteURL]); // CHANGED: Add siteURL to dependency array
 
   const signUp = useCallback(async (email: string, password: string) => {
     try {
@@ -106,7 +106,8 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/login`,
+          // CHANGED: Use the siteURL variable here too
+          emailRedirectTo: `${siteURL}/auth/login`,
         },
       });
 
@@ -123,7 +124,7 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       console.error('Error signing up:', error);
       return { data: null, error };
     }
-  }, [supabase, toast]);
+  }, [supabase, toast, siteURL]); // CHANGED: Add siteURL to dependency array
 
   const signOut = useCallback(async () => {
     try {
@@ -141,14 +142,15 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
   const resetPassword = useCallback(async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
+        // CHANGED: And use it here
+        redirectTo: `${siteURL}/auth/update-password`,
       });
       return { error };
     } catch (error: any) {
       console.error('Error resetting password:', error);
       return { error };
     }
-  }, [supabase]);
+  }, [supabase, siteURL]); // CHANGED: Add siteURL to dependency array
 
   const updatePassword = useCallback(async (newPassword: string) => {
     try {
