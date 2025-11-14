@@ -1,8 +1,6 @@
-//C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\workers\openaiWorker.ts
-
 import 'dotenv/config'; // Ensure .env is loaded
 import { Worker, Queue } from 'bullmq';
-import redisConnection from '../lib/redis';
+import redisConnection from '../lib/redis'; // This is our "main" connection
 import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import fetch from 'node-fetch';
@@ -20,8 +18,19 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Create queue
+// --- FIX IS HERE ---
+// BullMQ best practice: Don't share connections between listeners and other clients.
+// The Worker needs its own connection that it can block.
+// The Queue instance can use the main shared connection.
+
+// Create queue - this uses the main connection, which is fine
 new Queue('openai-requests', { connection: redisConnection });
+
+// Create a *dedicated* connection for the worker
+const workerConnection = redisConnection.duplicate();
+
+// --- END OF FIX ---
+
 
 async function parseResumeJob(data: any) {
     const {
@@ -417,7 +426,9 @@ function determineChangedSections(original: any, tailored: any) {
 }
 
 function calculateKeywordMatches(resume: any, jobAnalysis: any) {
-    const resumeText = JSON.stringify(resume).toLowerCase();
+    // --- THIS IS THE FIX ---
+    const resumeText = JSON.stringify(resume).toLowerCase(); // Only one period
+    // --- END OF FIX ---
     const keywords = [
         ...(jobAnalysis.skills?.hardSkills || []),
         ...(jobAnalysis.skills?.softSkills || []),
@@ -447,7 +458,8 @@ const worker = new Worker(
             throw error;
         }
     },
-    { connection: redisConnection }
+    // Pass the dedicated workerConnection to the worker
+    { connection: workerConnection }
 );
 
 worker.on('completed', job => {
