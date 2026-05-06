@@ -9,7 +9,11 @@ const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
 
 type ExportFormat = 'pdf' | 'docx' | 'txt';
 
-type CoverLetter = Tables<'cover_letters'>;
+type CoverLetter = Record<string, any> & {
+  job_title: string | null;
+  company_name: string | null;
+  content: string | null;
+};
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +42,7 @@ export async function POST(request: Request) {
       .select('*')
       .eq('id', coverLetterId)
       .eq('user_id', session.user.id)
-      .single();
+      .single<CoverLetter>();
 
     if (error || !coverLetter) {
       console.error('Error fetching cover letter:', error);
