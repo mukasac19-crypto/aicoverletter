@@ -14,7 +14,7 @@ export async function GET(
       .select('*')
       .eq('id', id)
       .not('published_at', 'is', null)
-      .single();
+      .single<Record<string, any> & { published_at: string }>();
 
     if (error || !blog) {
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
