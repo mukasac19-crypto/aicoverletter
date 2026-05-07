@@ -1,171 +1,152 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 
-// Special admin email that will bypass checks
 const TEMP_ADMIN_EMAIL = 'jennifernanyombi1@gmail.com';
 
-// Subscription cookie configuration
 const SUBSCRIPTION_COOKIE = {
   name: 'sb-subscription',
-  maxAge: 300, // 5 minutes in seconds
+  maxAge: 300,
 };
 
-// PRO-only routes (removed BUSINESS tier)
-const ROUTE_LIMITS = {
+const ROUTE_LIMITS: Record<string, string[]> = {
   '/dashboard/resumes/ats-scanner': ['PRO'],
-  '/dashboard/interview-buddy': ['PRO'], // Changed from BUSINESS to PRO
+  '/dashboard/interview-buddy': ['PRO'],
   '/dashboard/templates/premium': ['PRO'],
   '/api/export/bulk': ['PRO'],
 };
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res: response });
-  
-  // Get the user session
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  // Protected routes - requiring authentication
-  const authRoutes = [
-    '/dashboard',
-    '/api/user',
-  ];
-  
-  // Admin routes - requiring admin privileges
-  const adminRoutes = [
-    '/oslo'
-  ];
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  // IMPORTANT: getUser() refreshes the session — do not remove this call
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  
-  // Check if the route requires authentication
-  const requiresAuth = authRoutes.some(route => pathname.startsWith(route));
-  
-  // Check if the route is an admin route (excluding login)
-  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route)) && 
-                      pathname !== '/oslo/auth/login';
-  
-  // If the route requires auth and the user is not authenticated, redirect to login
-  if (requiresAuth && !session) {
+  const authRoutes = ['/dashboard', '/api/user'];
+  const adminRoutes = ['/oslo'];
+
+  const requiresAuth = authRoutes.some((route) => pathname.startsWith(route));
+  const isAdminRoute =
+    adminRoutes.some((route) => pathname.startsWith(route)) &&
+    pathname !== '/oslo/auth/login';
+
+  if (requiresAuth && !user) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/auth/login';
     redirectUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(redirectUrl);
   }
-  
-  // Handle admin routes
+
   if (isAdminRoute) {
-    if (!session) {
-      const redirectUrl = new URL('/oslo/auth/login', request.url);
-      return NextResponse.redirect(redirectUrl);
+    if (!user) {
+      return NextResponse.redirect(new URL('/oslo/auth/login', request.url));
     }
-    
-    if (session.user.email === TEMP_ADMIN_EMAIL) {
-      return response;
-    }
-    
-    try {
+    if (user.email !== TEMP_ADMIN_EMAIL) {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_admin')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single();
-      
+
       if (profileError || !profile?.is_admin) {
         const redirectUrl = new URL('/oslo/auth/login', request.url);
         redirectUrl.searchParams.set('error', 'unauthorized');
         return NextResponse.redirect(redirectUrl);
       }
-    } catch (error) {
-      const redirectUrl = new URL('/oslo/auth/login', request.url);
-      return NextResponse.redirect(redirectUrl);
     }
   }
-  
-  // Handle subscription-gated routes
-  if (session) {
-    // Check if route requires specific subscription tier
-    const requiredTiers = Object.entries(ROUTE_LIMITS).find(([route]) => 
+
+  if (user) {
+    const requiredTiers = Object.entries(ROUTE_LIMITS).find(([route]) =>
       pathname.startsWith(route)
     )?.[1];
-    
+
     if (requiredTiers) {
-      // Try to get subscription from cookie first
       const subscriptionCookie = request.cookies.get(SUBSCRIPTION_COOKIE.name);
       let userTier = 'FREE';
-      
+
       if (subscriptionCookie) {
         try {
           const cookieData = JSON.parse(subscriptionCookie.value);
-          if (cookieData.userId === session.user.id && 
-              Date.now() - cookieData.timestamp < SUBSCRIPTION_COOKIE.maxAge * 1000) {
+          if (
+            cookieData.userId === user.id &&
+            Date.now() - cookieData.timestamp < SUBSCRIPTION_COOKIE.maxAge * 1000
+          ) {
             userTier = cookieData.tier;
           }
         } catch {
-          // Invalid cookie, will fetch from DB
+          /* invalid cookie */
         }
       }
-      
-      // If no valid cookie, fetch from database
+
       if (userTier === 'FREE' && !subscriptionCookie) {
         try {
           const { data: subscription } = await supabase
             .from('subscriptions')
             .select('plan_id, status')
-            .eq('user_id', session.user.id)
+            .eq('user_id', user.id)
             .eq('status', 'active')
             .single();
-          
+
           if (subscription) {
-            // Map plan_id to tier (simplified for FREE/PRO only)
-            // If they have ANY active subscription, they're PRO
             userTier = 'PRO';
-            
-            // Set cookie for future requests
-            response.cookies.set(SUBSCRIPTION_COOKIE.name, JSON.stringify({
-              userId: session.user.id,
-              tier: userTier,
-              timestamp: Date.now(),
-            }), {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              maxAge: SUBSCRIPTION_COOKIE.maxAge,
-            });
+            response.cookies.set(
+              SUBSCRIPTION_COOKIE.name,
+              JSON.stringify({
+                userId: user.id,
+                tier: userTier,
+                timestamp: Date.now(),
+              }),
+              {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: SUBSCRIPTION_COOKIE.maxAge,
+              }
+            );
           }
         } catch {
-          // Error fetching subscription, assume FREE tier
+          /* assume FREE */
         }
       }
-      
-      // Check if user has access
+
       if (!requiredTiers.includes(userTier)) {
-        // Redirect to upgrade page with return URL
         const upgradeUrl = new URL('/dashboard/billing', request.url);
         upgradeUrl.searchParams.set('upgrade', 'true');
         upgradeUrl.searchParams.set('feature', pathname);
         upgradeUrl.searchParams.set('required', requiredTiers[0]);
-        
         return NextResponse.redirect(upgradeUrl);
       }
     }
   }
-  
+
   return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - api/stripe/webhooks (webhook endpoints should not be blocked)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public|api/stripe/webhooks).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public|api/stripe/webhooks).*)'],
 };

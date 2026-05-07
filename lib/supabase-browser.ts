@@ -1,22 +1,14 @@
 // lib/supabase-browser.ts
+import { createBrowserClient } from '@supabase/ssr';
+import { Database } from '@/types/supabase';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/supabase'; // Ensure this path is correct
-
-// Declare the client variable but do not initialize it.
-// This is safe to run on the server.
-let client: ReturnType<typeof createClientComponentClient<Database>> | undefined;
+let client: ReturnType<typeof createBrowserClient<Database>> | undefined;
 
 export const getBrowserClient = () => {
-  // If the client is already created, return it.
-  if (client) {
-    return client;
-  }
-
-  // If not, create it. This will only happen on the client side
-  // when called from the useState initializer.
-  // The library automatically reads the NEXT_PUBLIC_ variables.
-  client = createClientComponentClient<Database>();
-
+  if (client) return client;
+  client = createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   return client;
 };
