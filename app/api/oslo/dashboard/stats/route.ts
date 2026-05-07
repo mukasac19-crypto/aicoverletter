@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import type { DashboardStats } from '@/types/admin';
 
 export async function GET(request: Request) {
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await getServerClient();
   
   // Verify admin privileges
   const { data: { session } } = await supabase.auth.getSession();

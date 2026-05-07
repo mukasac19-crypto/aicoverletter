@@ -1,7 +1,6 @@
 // app/api/resumes/ats-scanner/history/route.ts
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 
 export async function GET(request: Request) {
   try {
@@ -15,8 +14,7 @@ export async function GET(request: Request) {
       );
     }
     
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

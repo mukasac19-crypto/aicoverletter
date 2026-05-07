@@ -1,7 +1,6 @@
 // lib/api-protection.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import { getUserSubscriptionTier } from './subscription';
 import { canUseFeature, trackUsage } from './usage-tracking';
 import { checkRateLimit } from './simple-rate-limiter';
@@ -37,7 +36,7 @@ export async function protectApiRoute(
   } = options;
 
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await getServerClient();
     
     // Authentication check
     if (requireAuth) {

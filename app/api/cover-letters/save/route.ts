@@ -1,8 +1,7 @@
 // File: app/api/cover-letters/save/route.ts
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from '@/types/supabase';
 import type { SenderInfo, RecipientInfo } from '@/types/cover-letter'
 
@@ -25,8 +24,7 @@ interface SaveCoverLetterPayload {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     // Authenticate user
     const { data: { session } } = await supabase.auth.getSession();

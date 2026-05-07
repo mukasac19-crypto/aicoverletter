@@ -1,14 +1,12 @@
 // app/api/stripe/create-portal/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from '@/types/supabase';
 import { stripe } from '@/lib/stripe'; // ✅ reuse shared instance (no apiVersion type clash)
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

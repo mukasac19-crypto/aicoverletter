@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database, Tables } from '@/types/supabase';
 import puppeteer from 'puppeteer';
 // FIX: Corrected the typo in the import statement from '*s' to '* as'
@@ -17,8 +16,7 @@ type CoverLetter = Record<string, any> & {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {

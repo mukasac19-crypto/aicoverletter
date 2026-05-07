@@ -1,7 +1,6 @@
 // app/api/generate/route.ts
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { QueueEvents, Job } from 'bullmq';
 import { openaiQueue } from '@/lib/queues/openaiQueue';
 import { Database } from '@/types/supabase';
@@ -11,8 +10,7 @@ import { checkFeatureUsage } from '@/lib/api-helpers';
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();

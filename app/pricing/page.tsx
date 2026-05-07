@@ -1,7 +1,6 @@
 // app/pricing/page.tsx
 import { Suspense } from 'react';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, CreditCard } from "lucide-react";
@@ -10,7 +9,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import PricingClient from './PricingClient';
 
 export default async function PricingPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await getServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   return (

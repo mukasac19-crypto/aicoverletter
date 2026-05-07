@@ -1,15 +1,13 @@
 // app/api/cv-integration/route.ts
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 
 /**
  * API route to link an existing CV to a resume or vice versa
  */
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

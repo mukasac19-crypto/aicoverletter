@@ -1,7 +1,6 @@
 // app/api/resumes/from-linkedin/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from '@/types/supabase';
 // Import the ACTUAL resume creation logic utility
 import { createResumeFromLinkedInData } from '@/lib/resumeUtils';
@@ -10,8 +9,7 @@ type LinkedInProfile = Database['public']['Tables']['linkedin_profiles']['Row'];
 
 export async function POST(request: NextRequest) {
     const start = Date.now();
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     try {
         // 1. Get User ID

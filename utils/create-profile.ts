@@ -1,7 +1,6 @@
 'use server';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 
 /**
  * Creates a default profile for a new user
@@ -10,7 +9,7 @@ import { cookies } from 'next/headers';
  * It ensures that each user has a corresponding profile in the profiles table
  */
 export async function createUserProfile(userId: string) {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await getServerClient();
   
   // Check if a profile already exists for this user
   const { data: existingProfile } = await supabase

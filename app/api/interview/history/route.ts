@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const resumeId = searchParams.get('resumeId'); // Optional filter by resume
     
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     
     // Get user session
     const { data: { session } } = await supabase.auth.getSession();

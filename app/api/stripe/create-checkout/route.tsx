@@ -1,7 +1,6 @@
 // app/api/stripe/create-checkout/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { SubscriptionTier } from '@/types/subscription';
 import { stripe } from '@/lib/stripe';
 
@@ -24,8 +23,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid billing interval.' }, { status: 400 });
     }
 
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
       return NextResponse.json({ error: 'Failed to get session' }, { status: 500 });

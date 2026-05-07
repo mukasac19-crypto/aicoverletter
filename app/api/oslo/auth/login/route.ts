@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 
 // Special admin email that will bypass checks - MUST match the one in useOsloAuth.ts
 const TEMP_ADMIN_EMAIL = 'jennifernanyombi1@gmail.com';
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
     }
     
     // Initialize Supabase client
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await getServerClient();
     
     // Sign in with email and password
     const { data, error } = await supabase.auth.signInWithPassword({

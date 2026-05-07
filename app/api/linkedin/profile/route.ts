@@ -1,7 +1,6 @@
 // app/api/linkedin/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from "@/types/supabase";
 // Import shared utilities for interacting with Official LinkedIn API
 import { refreshLinkedInToken, fetchComprehensiveLinkedInData } from "@/lib/linkedinUtils";
@@ -23,8 +22,7 @@ type LinkedInProfile = Database['public']['Tables']['linkedin_profiles']['Row'];
 
 export async function POST(request: NextRequest) {
     const start = Date.now();
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     try {
         // 1. Check user session

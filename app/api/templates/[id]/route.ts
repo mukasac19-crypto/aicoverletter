@@ -3,8 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { DEFAULT_TEMPLATES } from '@/lib/default-templates';
 import { Database } from '@/types/supabase'; // Import Database type if needed
 
@@ -24,8 +23,7 @@ export async function GET(
       return NextResponse.json(defaultTemplate);
     }
 
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -96,8 +94,7 @@ export async function PUT(
       );
     }
 
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();
@@ -184,8 +181,7 @@ export async function DELETE(
       );
     }
 
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
 
     // Get the current user session
     const { data: { session } } = await supabase.auth.getSession();

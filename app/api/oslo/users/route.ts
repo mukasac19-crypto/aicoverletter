@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await getServerClient();
   
   // Get URL and search parameters
   const { searchParams } = new URL(request.url);
@@ -155,7 +154,7 @@ export async function PATCH(request: NextRequest) {
   }
   
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await getServerClient();
   
   // Verify admin privileges
   const { data: { session } } = await supabase.auth.getSession();
@@ -246,7 +245,7 @@ export async function DELETE(request: NextRequest) {
   }
   
   // Create authenticated Supabase client
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await getServerClient();
   
   // Verify admin privileges
   const { data: { session } } = await supabase.auth.getSession();

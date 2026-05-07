@@ -1,6 +1,6 @@
 // app/api/linkedin/auth/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { getServerClient } from '@/lib/supabase-server';
 import { cookies } from "next/headers";
 import crypto from 'crypto';
 
@@ -19,8 +19,7 @@ export async function GET(request: NextRequest) {
     });
     
     // This is for READING incoming cookies to initialize Supabase
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     
     // Get the user's session
     const { data: { session } } = await supabase.auth.getSession();

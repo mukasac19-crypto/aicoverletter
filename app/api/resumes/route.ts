@@ -1,7 +1,6 @@
 // app/api/resumes/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { withAuth, checkFeatureUsage } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {

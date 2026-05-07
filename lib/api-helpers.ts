@@ -1,7 +1,6 @@
 // lib/api-helpers.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import { SUBSCRIPTION_PLANS } from './subscription-plans';
 
 interface ApiContext {
@@ -15,7 +14,7 @@ export async function withAuth(
   request: NextRequest,
   handler: (context: ApiContext) => Promise<NextResponse>
 ): Promise<NextResponse> {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await getServerClient();
   
   const { data: { session } } = await supabase.auth.getSession();
   

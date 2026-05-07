@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from '@/types/supabase';
 import { CoverLetter } from '@/types/cover-letter';
 
@@ -30,8 +29,7 @@ function mapDatabaseToCoverLetter(dbCoverLetter: any): CoverLetter {
 // GET handler to fetch all cover letters for the authenticated user
 export async function GET(request: Request) {
     try {
-        const cookieStore = cookies();
-        const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+        const supabase = await getServerClient();
 
         // Authenticate user
         const { data: { session } } = await supabase.auth.getSession();
@@ -151,8 +149,7 @@ export async function GET(request: Request) {
 // POST handler for fetching a specific cover letter by ID
 export async function POST(request: Request) {
     try {
-        const cookieStore = cookies();
-        const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+        const supabase = await getServerClient();
 
         // Authenticate user
         const { data: { session } } = await supabase.auth.getSession();

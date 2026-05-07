@@ -1,14 +1,12 @@
 //C:\Users\mukas\Downloads\project-bolt-sb1-guerg2d9\project\app\api\job-parser\route.ts
 
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { getServerClient } from '@/lib/supabase-server';
 import openai from '@/lib/openai';
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
         
     const { data: { session } } = await supabase.auth.getSession();
         

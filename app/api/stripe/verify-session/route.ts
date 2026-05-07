@@ -1,8 +1,7 @@
 //app\api\stripe\verify-session\route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { getServerClient } from '@/lib/supabase-server';
 import { Database } from '@/types/supabase';
 import { stripe } from '@/lib/stripe';
 // We only need the main Stripe import.
@@ -19,8 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const supabase = await getServerClient();
     
     const { data: { session } } = await supabase.auth.getSession();
     
