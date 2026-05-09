@@ -1,0 +1,162 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 360px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+  font-size: 14px;
+  color: #1f2937;
+  background: #fff;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: #fff;
+}
+
+.brand-header h1 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+section {
+  padding: 16px;
+}
+
+.hidden { display: none; }
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #047857;
+  margin-bottom: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+#job-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.company {
+  color: #4b5563;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.location {
+  color: #6b7280;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+button {
+  font: inherit;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.05s ease, box-shadow 0.15s ease;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button.primary {
+  background: #ea580c;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+
+button.primary:hover {
+  background: #c2410c;
+}
+
+button.secondary {
+  background: transparent;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+button.secondary:hover {
+  background: #fff7ed;
+}
+
+.hint {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+#no-job h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+#no-job p {
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.cta {
+  display: inline-block;
+  background: #1f2937;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.cta:hover {
+  background: #111827;
+}
+
+footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+footer a {
+  color: #4b5563;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #ea580c;
+}

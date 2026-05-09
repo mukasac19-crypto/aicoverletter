@@ -1,11 +1,57 @@
-import { NextPage } from 'next';
+import type { Metadata, NextPage } from 'next';
 import { Lightbulb, Zap, Users } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getCanonicalSiteUrl } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: 'About Us — The Story Behind CareerThings AI',
+  description:
+    'Why we built CareerThings AI: to give every job seeker the AI tools they need to beat ATS, write tailored cover letters, and land interviews faster.',
+  alternates: { canonical: '/about-us' },
+  openGraph: {
+    type: 'website',
+    title: 'About CareerThings AI',
+    description:
+      'Why we built CareerThings AI — leveling the playing field for job seekers with AI.',
+    url: '/about-us',
+  },
+};
 
 const AboutUsPage: NextPage = () => {
+  const siteUrl = getCanonicalSiteUrl();
+  const aboutJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About CareerThings AI',
+    url: `${siteUrl}/about-us`,
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'CareerThings AI',
+      url: siteUrl,
+      description:
+        'AI-powered cover letters, ATS-optimized resumes, interview prep, and job tracking — built to help job seekers land interviews faster.',
+    },
+  };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'About Us', item: `${siteUrl}/about-us` },
+    ],
+  };
+
   return (
     <div className="bg-white text-gray-800">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-orange-50 via-white to-white">
         <div className="container mx-auto px-6 py-24 text-center">

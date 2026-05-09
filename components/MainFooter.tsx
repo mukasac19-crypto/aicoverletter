@@ -56,6 +56,14 @@ const MainFooter = () => {
             <h3 className="text-white font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/blog" className="hover:text-orange-400 transition-colors">Blog</Link></li>
+              <li><Link href="/guides" className="hover:text-orange-400 transition-colors">Career Guides</Link></li>
+              <li><Link href="/cover-letter-examples" className="hover:text-orange-400 transition-colors">Cover Letter Examples</Link></li>
+              <li><Link href="/resume-examples" className="hover:text-orange-400 transition-colors">Resume Examples</Link></li>
+              <li><Link href="/cover-letter-for" className="hover:text-orange-400 transition-colors">Company Cover Letters</Link></li>
+              <li><Link href="/interview-questions" className="hover:text-orange-400 transition-colors">Interview Questions</Link></li>
+              <li><Link href="/resume-keywords" className="hover:text-orange-400 transition-colors">Resume Keywords</Link></li>
+              <li><Link href="/ats-guide" className="hover:text-orange-400 transition-colors">ATS Guides</Link></li>
+              <li><Link href="/tools" className="hover:text-orange-400 transition-colors">Free Tools</Link></li>
             </ul>
           </div>
 

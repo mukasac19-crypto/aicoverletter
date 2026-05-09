@@ -22,7 +22,7 @@ const createStripe = () => {
 
   // ⬇️ Removed apiVersion to avoid TS literal mismatch
   return new Stripe(key, {
-    appInfo: { name: 'AI Cover Letter Assistant', version: '1.0.0' },
+    appInfo: { name: 'CareerThings AI', version: '1.0.0' },
   });
 };
 

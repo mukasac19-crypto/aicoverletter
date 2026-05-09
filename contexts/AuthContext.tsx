@@ -1,3 +1,5 @@
+//C:\Users\mukas\OneDrive\Desktop\aicoverletter-work\contexts\AuthContext.tsx
+
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';

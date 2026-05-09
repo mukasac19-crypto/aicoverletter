@@ -1,4 +1,5 @@
 // app/pricing/page.tsx
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getServerClient } from '@/lib/supabase-server';
 import { Button } from "@/components/ui/button";
@@ -7,14 +8,95 @@ import { Check, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import PricingClient from './PricingClient';
+import { getCanonicalSiteUrl } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: 'Pricing — Free Forever or Go Pro for $20/mo',
+  description:
+    'Simple, transparent pricing for CareerThings AI. Start free with cover letters and resumes, or upgrade to Pro for unlimited generations, ATS scanning, and interview prep.',
+  alternates: { canonical: '/pricing' },
+  openGraph: {
+    type: 'website',
+    title: 'CareerThings AI Pricing — Free Forever or $20/mo Pro',
+    description:
+      'Free forever plan plus a Pro tier with unlimited cover letters, ATS scanning, and interview prep.',
+    url: '/pricing',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CareerThings AI Pricing',
+    description:
+      'Free forever plan plus a Pro tier with unlimited cover letters, ATS scanning, and interview prep.',
+  },
+};
 
 export default async function PricingPage() {
-  const supabase = await getServerClient();
+  const supabase = getServerClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  const siteUrl = getCanonicalSiteUrl();
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'CareerThings AI Professional',
+    description:
+      'Unlimited AI cover letters, ATS-optimized resumes, ATS scanning, and interview prep.',
+    brand: { '@type': 'Brand', name: 'CareerThings AI' },
+    url: `${siteUrl}/pricing`,
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${siteUrl}/auth/register`,
+      },
+      {
+        '@type': 'Offer',
+        name: 'Professional (monthly)',
+        price: '20',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${siteUrl}/pricing`,
+      },
+      {
+        '@type': 'Offer',
+        name: 'Professional (annual)',
+        price: '200',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `${siteUrl}/pricing`,
+      },
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '1200',
+      bestRating: '5',
+      worstRating: '1',
+    },
+  };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Pricing', item: `${siteUrl}/pricing` },
+    ],
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-secondary relative">
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-20 text-center max-w-5xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">

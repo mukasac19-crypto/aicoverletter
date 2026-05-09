@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CareerThings AI</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="brand-header">
+      <img src="icons/icon-32.png" alt="" width="24" height="24" />
+      <h1>CareerThings AI</h1>
+    </header>
+
+    <section id="job-detected" class="hidden">
+      <p class="status">
+        <span class="dot" aria-hidden="true"></span>
+        Job posting detected
+      </p>
+      <h2 id="job-title">—</h2>
+      <p class="company" id="job-company">—</p>
+      <p class="location" id="job-location"></p>
+
+      <div class="actions">
+        <button id="save-job" class="primary">Save to CareerThings</button>
+        <button id="tailor-now" class="secondary">Tailor a cover letter →</button>
+      </div>
+
+      <p class="hint">
+        We&rsquo;ll open your CareerThings dashboard with this posting pre-loaded.
+      </p>
+    </section>
+
+    <section id="no-job" class="hidden">
+      <h2>Browse a job posting to start</h2>
+      <p>
+        Open a posting on LinkedIn, Indeed, Greenhouse, Lever, Ashby, Workday, or
+        any other supported job site, then click the CareerThings AI extension.
+      </p>
+      <a class="cta" href="https://careerthings.ai" target="_blank" rel="noopener">
+        Open CareerThings AI
+      </a>
+    </section>
+
+    <footer>
+      <a href="https://careerthings.ai/tools/ats-checker" target="_blank" rel="noopener">Free ATS Checker</a>
+      <span>·</span>
+      <a href="https://careerthings.ai" target="_blank" rel="noopener">Sign in</a>
+    </footer>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

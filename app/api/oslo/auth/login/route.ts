@@ -1,3 +1,5 @@
+//app\api\oslo\auth\login\route.ts
+
 import { NextResponse } from 'next/server';
 import { getServerClient } from '@/lib/supabase-server';
 

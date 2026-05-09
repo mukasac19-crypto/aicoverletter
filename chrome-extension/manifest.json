@@ -1,0 +1,67 @@
+{
+  "manifest_version": 3,
+  "name": "CareerThings AI — Save Jobs & Tailor Applications",
+  "short_name": "CareerThings AI",
+  "version": "0.1.0",
+  "description": "Save job postings to CareerThings AI in one click. Tailor your cover letter and resume to any role in seconds.",
+  "author": "CareerThings AI",
+  "homepage_url": "https://careerthings.ai",
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    },
+    "default_title": "Save this job to CareerThings AI"
+  },
+
+  "permissions": ["activeTab", "storage", "scripting"],
+
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.glassdoor.com/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*",
+    "https://*.ashbyhq.com/*",
+    "https://*.workable.com/*",
+    "https://*.smartrecruiters.com/*",
+    "https://*.myworkdayjobs.com/*",
+    "https://wellfound.com/*",
+    "https://*.hiringcafe.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/jobs/*",
+        "https://*.indeed.com/*",
+        "https://*.glassdoor.com/job-listing/*",
+        "https://*.greenhouse.io/jobs/*",
+        "https://*.lever.co/*",
+        "https://*.ashbyhq.com/*",
+        "https://*.workable.com/*",
+        "https://*.smartrecruiters.com/*",
+        "https://*.myworkdayjobs.com/*",
+        "https://wellfound.com/*",
+        "https://*.hiringcafe.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
